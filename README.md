@@ -1,4 +1,4 @@
-# MaxPhase-SKAPTA
+# RAAPTR (Repository of Analysis Algorithms for Pulsar Timing Residuals)
 
 This is the github repository for the "MaxPhase" algorithm (C language version) and the Matlab codes simulating the data sets for the SKA era PTA. The data sets used in Wang and Mohanty (2016) paper are also uploaded here. 
 
