@@ -1,0 +1,22 @@
+/*!
+\mainpage Introduction
+The MaxPhase algorithm, described in [WMJ2], implements
+the Generalized Likelihood Ratio Test (GLRT) and Maximum Likelihood Estimation (MLE)
+for gravitational wave searches from isolated continuous wave sources 
+using Pulsar Timing Array (PTA) data. 
+
+This documentation describes the C implementation of MaxPhase. The following external libraries are required: 
+[GNU Scientific Library](https://www.gnu.org/software/gsl/), 
+[MPICH] (https://www.mpich.org), and the Matlab [MAT file API](https://www.mathworks.com/help/matlab/read-and-write-matlab-mat-files-in-c-c-and-fortran.html). (The 
+MAT file format is used for storing input and output data.)
+
+[WMJ2]: http://dx.doi.org/10.1088/0004-637X/815/2/125 "Wang, Mohanty, Jenet, ApJ, 815, 125 (2015)"
+
+\section Install Installation
+Installation of the code can be done by replacing path names appropriately in the supplied makefile. Basically, 
+the proper paths to the include files and the libraries mentioned above need to be set. Once the makefile has been edited, do 'make' to compile the codes.
+
+\section use Usage
+A user manual has been provided separately.  
+
+*/

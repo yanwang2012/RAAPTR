@@ -1,0 +1,37 @@
+# makefile for MaxPhase project.  Feb. 22, 2016
+
+OBJ = perfeval_mpi.o perfeval.o  LLR_PSO.o  maxphaseutils.o ptapso.o mp2matfile_io.o 
+CC = mpicc -O3
+GSLFLAGS :=  $(shell gsl-config --cflags)
+GSLLIBS := $(shell gsl-config --libs)
+MATLABFLAGS = /Applications/MATLAB_R2015b.app/extern/include
+MATLABLIBS = /Applications/MATLAB_R2015b.app/bin/maci64
+
+perfeval_mpi.out: $(OBJ)
+	$(CC) $(OBJ) -L$(MATLABLIBS) -lmat -lmx -Xlinker -rpath -Xlinker \
+	$(MATLABLIBS) $(GSLLIBS) -lm -o perfeval_mpi.out
+
+perfeval_mpi.o: perfeval_mpi.c 
+	$(CC) -c -I$(MATLABFLAGS) $(GSLFLAGS) perfeval_mpi.c
+
+mp2matfile_io.o: mp2matfile_io.c  
+	$(CC) -c -I$(MATLABFLAGS) $(GSLFLAGS) mp2matfile_io.c
+	
+perfeval.o: perfeval.c  
+	$(CC) -c -I$(MATLABFLAGS) $(GSLFLAGS) perfeval.c
+
+LLR_PSO.o: LLR_PSO.c  
+	$(CC) -c LLR_PSO.c -I$(MATLABFLAGS) $(GSLFLAGS) 
+
+maxphaseutils.o: maxphaseutils.c  
+	$(CC) -c maxphaseutils.c $(GSLFLAGS) 
+
+ptapso.o: ptapso.c  
+	$(CC) -c ptapso.c $(GSLFLAGS) 
+		
+.PHONY: clean
+clean:
+		-rm *.o
+		-rm -r simDataX_MPI/results*
+
+# EOF

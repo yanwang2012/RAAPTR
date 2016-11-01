@@ -1,0 +1,246 @@
+/*!
+\page fitfunc_example Template code for a fitness function
+
+\author Soumya D. Mohanty
+
+We illustrate how a fitness function is specified using the example
+function **ptapsotestfunc**. The declaration of the fitness function must be provided
+in the header file associated with the fitness function, which is ptapsotestfunc.h in our
+case. 
+
+\snippet ptapsotestfunc.h Declaration of fitness function
+
+The format given above for fitness functions is forced upon us by conventions defined in GSL. If we use any 
+GSL algorithm, such as Nelder-Mead minimization, we must supply the function to be minimized in the above format. 
+Hence, we adopt the same format for fitness functions in the MaxPhase code.
+
+The function must return a scalar fitness value (of type double). The first input argument sends in the coordinates of the
+location at which the fitness needs to be evaluated. The coordinates must be standardized so that the search 
+space is a unit hypercube (the coordinates of any point in the search space lie in [0,1]).
+The second argument is used to pass any parameter values
+that the fitness function may depend on. In MaxPhase, the second argument should be a structure of
+type fitFuncParams that is declared in maxphase.h.
+
+\snippet maxphase.h Fitness function Param Struct
+
+(See the fitFuncParams documentation for the meaning of the different fields of this structure.) 
+All fitness functions require the information contained in this structure (except the field splParams explained below). 
+They can also return
+additional information, besides the fitness value, through this structure. For example, the 
+field realCoord is used to return the actual (un-standardized) coordinates of the location. 
+
+The splParams field can be used to pass additional parameters required by a fitness function.  
+The additional parameters are provided as fields of a structure that is specific to a fitness function (*not*
+in global header files like maxphase.h). As
+such, this structure should be declared in the header file associated with the fitness function. In our case,  the
+ptapsotestfunc function does not need additional parameters but we have included a dummy one for illustration. (See
+ptapsotestfunc.h .)
+
+\snippet ptapsotestfunc.h Special Params struct
+
+The code snippet below shows how to initialize the fitness function parameter structure and the special parameters needed
+by a fitness function. This snippet is taken from the **test_ptapsotestfunc.c** file.
+
+\snippet test_ptapsotestfunc.c Initializing fitness param struct
+
+Ignoring the comment lines in the code snippet above, the first line defines the variable *inParams* to be of type
+fitFuncParams. The next several lines initialize the fields of *inParams*. Note how the *splParams* field is initialized.
+First, a variable *spclParams* of type ptapsotestfunc_params is defined. Then the fields of *spclParams* are initialized. 
+Then the field *splParams* of *inParams* is assigned the address of *spclParams*. Since *splParams* is of type __void *__,
+it can be assigned with the pointer to any data type.  However, anywhere we want to access the fields of *splParams*, we 
+will need to cast it back to type  ptapsotestfunc_params *. Since the fields of *splParams* are only going to be used
+inside a fitness function, and since each fitness function knows what data type this special structure is (from its own
+header file), the fitness function knows what type to cast *splParams* into. See the code snippets from ptapsotestfunc.c below 
+to see how this is done.
+
+\snippet ptapsotestfunc.c Cast special params
+
+Ignoring the comment lines in the code snippet above, the first line shows the cast of the field *splParams* of *inParams* from 
+__void *__ to ptapsotestfunc_params *. 
+(Note that there is no conflict in using the same name for the variable on the left as the name of the struct field on the right.)
+Once the cast is done, the fields of the variable *splParams*  can be retrieved as shown on the second line. Of course, before
+we can access any field of *inParams* inside **ptapsotestfunc**, *inParams*, which is sent
+into **ptapsotestfunc** via its second argument (__void *__), itself needs a cast from __void *__ to fitFuncParams *.
+
+\snippet ptapsotestfunc.c Cast fit func params
+
+Having gone through the rationale behind the design choices above, let's examine the template for defining any fitness function. Note 
+that unlike the code snippets shown above which are taken directly from the header and implementation files, the code shown below 
+need not correspond in detail with the ones in these files.
+
+\section headerfile Header File
+
+Every fitness function must have its own header file. The header file may define additional parameters specifically needed by the fitness 
+function. If there are more than one parameter, they must be passed through a structure. The structure tag should be given a unique name 
+that is associated with the fitness function. 
+
+
+\code{.c}
+struct ptapsotestfunc_params{
+	int dummyParam; /*!< Just a dummy special parameter */
+};
+\endcode
+
+The header file should contain the declaration of the fitness function. The declaration has the universal form shown below.
+
+\code
+double ptapsotestfunc(const gsl_vector *, void *);
+\endcode
+
+
+The gsl_vector.h header should be included via "#include <gsl/gsl_vector.h>". 
+
+
+\section Impfile Implementation File
+
+The main parts of the implementation file for **ptapsotestfunc** are discussed below.
+
+\subsection cast Proper Casting Of Inputs
+
+Before using any pointer of the generic type __void *__, it must be cast into a non-generic pointer. 
+After that the data stored in the structures can be accessed.
+
+\code
+/* Include the header file of the fitness function
+   so that the declaration of the structure containing
+   special parameters is available.
+*/
+#include "ptapsotestfunc.h"
+
+...
+
+double ptapsotestfunc(const gsl_vector *xVec, void  *inParamsPointer){
+    
+	...
+	
+	/* Cast the second argument */
+	
+	struct fitFuncParams *inParams = (struct fitFuncParams *)inParamsPointer;
+	
+	/* Now the fields of inParams can accessed via 'inParams->' syntax */ 
+	
+	struct ptapsotestfunc_params *splParams = (struct ptapsotestfunc_params *)inParams->splParams;
+	
+	...
+	
+	/* Now access the fields */
+	unsigned int ncols = inParams->nDim;
+	
+	...
+	
+	int dummy = splParams->dummyParam;
+	
+	...
+}
+\endcode
+
+\subsection CalcFit Calculate Fitness Value
+
+The rest of the function then computes the fitness values, which requires the calculation of the
+un-standardized coordinates first.
+
+\code
+double ptapsotestfunc(const gsl_vector *xVec, void  *inParamsPointer){
+    /* Stuff discussed above */
+	
+	....
+	
+	/* Get the un-standardized locations (second argument). */
+	s2rvector(xVec,inParams->realCoord,inParams->rmin,inParams->rangeVec);
+	
+	...
+	
+	/* Set a flag if the location is outside the unit hypercube */
+	validPt = chkstdsrchrng(xVec);
+	
+	...
+	
+ 	if (validPt){
+	      /* Set flag that function was actually evaluated */
+          inParams->fitEvalFlag = 1;
+		  /* Fitness calculation goes here */
+		  ...
+		  
+ 		}
+     }
+ 	else{
+	    /* If the location is invalid, return +infty as the fitness value */
+ 		fitFuncVal=GSL_POSINF;
+		/* Set flag that the function was not actually evaluated */
+		inParams->fitEvalFlag = 0;
+ 	}
+	
+	...
+	
+	/* Return the value and exit function */
+    return fitFuncVal;
+}
+\endcode
+
+\section FuncCall Calling The Fitness Function
+
+The **test_ptapsotestfunc.c** code shows how to initialize the fitness function parameters and call the fitness function.
+
+\code
+/* Include relevant header files */
+
+...
+
+#include "maxphase.h"  /* Defines the fitFuncParams struct among other things */
+#include "ptapsotestfunc.h"  /* Declares the fitness function as well as the special parameters struct it needs */
+
+...
+
+int main(){
+
+	...
+	
+	/* Create storage for the vector that will carry in the location into the fitness function*/
+	gsl_vector *xVec = gsl_vector_alloc(nDim);
+	
+	...
+	
+	/* Initialize the fitness function parameter structures */
+	struct fitFuncParams inParams;
+	inParams.nDim = nDim;
+	inParams.rmin = gsl_vector_alloc(nDim);
+
+	...
+	
+	struct ptapsotestfunc_params spclParams;
+	spclParams.dummyParam = 10;
+	inParams.splParams = &spclParams;
+	
+	...
+	
+	/* Call the fitness function. Of course, xVec was loaded somewhere
+	   with standardized coordinates.
+    */
+	fitVal = ptapsotestfunc(xVec,&inParams);
+	
+	...
+	
+	/* Get the un-standardized coordinates */
+	for (lpc=0; lpc < nDim; lpc++){
+		realCoords[lpc] = gsl_vector_get(inParams.realCoord,lpc);
+	}
+	
+	...
+	
+	/* Free allocated memory */
+	gsl_vector_free(xVec);
+	gsl_vector_free(inParams.rmin);
+	
+	...
+	
+
+\endcode
+
+
+
+*/
+
+
+
+
+
