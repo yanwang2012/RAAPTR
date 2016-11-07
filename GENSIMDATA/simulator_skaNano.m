@@ -110,7 +110,7 @@ phi0=2.89;  %0.0;  % initial orbital phase
 
 % ==== Constructing a pulsar timing array using Np pulsars ====
 % read in the pulsar catalogue simulated for SKA
-skamsp=load('/Users/ywang/Research/PULSARTIMING/MultiCW/survey_ska.mat');
+skamsp=load('/Your/path/to/the/file/survey_ska.mat');
 [~,I]=sort(skamsp.D);
 Np=1000;  % number of pulsars in the timing array
 
