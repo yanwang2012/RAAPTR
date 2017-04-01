@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 //Soumya D. Mohanty, 2016
+//The original code is in the repository HDF5_MAT_GSL_UTILS
 
 //Input: hdf file, dataset name, gsl_vector
 void gslvector2hdf5(hid_t, const char *, const gsl_vector *);
