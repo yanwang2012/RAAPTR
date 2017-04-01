@@ -120,18 +120,21 @@ void ptapso(size_t nDim, /*!< Number of search dimensions */
 	            gsl_vector_memcpy(pop[lpParticles].partPbest,pop[lpParticles].partCoord);
 	        }
 	    }
-		
+				
 		/* Find the best particle in the current iteration */
 		bestfitParticle = gsl_vector_min_index(partSnrCurrCol);
 	    currBestFitVal = pop[bestfitParticle].partSnrCurr; 
+		
 	    if (gbestFitVal > currBestFitVal){
 		/* 
 		   Do local minimization iterations since gbest has changed.
 		*/
+			/* Merely calling the gsl_multimin_fiminizer_set function leads to nDim+1 
+			   function evaluations! */
 		   	gsl_multimin_fminimizer_set(minimzrState,&func2minimz,
 			                            pop[bestfitParticle].partCoord,
-										locMinStp);
-			funcCount = 0;
+										locMinStp);			
+			funcCount = nDim+1;
 			
 			for (lpLocMin = 0; lpLocMin < psoParams->locMinIter; lpLocMin++){
 				status = gsl_multimin_fminimizer_iterate(minimzrState);

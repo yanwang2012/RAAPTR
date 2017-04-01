@@ -6,8 +6,7 @@
 /*Test suite for perfeval.c function
 Compile using: 
 make (To compile a bunch of functions)
-gcc -c -g test_perfeval.c -I/usr/local/include 
-	-I/Applications/MATLAB_R2016a.app/extern/include
+gcc -c -g test_perfeval.c -I/usr/local/include -I/Applications/MATLAB_R2016a.app/extern/include
 gcc test_perfeval.o perfeval.o LLR_PSO.o  maxphaseutils.o ptapso.o mp2matfile_io.o  
     -L/usr/local/lib -lgsl -lgslcblas
 	-L/Applications/MATLAB_R2016a.app/bin/maci64 -lmat -lmx 
@@ -34,7 +33,7 @@ int main(int argc, char *argv[]){
 	
 	//Run a loop in order to detect memory leak
 	size_t lpc;
-	for(lpc = 0; lpc < 5; lpc++){
+	for(lpc = 0; lpc < 1; lpc++){
 		printf("Loop # %zu\n",lpc);
 		perfeval(ffp,inputFileName, outputFileName);
 	}
