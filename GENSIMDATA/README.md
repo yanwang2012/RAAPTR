@@ -1,22 +1,26 @@
 Updated 09/13/2018 YW
 
 
-This folder contains the code for generating simulated PTA data.
+This folder contains the code for generating simulated Pulsar Timing Array (PTA) data. A PTA data set consists of the timing residuals from Np pulsars. The timing residuals for all the pulsars are generated with the same start and end times and the same sampling rate. Henceforth, we refer to the collection of timing residuals as a data realization, or just the data.
 
 
-'simulator_ska_GWB.m' is the simulator that generates the data for the SKA era PTA. 'H1 data' (such as 'GWBsimDataSKASrlz1Nrlz1.mat') contains the timing residuals of SKA observed pulsars (Np=1000) including both the GW induced residuals from a number of (Ns=100) SMBHBs across the Universe and the measurement noise (sd=100 ns, contributed by radiometer and jitter noise); 'H0 data' (such as 'noise1.mat') contains noise only timing residuals.  
+The main code is 'simulator_ska_GWB.m', which generates multiple data realizations of two types, namely,  signal+noise ('H1 data')   and noise-only ('H0 data'). The name of the file containing a data realization indicates what type of data it is. For example, 'GWBsimDataSKASrlz1Nrlz1.mat' contains H1 data while  'noise1.mat' contains H0 data.
 
-This simulation has a few outputs: 
+The noise is assumed to consist of only radiometer and jitter noise, which is well approximated as Gaussian white noise, because these are expected to be the dominant sources of noise for timing residuals obtained with the Square Kilometer Array (SKA). At present, the noise standard deviation (sd) is assumed to be 100 nano-seconds (ns) for each pulsar.
 
-(1) In simDateDir folder ./GWBsimDataSKA_xxx: GWB_Srlz1.mat contains the information of the simulated SMBHBs, this info may have overlaps with the ones in the H1/H0 data for the ease of subsequent analysis. Each data may take 20 sec or so on a single processor (2.8 GHz Intel Core i7).
+The GW signal in each timing residual arises from a set of Ns=100 Supermassive Black Hole Binaries (SMBHBs) scattered across the Universe. 
 
-(2) ./GWBsimDataSKA_xxx: H1 data GWBsimDataSKASrlz1Nrlz1.mat
+The simulated data files are organized as follows: 
+
+(1) In the simDataDir folder named as ./GWBsimDataSKA_xxx: GWB_Srlz1.mat contains information about the particular simulation. This info may have some overlap with that cointained in the H1/H0 data files for ease of subsequent analysis. Each data file may take 20 sec or so to generate on a single processor (2.8 GHz Intel Core i7).
+
+(2) ./GWBsimDataSKA_xxx: H1 data (e.g., GWBsimDataSKASrlz1Nrlz1.mat)
 
 
-(3) ./GWBsimDataSKA_xxx: H0 data noise1.mat (We try to maintain the same data structure of H0 data as H1 data.)
+(3) ./GWBsimDataSKA_xxx: H0 data (e.g., noise1.mat). We try to maintain the same variable names for the contents in H0 and H1 data files.
 
 
-(4) In home folder: search parameter file (searchParamsFile='searchParams_GWBsimDataSKA_xxx') contains variable 'xmaxmin' which provides the maximum and minimum values of the searched parameters (parameter ranges). The detection algorithm 'MaxPhase' and 'AvPhase' (in C) may use a different parameter file which separate the full range into several bins for the purpose of multiple source detection and estimation. 
+(4) In the home folder: search parameter file (searchParamsFile='searchParams_GWBsimDataSKA_xxx') contains variable 'xmaxmin' which provides the maximum and minimum values of the searched parameters (parameter ranges). The detection algorithm 'MaxPhase' and 'AvPhase' (in C) may use a different parameter file which separate the full range into several bins for the purpose of multiple source detection and estimation. 
 
 
 Inputs needed: 
