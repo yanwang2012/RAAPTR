@@ -1,6 +1,3 @@
-Updated 09/13/2018 YW
-
-
 This folder contains the code for generating simulated Pulsar Timing Array (PTA) data. A PTA data set consists of the timing residuals from Np pulsars. The timing residuals for all the pulsars are generated with the same start and end times and the same sampling rate. Henceforth, we refer to the collection of timing residuals as a data realization, or just the data.
 
 
