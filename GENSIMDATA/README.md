@@ -1,11 +1,8 @@
-This folder contains the code for generating simulated Pulsar Timing Array (PTA) data. A PTA data set consists of the timing residuals from Np pulsars. The timing residuals for all the pulsars are generated with the same start and end times and the same sampling rate. Henceforth, we refer to the collection of timing residuals as a data realization, or just the data.
+This folder contains the code for generating simulated Pulsar Timing Array (PTA) data. The data from a PTA is a collection of the timing residuals from Np pulsars. The code generates statistically independent realizations of PTA data and stores them in files. 
 
+The main code is 'simulator_ska_GWB.m', which generates data realizations of two types, namely,  signal+noise ('H1 data')   and noise-only ('H0 data'). The name of the file containing a data realization indicates what type of data it is. For example, 'GWBsimDataSKASrlz1Nrlz1.mat' contains H1 data while  'noise1.mat' contains H0 data. In each file, the timing residuals for all the pulsars are generated with the same start and end times, and the same sampling rate. 
 
-The main code is 'simulator_ska_GWB.m', which generates multiple data realizations of two types, namely,  signal+noise ('H1 data')   and noise-only ('H0 data'). The name of the file containing a data realization indicates what type of data it is. For example, 'GWBsimDataSKASrlz1Nrlz1.mat' contains H1 data while  'noise1.mat' contains H0 data.
-
-The noise is assumed to consist of only radiometer and jitter noise, which is well approximated as Gaussian white noise, because these are expected to be the dominant sources of noise for timing residuals obtained with the Square Kilometer Array (SKA). At present, the noise standard deviation (sd) is assumed to be 100 nano-seconds (ns) for each pulsar.
-
-The GW signal in each timing residual arises from a set of Ns=100 Supermassive Black Hole Binaries (SMBHBs) scattered across the Universe. 
+The noise in each timing residual is assumed to consist of only radiometer and jitter noise, which is well approximated as Gaussian white noise, because these are expected to be the dominant sources of noise for timing residuals obtained with the Square Kilometer Array (SKA). At present, the noise standard deviation (sd) is assumed to be 100 nano-seconds (ns) for each pulsar. The GW signal in each timing residual arises from a set of Ns Supermassive Black Hole Binaries (SMBHBs) scattered across the Universe. (Currently, Ns=100 in the codes.)
 
 The simulated data files are organized as follows: 
 
