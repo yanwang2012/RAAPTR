@@ -1,4 +1,4 @@
-function Res=cosined(Vec);
+function Res=cosined(Vec)
 %--------------------------------------------------------------------
 % cosined function     cosine direction transformation
 %                    convert lon & lat to cosine direction
@@ -13,14 +13,14 @@ function Res=cosined(Vec);
 % output : - cosine direction or longitude and latitude.
 %    By  Eran O. Ofek           July 1999
 %--------------------------------------------------------------------
-if (length(Vec(1,:))==2),
+if (length(Vec(1,:))==2)
    Alpha = Vec(:,1);
    Delta = Vec(:,2);
    Res          = zeros(length(Vec(:,1)),3);
    Res(:,1)     = cos(Alpha).*cos(Delta);
    Res(:,2)     = sin(Alpha).*cos(Delta);
    Res(:,3)     = sin(Delta);
-elseif (length(Vec(1,:))==3),
+elseif (length(Vec(1,:))==3)
    L1           = Vec(:,1);
    L2           = Vec(:,2);
    L3           = Vec(:,3);
