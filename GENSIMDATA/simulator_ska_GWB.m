@@ -26,7 +26,7 @@ omega_tmp = 2*pi* fgw * 3.156*10^7;  % convert sec^-1 (Hz) to yr^-1
 
 % ==== Constructing a pulsar timing array using Np pulsars ====
 % read in the pulsar catalogue simulated for SKA
-skamsp=load('/Users/ywang/Research/PULSARTIMING/MultiCW/survey_ska.mat');
+skamsp=load('/Users/qianyiqian/Research/RAAPTR/GENSIMDATA/survey_ska.mat');
 [~,I]=sort(skamsp.D);
 Np=1000;  % number of pulsars in the timing array
 

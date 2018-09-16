@@ -4,36 +4,26 @@
 % induced by an ensemble of SMBHBs from Monte Carlo simulation. 
 % Yi-Qian Qian, Yan Wang, Soumya Mohanty, April 8, 2017 
 %%
-% Build it in a function can be easily called in other scripts
+% Build it into a function can be easily called in other scripts
 % Yi-Qian, Sep, 14, 2018
 %%
-function []=FSGWB()
+function []=FSGWB(path_to_parameters,path_to_data,path_to_output)
 
-clear;
-tic;
+load(path_to_parameters);% load all the constants and parameters
 
 % master directory for simulated data
-simDataDir = 'GWBsimDataSKA_xxx';
-searchParamsFile = 'searchParams_GWBsimDataSKA_xxx';
-mkdir(simDataDir);
+simDataDir = path_to_output;
+mkdir(path_to_output);
 
 rng('shuffle')  % initialize the random number generator using a different seed
-
-% ======  Useful constants  ======
-pc2ly=3.261563777;  % 1 pc=3.26 ly (Julian)
-dy2yr=1.0/365.25;  % 1 day=365.25 yr (Julian)  ??
-kilo=1.0*10^3;  % kilo 1000
-
-% ==== Generate random GW sources ====
-Ns = 100;  % number of GW sources
+%% ==== Generate random GW sources ====
 [Amp,alpha_tmp,delta_tmp,fgw,iota,thetaN,phi0,r]=GenerateRandomGWSource(Ns);
 omega_tmp = 2*pi* fgw * 3.156*10^7;  % convert sec^-1 (Hz) to yr^-1
 
-% ==== Constructing a pulsar timing array using Np pulsars ====
+%% ==== Constructing a pulsar timing array using Np pulsars ====
 % read in the pulsar catalogue simulated for SKA
-skamsp=load('/Users/ywang/Research/PULSARTIMING/MultiCW/survey_ska.mat');
+skamsp=load(path_to_data);% load input data
 [~,I]=sort(skamsp.D);
-Np=1000;  % number of pulsars in the timing array
 
 % sky location of the pulsars in the equatorial coordinate
 % we need to transfer from hr angle and degree to radian
@@ -42,10 +32,29 @@ deltaP=zeros(Np,1);  % declination, in radian
 distP=zeros(Np,1);  % (parallax) distance from SSB to pulsars, from mas/pc to ly
 kp=zeros(Np,3);  % unit vector pointing from SSB to pulsars,
 sd=zeros(Np,1);  % standard deviation of noise for different pulsar
+dy=zeros(N,1);  % observation epoch, in day
+yr=zeros(N,1);  % observation epoch, in year
 
+%% set the range of the parameters
+xmaxmin=zeros(7,2);  % x_max, x_min for each parameter x
+xmaxmin(1,1)=2*pi;  % alpha
+xmaxmin(1,2)=0.0;
+xmaxmin(2,1)=pi/2;  % delta 
+xmaxmin(2,2)=-pi/2;
+xmaxmin(3,1)=200.0;  % angular velocity -- omega for GW
+xmaxmin(3,2)=1.0;
+xmaxmin(4,1)=pi;  % initial phase
+xmaxmin(4,2)=0;
+xmaxmin(5,1)=-6.0;  %-5.0;  %10^(-6);  % amplitude, in sec
+xmaxmin(5,2)=-15.0;  % -10.0;  %10^(-8);
+xmaxmin(6,1)=pi;  % inclination
+xmaxmin(6,2)=0;
+xmaxmin(7,1)=pi;  % polarization
+xmaxmin(7,2)=0;
+
+%% 
 InList=zeros(1,2);
 OutList=zeros(1,2);
-
 for i=1:1:Np
     %     if OutList(i,1)>0
     %         alphaP(i)=OutList(i,1);  % in rad
@@ -86,16 +95,6 @@ for i=1:1:Np
     kp(i,3)=sin(deltaP(i));
 end
 
-% -------------------------------
-% starting epoch of the observations
-start=53187;  % Modified Julian Day, 'July 1, 2004'
-%finish=start+ceil(365.25*5);  % approximately, set 5 yrs
-deltaT=14;  % observation cadence, in days, set biweekly
-%N=389;  % 14.9 yr, 128;  % number of biweekly observations for all pulsars, fft prefer 2^n
-N=130;  % 5 yrs biweekly
-%N=260;  % 10 yrs biweekly
-dy=zeros(N,1);  % observation epoch, in day
-yr=zeros(N,1);  % observation epoch, in year
 for i=1:1:N
     dy(i)=start+(i-1)*deltaT;  % dates conducting observations, in MJD
     yr(i)=2004.5+(i-1)*deltaT*dy2yr;
@@ -111,34 +110,12 @@ timingResiduals=zeros(Np,N);  % signal, i.e. GW induced timing residuals, Np pul
 timingResiduals_tmp=zeros(Np,N);   % signal without noise
 phiI=zeros(Np,1);  % arbitrary phase for each pulsar, relative distance
 
-Nrlz=5;  % number of noise realizations H1
 noise=zeros(Np,N);  % noise
 %sd=0.1*10^(-7);  % standard deviation of the normal distribtion (sec)
-
-Nnis=3;  % number of realization of noise only cases H0
 
 CA4filenames=cell(Nrlz+Nnis,1);  % cell array for file names of simulated data
 
 perfect_fitness=zeros(Ns,1);  % fitness value for the true parameters
-
-% set the range of the parameters
-xmaxmin=zeros(7,2);  % x_max, x_min for each parameter x
-xmaxmin(1,1)=2*pi;  % alpha
-xmaxmin(1,2)=0.0;
-xmaxmin(2,1)=pi/2;  % delta 
-xmaxmin(2,2)=-pi/2;
-xmaxmin(3,1)=200.0;  % angular velocity -- omega for GW
-xmaxmin(3,2)=1.0;
-xmaxmin(4,1)=pi;  % initial phase
-xmaxmin(4,2)=0;
-xmaxmin(5,1)=-6.0;  %-5.0;  %10^(-6);  % amplitude, in sec
-xmaxmin(5,2)=-15.0;  % -10.0;  %10^(-8);
-xmaxmin(6,1)=pi;  % inclination
-xmaxmin(6,2)=0;
-xmaxmin(7,1)=pi;  % polarization
-xmaxmin(7,2)=0;
-
-save(searchParamsFile,'xmaxmin');
 
 %Standardized true parameter values
 %stdTrueCoord = zeros(1,12);  % 4+Np 
@@ -289,6 +266,4 @@ for ii=1:1:Nnis
     
 end
 
-
-toc; % stop the stopwatch timer
 % end of script
