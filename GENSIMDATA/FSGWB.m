@@ -1,11 +1,8 @@
-% This is a simulator based on 'simulator2.m' and 'simulator_ska.m'. 
+% This is simulate function based on simulator_ska_GWB.m 
 % It is used to simulate the data for the SKA pulsars provided by R. Smits.
 % Different from 'simulator_ska.m', this script generates timing residuals
 % induced by an ensemble of SMBHBs from Monte Carlo simulation. 
-% Yi-Qian Qian, Yan Wang, Soumya Mohanty, April 8, 2017 
-%%
-% Build it into a function can be easily called in other scripts
-% Yi-Qian, Sep, 14, 2018
+% Yi-Qian Qian, Yan Wang, Soumya Mohanty, Sep 16, 2018 
 %%
 function []=FSGWB(path_to_parameters,path_to_data,path_to_output)
 
@@ -35,22 +32,6 @@ sd=zeros(Np,1);  % standard deviation of noise for different pulsar
 dy=zeros(N,1);  % observation epoch, in day
 yr=zeros(N,1);  % observation epoch, in year
 
-%% set the range of the parameters
-xmaxmin=zeros(7,2);  % x_max, x_min for each parameter x
-xmaxmin(1,1)=2*pi;  % alpha
-xmaxmin(1,2)=0.0;
-xmaxmin(2,1)=pi/2;  % delta 
-xmaxmin(2,2)=-pi/2;
-xmaxmin(3,1)=200.0;  % angular velocity -- omega for GW
-xmaxmin(3,2)=1.0;
-xmaxmin(4,1)=pi;  % initial phase
-xmaxmin(4,2)=0;
-xmaxmin(5,1)=-6.0;  %-5.0;  %10^(-6);  % amplitude, in sec
-xmaxmin(5,2)=-15.0;  % -10.0;  %10^(-8);
-xmaxmin(6,1)=pi;  % inclination
-xmaxmin(6,2)=0;
-xmaxmin(7,1)=pi;  % polarization
-xmaxmin(7,2)=0;
 
 %% 
 InList=zeros(1,2);
