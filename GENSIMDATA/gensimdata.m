@@ -1,6 +1,6 @@
-function []=FSGWB(path_to_parameters,path_to_data,path_to_output)
+function []=gensimdata(path_to_parameters,path_to_data,path_to_output)
 %Generate PTA data realizations with multiple SMBHB sources
-%FSGWB(P,D,O)
+%GENSIMDATA(P,D,O)
 %P is the path to a .mat file containing the parameters for generating the
 %data. See the help for PARAMETERS for details about the parameters that must be
 %specified. D is the path to the file containing information about the
