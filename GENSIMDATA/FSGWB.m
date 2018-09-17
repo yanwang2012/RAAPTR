@@ -1,10 +1,16 @@
-% This is simulate function based on simulator_ska_GWB.m 
-% It is used to simulate the data for the SKA pulsars provided by R. Smits.
-% Different from 'simulator_ska.m', this script generates timing residuals
-% induced by an ensemble of SMBHBs from Monte Carlo simulation. 
-% Yi-Qian Qian, Yan Wang, Soumya Mohanty, Sep 16, 2018 
-%%
 function []=FSGWB(path_to_parameters,path_to_data,path_to_output)
+%Generate PTA data realizations with multiple SMBHB sources
+%FSGWB(P,D,O)
+%P is the path to a .mat file containing the parameters for generating the
+%data. See the help for PARAMETERS for details about the parameters that must be
+%specified. D is the path to the file containing information about the
+%pulsars in the PTA. See 'survey_ska.mat' for an example of this file. O is
+%the path to the folder where the data realizations will be stored. 
+%
+% Authors: Yi-Qian Qian, Yan Wang, Soumya Mohanty, Sep 16, 2018 
+
+%Sep 2018 
+%Original code by YW. Turned into a function by YQ.
 
 load(path_to_parameters);% load all the constants and parameters
 
