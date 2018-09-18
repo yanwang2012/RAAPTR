@@ -3,7 +3,7 @@
 % Yi-Qian, Sep 18, 2018
 %% ======== constants ===========
 pc2ly=3.261563777;  % 1 pc=3.26 ly (Julian)
-dy2yr=1.0/365.25;  % 1 day=365.25 yr (Julian)  ??
+dy2yr=1.0/365.25;  % 1 day=365.25 yr (Julian) 
 kilo=1.0*10^3;  % kilo 1000
 %% =========== parameters ============
 % NumGwsources: number of GW sources
@@ -13,8 +13,12 @@ kilo=1.0*10^3;  % kilo 1000
 NumGWsources = 100;
 NumPulsar = 1000;
 NumNoiseReali = 5;
-NumRealiNoise = 1;
+NumRealiNoise = 3;
 parameters(NumGWsources,NumPulsar,NumNoiseReali,NumRealiNoise)
 load('parameter.mat')
 
 save('input.mat')
+
+gensimdata('/Users/qianyiqian/Research/RAAPTR/GENSIMDATA/input.mat',...
+           '/Users/qianyiqian/Research/RAAPTR/GENSIMDATA/survey_ska.mat',...
+           '/Users/qianyiqian/Research/RAAPTR/GENSIMDATA/test')
