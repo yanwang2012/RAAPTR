@@ -1,19 +1,13 @@
+function []=parameters(NumGWsources,NumPulsar,NumNoiseReali,NumRealiNoise)
 %% A script to generate the all the parameters and save it to .mat
 % for the function FSGWB
 % Yi-Qian, Sep 16, 2018
 %% parameters
-clear;
-% ======  Useful constants  ======
-pc2ly=3.261563777;  % 1 pc=3.26 ly (Julian)
-dy2yr=1.0/365.25;  % 1 day=365.25 yr (Julian)  ??
-kilo=1.0*10^3;  % kilo 1000
-
 % ==== Generate random GW sources ====
-Ns = 100;  % number of GW sources
+Ns = NumGWsources;  % number of GW sources
 [Amp,alpha_tmp,delta_tmp,fgw,iota,thetaN,phi0,r]=GenerateRandomGWSource(Ns);
 omega_tmp = 2*pi* fgw * 3.156*10^7;  % convert sec^-1 (Hz) to yr^-1
-
-Np=1000;  % number of pulsars in the timing array
+Np=NumPulsar;  % number of pulsars in the timing array
 
 % starting epoch of the observations
 start=53187;  % Modified Julian Day, 'July 1, 2004'
@@ -26,11 +20,11 @@ dy=zeros(N,1);  % observation epoch, in day
 yr=zeros(N,1);  % observation epoch, in year
 
 % noise
-Nrlz=5;  % number of noise realizations H1
+Nrlz=NumNoiseReali;  % number of noise realizations H1
 noise=zeros(Np,N);  % noise
 %sd=0.1*10^(-7);  % standard deviation of the normal distribtion (sec)
 
-Nnis=3;  % number of realization of noise only cases H0
+Nnis=NumRealiNoise;  % number of realization of noise only cases H0
 
 % set the range of the parameters
 xmaxmin=zeros(7,2);  % x_max, x_min for each parameter x
@@ -49,4 +43,5 @@ xmaxmin(6,2)=0;
 xmaxmin(7,1)=pi;  % polarization
 xmaxmin(7,2)=0;
 
-save('parameters.mat')
+save('parameter.mat')
+% end of function
