@@ -12,11 +12,13 @@ function []=gensimdata(path_to_parameters,path_to_data,path_to_output)
 %Sep 2018 
 %Original code by YW. Turned into a function by YQ.
 
+%Get constants
+dy2yr = genptaconsts('dy2yr');
+
 load(path_to_parameters);% load all the constants and parameters
 
 % master directory for simulated data
 simDataDir = path_to_output;
-mkdir(path_to_output);
 
 rng('shuffle')  % initialize the random number generator using a different seed
 %% ==== Generate random GW sources ====
