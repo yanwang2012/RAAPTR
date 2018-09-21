@@ -17,6 +17,13 @@ function [] = mpavinfile2hdf5(inFile,varargin)
 %Read the contents of the input file
 inFileInfo = load(inFile);
 
+%If the simParams struct is not present, this is not an input data .mat
+%file
+if ~isfield(inFileInfo,'simParams')
+    warning([inFile,' is not an input data file']);
+    return;
+end
+
 %Explode the structure fields
 inFileInfo.Np = inFileInfo.simParams.Np;
 inFileInfo.N = inFileInfo.simParams.N;
