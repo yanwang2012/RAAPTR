@@ -9,8 +9,11 @@
 NumGWsources = 100;
 NumPulsar = 1000;
 NumNoiseReali = 5;
-NumRealiNoise = 1;
+NumRealiNoise = 3;
 parameters(NumGWsources,NumPulsar,NumNoiseReali,NumRealiNoise)
 
 mkdir('TESTDATA');
-gensimdata('parameter.mat','survey_ska.mat','TESTDATA')
+
+gensimdata('GENSIMDATA/parameter.mat',...
+           'GENSIMDATA/survey_ska.mat',...
+            'GENSIMDATA/TESTDATA')
