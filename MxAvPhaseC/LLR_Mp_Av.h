@@ -1,5 +1,5 @@
-/*! \file LLR_PSO.h
-\brief Header file for \ref LLR_PSO.c.
+/*! \file LLR_Mp_Av.h
+\brief Header file for \ref LLR_Mp_Av.c.
 */
 #if !defined(LLR_MpAv_HDR)
 #define LLR_MpAv_HDR
@@ -8,8 +8,8 @@
 #include <gsl/gsl_vector.h>
 
 /*!
-Special parameters struct to pass parameters specific to LLR_PSO fitness function.
-See \ref fitfunc_example for an example of a special parameter structure.
+Special parameters struct to pass parameters specific to LLR_Mp_Av fitness function.
+See how_to_code_fitnessFunc.txt for an example of a special parameter structure.
 */
 struct llr_pso_params{
 	/*! number of pulsars in the timing array */

@@ -758,12 +758,12 @@ WARN_LOGFILE           =
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT = maxphase.h maxphaseutils.c ptapsotestfunc.h\ 
-INPUT +=  ptapsotestfunc.c LLR_PSO.h ptapso.h LLR_PSO.c\
+INPUT = maxphase.h maxphaseutils.c ptapsotestfunc.h 
+INPUT +=  ptapsotestfunc.c LLR_Mp_Av.h ptapso.h LLR_Mp_Av.c
 INPUT +=  ptapso.c test_ptapsotestfunc.c
-INPUT += Intro_MaxPhaseC.txt how_to_code_fitnessFunc.txt
-INPUT += perfeval_mpi.c perfeval.h perfeval.c 
+INPUT += perfeval_spmd.c perfeval_omp.c perfeval_omp.h  
 INPUT += mp2matfile_io.c mp2matfile_io.h
+INPUT += ../README.md
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -900,7 +900,7 @@ FILTER_SOURCE_PATTERNS =
 # (index.html). This can be useful if you have a project on for instance GitHub
 # and want to reuse the introduction page also for the doxygen output.
 
-USE_MDFILE_AS_MAINPAGE = Intro_MaxPhaseC.txt
+USE_MDFILE_AS_MAINPAGE = ../README.md
 
 #---------------------------------------------------------------------------
 # Configuration options related to source browsing

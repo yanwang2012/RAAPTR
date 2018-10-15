@@ -18,7 +18,7 @@ and handling output.
 /*! 
 This function accepts a pointer to a fitness function and searches 
 for its global optimum using Particle Swarm Optimization. The fitness
-function must accept coordinates in the range [0,1]. See \ref fitfunc_example for
+function must accept coordinates in the range [0,1]. See how_to_code_fitnessFunc.txt for
 an example of the interface required for a fitness function.
 
 Notes on the PSO implementation used:
