@@ -1,4 +1,4 @@
-The main function for generating simulated PTA data realizations with multiple SMBHB sources is gensimdata.m (can the name of the function be made bold?). 
+The main function for generating simulated PTA data realizations with multiple SMBHB sources is gensimdata.m (can the name of the function be made bold?). [Give a brief summary of how gensimdata works: e.g., white noise realizations, network SNR, etc.]
 ## Usage
 ```
 gensimdata(/path/to/inputfile,/path/to/inputdata,/path/to/output_folder)
