@@ -1,12 +1,12 @@
-/*! \file LLR_PSO.c
+/*! \file LLR_Mp_Av.c
 \brief MaxPhase fitness function.
 
-The function \ref LLR_PSO is a wrapper around the function 
-\ref LogLikelihoodRatioMP5. Any fitness function sent to the 
-PSO function \ref ptapso should accept standardized particle positions
-(where each coordinate lies in [0,1]). \ref LLR_PSO accepts 
+The function LLR_Mp_Av() is a wrapper around the function
+LogLikelihoodRatioMP5(). Any fitness function sent to the
+PSO function ptapso() should accept standardized particle positions
+(where each coordinate lies in [0,1]). LLR_Mp_Av() accepts
 standardized particle coordinates and converts then to real 
-coordinates before calling \ref LogLikelihoodRatioMP5.
+coordinates before calling LogLikelihoodRatioMP5().
  */
 #include "maxphase.h"
 #include "LLR_Mp_Av.h"
@@ -55,7 +55,7 @@ struct fitFuncParams * ffparams_clone(struct fitFuncParams *srcffp){
 }
 
 /*!
-fitFuncVal = LLR_PSO(xVec,P)
+fitFuncVal = LLR_Mp_Av(xVec,P)
 The fitness value is returned in fitFuncVal.
 xVec is standardized, that is 0<=xVec(i,j)<=1.
 The values used to convert xVec(i,j)
@@ -101,7 +101,7 @@ double LLR_mp(gsl_vector *xVec, /*!< Standardized Particle Coordinates*/
 	
    return fitFuncVal;
 }
-// EOF LLR_PSO
+// EOF LLR_Mp_Av
 
 double LLR_av(gsl_vector *xVec, /*!< Standardized Particle Coordinates*/
                void  *inParamsPointer /*!< Fitness function parameter structure

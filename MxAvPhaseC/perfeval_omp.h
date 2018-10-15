@@ -10,7 +10,7 @@
 #include "hdf5.h"
 
 /*! \file 
-\brief Header file for \ref perfeval.c.
+\brief Header file for perfeval_omp().
 */
 
 void perfeval_omp(struct fitFuncParams *, char *, char *, char *);
