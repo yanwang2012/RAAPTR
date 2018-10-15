@@ -1,5 +1,4 @@
-# GENSIMDATA
-This is the main function for generating simulated PTA data realizations with multiple SMBHB sources. 
+The main function for generating simulated PTA data realizations with multiple SMBHB sources is gensimdata.m (can the name of the function be made bold?). 
 ## Usage
 ```
 gensimdata(/path/to/inputfile,/path/to/inputdata,/path/to/output_folder)
