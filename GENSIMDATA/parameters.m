@@ -42,6 +42,8 @@ xmaxmin(6,1)=pi;  % inclination
 xmaxmin(6,2)=0;
 xmaxmin(7,1)=pi;  % polarization
 xmaxmin(7,2)=0;
+searchParamsFile = 'searchParams_simDataSKA_X';
+save(searchParamsFile,'xmaxmin'); % save the range of parameters
 
 save('parameter.mat')
 % end of function

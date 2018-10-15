@@ -1,0 +1,1 @@
+/work/05884/qyqstc/lonestar/PULSARTIMING/RAAPTR/MxAvPhaseC/perfeval_spmd.out /work/05884/qyqstc/lonestar/PULSARTIMING/RAAPTR/MxAvPhaseC/searchParams_simDataSKA.hdf5 /work/05884/qyqstc/lonestar/TESTDATA_HDF5/GWBsimDataSKASrlz1Nrlz1.hdf5 /work/05884/qyqstc/lonestar/RESULTS/GWBsimDataSKASrlz1Nrlz1.hdf5 maxPhase
