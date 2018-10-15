@@ -3,3 +3,5 @@
 .out
 .mat
 .hdf5
+.pdf
+.slurm
