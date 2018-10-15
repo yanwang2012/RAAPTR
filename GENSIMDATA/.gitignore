@@ -1,7 +1,7 @@
 .DS_Store
-.o
-.out
-.mat
-.hdf5
-.pdf
-.slurm
+*.o
+*.out
+*.mat
+*.hdf5
+*.pdf
+*.slurm
