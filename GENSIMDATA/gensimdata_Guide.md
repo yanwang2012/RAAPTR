@@ -27,7 +27,8 @@ number of noise realizations H1
 ```matlab
 number of realization of noise only cases H0
 ```
+You choose these Parameters in the function **test_gensimdata.m** then it will generate a parameter file named **parameter.mat**. In this file, you have all the parameters you need to simulate the data set. To change other parameter in searching area see next step.
 ### Function 'Paremeters.m'
 In this function you can set up the search area for PSO and the starting epoch of the observation.
 
-
+The **xmaxmin** variable is the search range of PSO, you can set it in this function.
