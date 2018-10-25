@@ -27,7 +27,7 @@ number of noise realizations H1
 ```matlab
 number of realization of noise only cases H0
 ```
-#### Variables required in file containing PTA information
+### Variables required in file containing PTA information
 ...
 
 You choose these Parameters in the function **test_gensimdata.m** then it will generate a parameter file named **parameter.mat**. In this file, you have all the parameters you need to simulate the data set. To change other parameter in searching area see next step.
