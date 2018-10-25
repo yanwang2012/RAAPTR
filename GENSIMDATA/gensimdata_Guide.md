@@ -3,6 +3,7 @@ This is the main function to use for generating simulation data files.
 ## How to use
 (See the 'test_gensimdata.m' script for a worked out example of how to generate simulated data files.)
 The input argument for gensimdata are: The name of a .mat input parameter file containing the variables listed below, the name of a .mat file containing information about the pulsars in the PTA, ...
+[SDM: test_gensimdata.m is an example. In this place, you are describing gensimdata.m. So, you should explain the arguments of gensimdata.m directly here and describe the contents of the files that it reads without asking the reader to edit test_gensimdata.m.]
 ### Variables required in input parameter file
 **NumGwsources**
 
