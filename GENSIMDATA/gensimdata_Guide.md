@@ -1,9 +1,9 @@
 # Function 'gensimdata.m'
 This is the main function to generate simulation data about multiple source GW signals.
 ## How to use
-Use the 'test_gensimdata.m' file to generate data files.
-
-### Parameters in 'test_gensimdata.m'
+(See the 'test_gensimdata.m' file for a worked out example of how to generate data files.)
+The input argument for gensimdata is a .mat file containing the following variables.
+### Input Parameters for 'gensimdata.m'
 **NumGwsources**
 
 ```matlab
