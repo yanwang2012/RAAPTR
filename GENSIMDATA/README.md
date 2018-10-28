@@ -23,15 +23,17 @@ Inputs needed:
 
 (2) Subfunctions called:
 
-    * GenerateRandomGWSource, SpherePointPicking: generates a random realization of Ns SMBHBs with parameters, such as chirp mass (Mc), location (alpha, delta), distance (r), GW frequency (fgw), angles (iota, Psi, Phi0), sampled either uniformly or log uniformly. These parameters are saved in H1 data file. The parameter values are set to 0 for H0 data.
+* GenerateRandomGWSource, SpherePointPicking: generates a random realization of Ns SMBHBs with parameters, such as chirp mass (Mc), location (alpha, delta), distance (r), GW frequency (fgw), angles (iota, Psi, Phi0), sampled either uniformly or log uniformly. These parameters are saved in H1 data file. The parameter values are set to 0 for H0 data.
 
-    * coco, cosine, rotm_coo: coordinates transformation
+* coco, cosine, rotm_coo: coordinates transformation
 
-    * likelihood, InnProduct,LLR_PSO, etc:  calculating the time series of timing residual and the likelihood.
+* likelihood, InnProduct,LLR_PSO, etc:  calculating the time series of timing residual and the likelihood.
 
-Note: simulator_skaNano.m is an earlier version of the code, which is not used in the current simulation.
+**Note**: simulator_skaNano.m is an earlier version of the code, which is not used in the current simulation.
 
 Example and more information
 
-you can find an example and more information about the functions at 
+you can find an example and more information about the functions at
 [user-guide](https://github.com/yanwang2012/RAAPTR/blob/master/GENSIMDATA/gensimdata_Guide.md)
+
+
