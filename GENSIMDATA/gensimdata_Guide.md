@@ -1,10 +1,12 @@
 # Function 'gensimdata.m'
 This is the main function to use for generating simulation data files.
 ## How to use
-(See the 'test_gensimdata.m' script for a worked out example of how to generate simulated data files.)
-The input argument for gensimdata are: The name of a .mat input parameter file containing the variables listed below, the name of a .mat file containing information about the pulsars in the PTA, ...
-[SDM: test_gensimdata.m is an example. In this place, you are describing gensimdata.m. So, you should explain the arguments of gensimdata.m directly here and describe the contents of the files that it reads without asking the reader to edit test_gensimdata.m.]
-### Variables required in input parameter file
+The input arguments for **gensimdata.m** are: The path to a .mat input parameter file containing the variables listed below, the path to a .mat file containing information about the pulsars in the PTA, and the output folder where you want to store the output files.
+
+### Function 'Paremeters.m'
+#### Call the Function
+By calling the function **parameters** to generate your own parameter file with the  input arguments listed below:
+
 **NumGwsources**
 
 ```matlab
@@ -28,11 +30,12 @@ number of noise realizations H1
 ```matlab
 number of realization of noise only cases H0
 ```
-### Variables required in file containing PTA information
-...
-
-You choose these Parameters in the function **test_gensimdata.m** then it will generate a parameter file named **parameter.mat**. In this file, you have all the parameters you need to simulate the data set. To change other parameter in searching area see next step.
-### Function 'Paremeters.m'
+#### Edit the function itself to set the range of PSO
 In this function you can set up the search area for PSO and the starting epoch of the observation.
 
 The **xmaxmin** variable is the search range of PSO, you can set it in this function.
+### Variables required in file containing PTA information
+This file is a pulsar catalog called **survey_ska.mat** contains the information of pulsars.
+
+### Example
+See the **test_gensimdata.m** file for a worked out example about how to generate the simulate data files.
