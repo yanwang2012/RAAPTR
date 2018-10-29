@@ -11,9 +11,9 @@ The simulated data files are stored in an output_folder. Its contents are organi
 (2) H1 data files (e.g., GWBsimDataSKASrlz1Nrlz1.mat).
 
 
-(3) H0 data files (e.g., noise1.mat). We try to maintain the same variable names for the contents in H0 and H1 data files.
+(3) H0 data files (e.g., noise1.mat). The names of the variables stored in H0 and H1 data files are substantially the same.
 
 Example and more information
 
-you can find an example and more information about the functions at
+An example of how to generate simulated data and more information about the code can be found at
 [user-guide](https://github.com/yanwang2012/RAAPTR/blob/master/GENSIMDATA/gensimdata_Guide.md)
