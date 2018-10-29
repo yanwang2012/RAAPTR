@@ -1,4 +1,4 @@
-function []=gensimdata(path_to_parameters,path_to_data,path_to_output)
+function []=gensimdata(path_to_parameters,path_to_pulsar_catalog,path_to_output)
 %Generate PTA data realizations with multiple SMBHB sources
 %GENSIMDATA(P,D,O)
 %P is the path to a .mat file containing the parameters for generating the
@@ -27,7 +27,7 @@ omega_tmp = 2*pi* fgw * 3.156*10^7;  % convert sec^-1 (Hz) to yr^-1
 
 %% ==== Constructing a pulsar timing array using Np pulsars ====
 % read in the pulsar catalogue simulated for SKA
-skamsp=load(path_to_data);% load input data
+skamsp=load(path_to_pulsar_catalog);% load input data
 [~,I]=sort(skamsp.D);
 
 % sky location of the pulsars in the equatorial coordinate
