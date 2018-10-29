@@ -1,15 +1,15 @@
 # Function 'gensimdata.m'
 This is the main function to use for generating simulation data files.
-## How to use
-The input arguments for **gensimdata.m** are: The path to a .mat **input_parameter_file** containing the variables listed below, the path to a .mat **pulsar_catalog_file** containing information about the pulsars in the PTA, and the **output_folder** name where the data realizations will be stored.
+## Usage
+GENSIMDATA(P,C,O)
+P is the path to a .mat **input_parameter_file** containing the variables listed below, C is the path to a .mat **pulsar_catalog_file** containing information about the pulsars in the PTA, and O is the **output_folder** name where the data realizations will be stored.
 
-### Variables required in the input_parameter_file
-Use the Function **parameters.m** to generate the input_parameter_file.
-This function will generate a parameter file contains random GW sources, number of pulsars in the timing array, starting epoch of the observation, the information of noises and the searching range for PSO.
+### input_parameter_file
+The Function **parameters.m** can be used to generate the input_parameter_file. This function generates a file containing random GW sources, number of pulsars in the timing array, starting epoch of the observation, information about the noise realizations, and the search range for Particle Swarm Optimization (PSO).
 
-**Note**: Though these variables are already in the input_parameter_fil but will still be individually stored in a file **searchParams_simDataSKA_X.mat** for the future use of multiple sources.
+**Note**: Though these variables are already in the input_parameter_file but will still be individually stored in a file **searchParams_simDataSKA_X.mat** for the future use of multiple sources.
 
-The input arguments are listed below:
+The input arguments for parameters.m are listed below:
 
 **NumGwsources**
 
