@@ -1,4 +1,8 @@
 function []=parameters(NumGWsources,NumPulsar,NumNoiseReali,NumRealiNoise)
+% given the numer of random GW sources [NumGWsources], the number of pulsars
+% [NumPulsar], the number of noise realizations in H1 data [NumNoiseReali]
+% and the number of realization of noise in H0 [NumRealiNoise],outputs a
+% .mat file stores these variables.
 %% A script to generate the all the parameters and save it to .mat
 % for the function FSGWB
 % Yi-Qian, Sep 16, 2018
