@@ -4,7 +4,7 @@ GENSIMDATA(P,C,O)
 P is the path to a .mat **input_parameter_file** containing the variables listed below, C is the path to a .mat **pulsar_catalog_file** containing information about the pulsars in the PTA, and O is the **output_folder** name where the data realizations will be stored.
 
 ### input_parameter_file
-The Function **parameters.m** can be used to generate the input_parameter_file. This function generates a file containing random GW sources, number of pulsars in the timing array, starting epoch of the observation, information about the noise realizations, and the search range for Particle Swarm Optimization (PSO).
+The Function **parameters.m** can be used to generate the input_parameter_file. This function generates two files, **parameter.mat** and **searchParams_simDataSKA_X.m**. The .mat file **parameter.mat** contains the variables: the location of random GW sources, number of pulsars in the timing array, starting epoch of the observation, information about the noise realizations. The search range for Particle Swarm Optimization (PSO) is stored separately in the file **searchParams_simDataSKA_X.mat** for running on LS5(LoneStar 5).
 
 **Note**: Though these variables are already in the input_parameter_file but will still be individually stored in a file **searchParams_simDataSKA_X.mat** for the future use of multiple sources.
 
@@ -36,13 +36,6 @@ number of realization of noise only cases H0
 
 ### pulsar_catalog_file
 This file contains information about the pulsars in a Pulsar Timing Array (PTA). The file **survey_ska.mat** provides an example of a pulsar_catalog_file.
-
-### Inputs needed [This section can be removed as the inputs are explained above]
-1. input_parameter_file
-
-2. Pulsar catalog: [Why is this command included here?] skamsp=load('/path/to/the/file/survey_ska.mat');
-
-3. output_folder: name of the folder where the data realization will be stored.
 
 ### Subfunctions needed by GENSIMDATA
 
