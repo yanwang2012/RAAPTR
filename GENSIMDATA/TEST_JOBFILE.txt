@@ -1,1 +1,0 @@
-./perfeval_spmd.out searchParams_simDataSKA.hdf5 /Users/qianyiqian/Research/DATA/TESTDATA_HDF5/GWBsimDataSKASrlz1Nrlz1.hdf5 /Users/qianyiqian/Research/DATA/Out/test.hdf5 maxPhase
