@@ -11,7 +11,7 @@ perfeval_spmd.out: $(OBJ)
 	$(CC) -fopenmp $(OBJ) -L$(HDF5LIBS) -lhdf5 -lhdf5_hl -lz $(GSLLIBS) -lm -o perfeval_spmd.out
 
 perfeval_spmd.o: perfeval_spmd.c
-	$(CC) -c -I$(HDF5FLAGS) -$(GSLFLAGS) perfeval_spmd.c
+	$(CC) -c -I$(HDF5FLAGS) $(GSLFLAGS) perfeval_spmd.c
 
 gslhdf5_io.o: gslhdf5_io.c
 	$(CC) -c -I$(HDF5FLAGS) $(GSLFLAGS) gslhdf5_io.c
@@ -30,7 +30,7 @@ ptapso.o: ptapso.c
 
 .PHONY: clean
 clean:
-		-rm *.o
+		rm *.o
 		-rm -r simDataX_MPI/results*
 
 # EOF
