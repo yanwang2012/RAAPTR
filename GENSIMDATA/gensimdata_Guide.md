@@ -4,7 +4,14 @@ GENSIMDATA(P,C,O)
 P is the path to a .mat **input_parameter_file** containing the variables listed below, C is the path to a .mat **pulsar_catalog_file** containing information about the pulsars in the PTA, and O is the **output_folder** name where the data realizations will be stored.
 
 ### input_parameter_file
-The Function **parameters.m** can be used to generate the input_parameter_file. This function generates two files, **parameter.mat** and **searchParams_simDataSKA_X.m**. The .mat file **parameter.mat** contains the variables: the location of random GW sources, number of pulsars in the timing array, starting epoch of the observation, information about the noise realizations. The search range for Particle Swarm Optimization (PSO) is stored separately in the file **searchParams_simDataSKA_X.mat** for running on LS5(LoneStar 5).
+This is a .mat file containing the following variables: the locations of the GW sources, number of pulsars in the timing array, starting epoch of the observation, information about the noise realizations. 
+
+### PSO parameter file
+The search range for Particle Swarm Optimization (PSO) is stored in a separate .mat file.
+in the file **searchParams_simDataSKA_X.mat**. 
+
+### Generating the parameter files
+The Function **parameters.m** can be used to generate the input_parameter_file. This function generates two files, **parameter.mat** and **searchParams_simDataSKA_X.m**. 
 
 **Note**: Though these variables are already in the input_parameter_file but will still be individually stored in a file **searchParams_simDataSKA_X.mat** for the future use of multiple sources.
 
