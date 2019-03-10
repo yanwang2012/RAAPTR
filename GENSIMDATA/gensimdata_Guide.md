@@ -1,6 +1,7 @@
 This is a brief description of the main function, **gensimdata.m**, used for generating simulation data files.
 ## Usage
 GENSIMDATA(P,C,O)
+
 P is the path to a .mat **input_parameter_file** containing the variables listed below, C is the path to a .mat **pulsar_catalog_file** containing information about the pulsars in the PTA, and O is the **output_folder** name where the data realizations will be stored.
 
 ### input_parameter_file
