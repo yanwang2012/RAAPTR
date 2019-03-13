@@ -13,7 +13,7 @@
 /*! \file
 \brief Run MaxPhase on a specified input data file.
 
-The function \ref perfeval is the main one. 
+The function perfeval() is the main one.
 
 \author Soumya D. Mohanty
 */
@@ -23,11 +23,12 @@ searches for the maximum of the Log-Likelihood Ratio using Particle Swarm Optimi
 and stores the results into an output file. PSO is run multiple times on the same 
 input data using independent random positions and velocities.
 
-The PSO function \ref ptapso can accept any fitness function. See \ref fitfunc_example to see the 
-required interface for a fitness function. Here, the  Log-Likelihood Ratio fitness function \ref LLR_PSO
-is sent to PSO.
+The PSO function ptapso() can optimize any fitness function defined over a continuous search space.
+See how_to_code_fitnessFunc.txt to see the
+required interface for a fitness function. Here, the  Log-Likelihood Ratio fitness function LLR_Mp_Av()
+is sent to ptapso().
 */
-void perfeval(struct fitFuncParams *ffp, /*!< Parameters for the \ref LLR_PSO fitness function */
+void perfeval(struct fitFuncParams *ffp, /*!< Parameters for the LLR_Mp_Av() fitness function */
               char *inputFileName, /*!< Name of the file containing data to analyze*/
 			  char *outputFileName /*!< Name of the file to store output results in*/){
 	

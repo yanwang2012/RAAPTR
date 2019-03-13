@@ -10,7 +10,7 @@
 #include <string.h>
 
 /*! \file 
-\brief Run \ref perfeval_omp.c on an input data file. 
+\brief Run perfeval_spmd() on an input data file. 
 
 \author Soumya D. Mohanty
 

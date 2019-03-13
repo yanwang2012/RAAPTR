@@ -6,6 +6,8 @@
 % NumPulsar: number of Pulsars
 % NumNoiseReali: number of noise realizations H1
 % NumRealiNoise: number of realization of noise only cases H0
+tic;
+clear;
 NumGWsources = 100;
 NumPulsar = 1000;
 NumNoiseReali = 5;
@@ -17,3 +19,4 @@ mkdir('TESTDATA');
 gensimdata('parameter.mat',...
            'survey_ska.mat',...
             'TESTDATA')
+toc;

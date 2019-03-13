@@ -20,13 +20,15 @@
 This function reads pulsar timing residual data stored in an input data file, 
 searches for the maximum of the Log-Likelihood Ratio using Particle Swarm Optimization (PSO), 
 and stores the results into an output file. PSO is run multiple times on the same 
-input data using independent random positions and velocities.
+input data using independent random positions and velocities. The independent runs are parallelized 
+ using OpenMP (OMP).
 
-The PSO function \ref ptapso can accept any fitness function. See \ref fitfunc_example to see the 
-required interface for a fitness function. Here, the  Log-Likelihood Ratio fitness function \ref LLR_PSO
+The function ptapso() can apply PSO to any fitness function provided it has the interface
+ specied in how_to_code_fitnessFunc.txt. In the present case,
+ the  Log-Likelihood Ratio fitness function LLR_av() (or LLR_mp())
 is sent to PSO.
 */
-void perfeval_omp(struct fitFuncParams *ffp, /*!< Parameters for the \ref LLR_PSO fitness function */
+void perfeval_omp(struct fitFuncParams *ffp, /*!< Parameters for the fitness function */
               char *inputFileName, /*!< Name of the file containing data to analyze*/
 			  char *outputFileName, /*!< Name of the file to store output results in*/
 			  char *mp_av_select /*!< Select Max or AvPhase algorithm */){
@@ -251,7 +253,7 @@ void perfeval_omp(struct fitFuncParams *ffp, /*!< Parameters for the \ref LLR_PS
 }
 
 
-/*! Dump output from multiple pso runs in \ref perfeval to a .mat file */
+/*! Dump output from multiple pso runs in perfeval_omp() to a .mat file */
 void perfevalomp2hdf5file(size_t nRuns, size_t nDim, size_t Np,  
                       gsl_vector *wallClckTimes,
 					  struct returnData *psoResults[],
