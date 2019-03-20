@@ -1,4 +1,4 @@
-function []=parameters(NumGWsources,NumPulsar,NumNoiseReali,NumRealiNoise)
+function []=parameters(NumGWsources,NumPulsar,NoiseReali_H1,NoiseReali_H0)
 % given the numer of random GW sources [NumGWsources], the number of pulsars
 % [NumPulsar], the number of noise realizations in H1 data [NumNoiseReali]
 % and the number of realization of noise in H0 [NumRealiNoise],outputs a
@@ -8,8 +8,8 @@ function []=parameters(NumGWsources,NumPulsar,NumNoiseReali,NumRealiNoise)
 % Yi-Qian, Sep 16, 2018
 %% parameters
 % ==== Generate random GW sources ====
-Ns = NumGWsources;  % number of GW sources
-[Amp,alpha_tmp,delta_tmp,fgw,iota,thetaN,phi0,r]=GenerateRandomGWSource(Ns);
+%Ns = NumGWsources;  % number of GW sources
+[Amp,alpha_tmp,delta_tmp,fgw,iota,thetaN,phi0,r]=GenerateRandomGWSource(NumGWsources);
 omega_tmp = 2*pi* fgw * 3.156*10^7;  % convert sec^-1 (Hz) to yr^-1
 Np=NumPulsar;  % number of pulsars in the timing array
 
@@ -24,11 +24,11 @@ dy=zeros(N,1);  % observation epoch, in day
 yr=zeros(N,1);  % observation epoch, in year
 
 % noise
-Nrlz=NumNoiseReali;  % number of noise realizations H1
+Nrlz=NoiseReali_H1;  % number of noise realizations H1
 noise=zeros(Np,N);  % noise
 %sd=0.1*10^(-7);  % standard deviation of the normal distribtion (sec)
 
-Nnis=NumRealiNoise;  % number of realization of noise only cases H0
+Nnis=NoiseReali_H0;  % number of realization of noise only cases H0
 
 % set the range of the parameters
 xmaxmin=zeros(7,2);  % x_max, x_min for each parameter x
