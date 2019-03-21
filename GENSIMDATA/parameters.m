@@ -1,17 +1,17 @@
-function []=parameters(NumGWsources,NumPulsar,NoiseReali_H1,NoiseReali_H0)
-% given the numer of random GW sources [NumGWsources], the number of pulsars
-% [NumPulsar], the number of noise realizations in H1 data [NumNoiseReali]
-% and the number of realization of noise in H0 [NumRealiNoise],outputs a
+function []=parameters(Ns,Np,Nrlz,Nnis)
+% given the numer of random GW sources [Ns], the number of pulsars
+% [Np], the number of noise realizations in H1 data [Nrlz]
+% and the number of realization of noise in H0 [Nnis],outputs a
 % .mat file stores these variables.
 %% A script to generate the all the parameters and save it to .mat
 % for the function FSGWB
 % Yi-Qian, Sep 16, 2018
 %% parameters
 % ==== Generate random GW sources ====
-%Ns = NumGWsources;  % number of GW sources
-[Amp,alpha_tmp,delta_tmp,fgw,iota,thetaN,phi0,r]=GenerateRandomGWSource(NumGWsources);
-omega_tmp = 2*pi* fgw * 3.156*10^7;  % convert sec^-1 (Hz) to yr^-1
-Np=NumPulsar;  % number of pulsars in the timing array
+%Ns = Ns;  % number of GW sources
+%[Amp,alpha_tmp,delta_tmp,fgw,iota,thetaN,phi0,r]=GenerateRandomGWSource(Ns);
+%omega_tmp = 2*pi* fgw * 3.156*10^7;  % convert sec^-1 (Hz) to yr^-1
+%Np=NP;  % number of pulsars in the timing array
 
 % starting epoch of the observations
 start=53187;  % Modified Julian Day, 'July 1, 2004'
@@ -20,15 +20,15 @@ deltaT=14;  % observation cadence, in days, set biweekly
 %N=389;  % 14.9 yr, 128;  % number of biweekly observations for all pulsars, fft prefer 2^n
 N=130;  % 5 yrs biweekly
 %N=260;  % 10 yrs biweekly
-dy=zeros(N,1);  % observation epoch, in day
-yr=zeros(N,1);  % observation epoch, in year
+%%dy=zeros(N,1);  % observation epoch, in day
+%%yr=zeros(N,1);  % observation epoch, in year
 
 % noise
-Nrlz=NoiseReali_H1;  % number of noise realizations H1
-noise=zeros(Np,N);  % noise
+%Nrlz=NoiseReali_H1;  % number of noise realizations H1
+%%noise=zeros(Np,N);  % noise
 %sd=0.1*10^(-7);  % standard deviation of the normal distribtion (sec)
 
-Nnis=NoiseReali_H0;  % number of realization of noise only cases H0
+%Nnis=NoiseReali_H0;  % number of realization of noise only cases H0
 
 % set the range of the parameters
 xmaxmin=zeros(7,2);  % x_max, x_min for each parameter x
@@ -46,8 +46,8 @@ xmaxmin(6,1)=pi;  % inclination
 xmaxmin(6,2)=0;
 xmaxmin(7,1)=pi;  % polarization
 xmaxmin(7,2)=0;
-searchParamsFile = 'searchParams_simDataSKA_X';
+searchParamsFile = 'searchParams_simDataSKA_1';
+simParamsFile = 'sim_Params_1';
 save(searchParamsFile,'xmaxmin'); % save the range of parameters
-
-save('parameter.mat')
+save(simParamsFile);
 % end of function

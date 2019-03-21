@@ -2,21 +2,21 @@
 % parameters and constants for function gensimdata
 % Yi-Qian, Sep 18, 2018
 %% =========== parameters ============
-% NumGwsources: number of GW sources
-% NumPulsar: number of Pulsars
-% NumNoiseReali: number of noise realizations H1
-% NumRealiNoise: number of realization of noise only cases H0
+% Ns: number of GW sources
+% Np: number of Pulsars
+% Nrlz: number of noise realizations H1
+% Nnis: number of realization of noise only cases H0
 tic;
 clear;
-NumGWsources = 100;
-NumPulsar = 1000;
-NumNoiseReali = 5;
-NumRealiNoise = 3;
-parameters(NumGWsources,NumPulsar,NumNoiseReali,NumRealiNoise)
+Ns = 100;
+Np = 1000;
+Nrlz = 5;
+Nnis = 3;
+parameters(Ns,Np,Nrlz,Nnis)
 
 mkdir('TESTDATA');
 
-gensimdata('parameter.mat',...
+gensimdata('sim_Params_1.mat',...
            'survey_ska.mat',...
             'TESTDATA')
 toc;
