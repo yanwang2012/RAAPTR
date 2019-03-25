@@ -33,13 +33,13 @@ number of pulsars.
 **Nrlz**
 
 ```matlab
-number of noise realizations H1
+number of signal+noise (H1) data realizations
 ```
 
 **Nnis**
 
 ```matlab
-number of realization of noise only cases H0
+number of  noise-only (H0) data realizations
 ```
 
 ### Subfunctions needed by GENSIMDATA
