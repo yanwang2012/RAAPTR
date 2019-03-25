@@ -12,5 +12,5 @@ The names of the variables stored in H0 and H1 data files are substantially the 
 
 # Example and more information
 
-An example of how to generate simulated data and more information about the code can be found at
+An example of how to generate simulated data and more information about the code can be found in the
 [user-guide](https://github.com/yanwang2012/RAAPTR/blob/master/GENSIMDATA/gensimdata_UserGuide.md)
