@@ -1,5 +1,4 @@
-This folder contains the code for generating simulated Pulsar Timing Array (PTA) data. The data from a PTA is a collection of the timing residuals from Np pulsars. The code generates statistically independent realizations of PTA data and stores them in files.
-This folder contains the code for generating simulated Pulsar Timing Array (PTA) data. The data from a PTA is a collection of the timing residuals from Np pulsars. The code generates statistically independent realizations of PTA data and stores them in files.
+This folder contains the code for generating simulated Pulsar Timing Array (PTA) data. The data from a PTA is a collection of the timing residuals from Np pulsars. The code generates statistically independent realizations of PTA data and stores them in files. The data from a PTA is a collection of the timing residuals from Np pulsars. The code generates statistically independent realizations of PTA data and stores them in files.
 
 The main code is **gensimdata.m**, which generates data realizations of two types, namely,  signal+noise ('H1 data')   and noise-only ('H0 data'). In each file, the timing residuals for all the pulsars are generated with the same start and end times, and the same sampling rate. 
 
