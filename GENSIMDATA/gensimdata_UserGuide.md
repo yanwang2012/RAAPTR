@@ -12,7 +12,7 @@ This is a .mat file containing the following variables: the locations of the GW 
 This file contains information about the pulsars in a Pulsar Timing Array (PTA). The file **survey_ska.mat** provides an example of a pulsar_catalog_file.
 
 ### Generating the parameter files
-The Function **parameters.m** provides a template that can be modified to generate the input_parameter_file. This function generates two files, **Sim_Params_X.mat** and **searchParams_simDataSKA_X.mat**. The latter file contains parameters for Particle Swarm Optimization (PSO) that is used in the analysis codes (see the documentation in the **MxAvPhase** folder).
+The Function **parameters.m** provides a template that can be modified to generate the **input_parameter_file**. This function generates two files, **Sim_Params_X.mat** and **searchParams_simDataSKA_X.mat**. The latter file contains parameters for Particle Swarm Optimization (PSO) that is used in the analysis codes (see the documentation in the **MxAvPhase** folder).
 
 **Note**: Though these variables are already in the input_parameter_file but will still be individually stored in a file **searchParams_simDataSKA_X.mat** for the future use of multiple sources.
 
