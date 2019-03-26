@@ -2,7 +2,7 @@ This is the C-code that implements the MaxPhase and AvPhase algorithms. The code
 (A global overview of the codes and examples will be provided in a User manual that is under development.)
 Note: Currently, the MPI based codes will not work. Use the OpenMP codes ('perfeval_spmd') instead. The Doxyfile may be out of date.
 
-To test the codes, do:
+To test the codes:
 1. Create a directory called 'results' inside TESTPERFEVALOMP
 2. Compile the code using makefile_omp
 3. Set the number of threads to use in OpenMP
