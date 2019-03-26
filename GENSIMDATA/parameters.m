@@ -29,7 +29,7 @@ N=130;  % 5 yrs biweekly
 %sd=0.1*10^(-7);  % standard deviation of the normal distribtion (sec)
 
 %Nnis=NoiseReali_H0;  % number of realization of noise only cases H0
-
+%%
 % set the range of the parameters
 xmaxmin=zeros(7,2);  % x_max, x_min for each parameter x
 xmaxmin(1,1)=2*pi;  % alpha
@@ -46,6 +46,7 @@ xmaxmin(6,1)=pi;  % inclination
 xmaxmin(6,2)=0;
 xmaxmin(7,1)=pi;  % polarization
 xmaxmin(7,2)=0;
+%%
 searchParamsFile = 'searchParams_simDataSKA_1';
 simParamsFile = 'sim_Params_1';
 save(searchParamsFile,'xmaxmin'); % save the range of parameters

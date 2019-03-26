@@ -33,7 +33,7 @@
 % * 'EstStats_<*>': Estimation performance related information (Mean and
 %    covariance of estimated parameters)
 %  
-
+clear;
 %% Read files and gather info
 %Relevant data from input files is loaded into elements of a struct array.
 %The struct array elements are then processed to produce the desired output
@@ -43,13 +43,13 @@
 %simDataDir = '/Users/ywang/Research/PULSARTIMING/AvPhase/AvMax_MatlabCodes/AvPhase/simData17_snr123_loc3/';
 %simDataDir = '/Users/ywang/Research/PULSARTIMING/MultiCW/simDataSKA_snr0123_loc1_test/';
 %simDataDir = '/Users/ywang/Research/PULSARTIMING/MultiCW/simDataSKA_snr0123_loc3/';
-simDataDir = '/Users/ywang/Research/PULSARTIMING/MultiCW/simDataSKA_loc6/';
+simDataDir = '/Users/qianyiqian/Research/PulsarTiming/SimDATA/MultiSource/Multi_Results_MAT';
 %simDataDir = '/Users/ywang/Research/PULSARTIMING/MultiCW/simDataSKA_loc_PG1302/';
 %simDataDir = '/Users/ywang/Research/PULSARTIMING/MultiCW/simData9_snr0123_loc3/';
 
-outDir = [simDataDir,filesep,'results_LS5_simDataSKA_loc6_avPhase',filesep,'summary'];
+outDir = [simDataDir,filesep,'results_LS5_simDataSKA_Srlz1Nrlz1_MaxPhase',filesep,'summary'];
 mkdir(outDir);
-inDataDir = [simDataDir,filesep,'results_LS5_simDataSKA_loc6_avPhase'];
+inDataDir = [simDataDir,filesep,'Srlz1Nrlz1'];
 % List of input data files (we will only process .mat files)
 inputFiles = dir([inDataDir,filesep,'*.mat']);
 % Number of input Data files 
@@ -125,9 +125,10 @@ for lpfiles = 2:nInputFiles
                fileTypes(lptype).elements = [fileTypes(lptype).elements,lpfiles];
                if ~strcmp(fileTypes(lptype).hypothesis, outStruct(lpfiles).metaData.genHypothesis)
                    warning(['Something wrong with ', outStruct(lpfiles).metaData.fileName]);
+               
+                noMatch = 0;
+                break;
                end
-               noMatch = 0;
-               break;
         end
     end
     if noMatch
@@ -141,37 +142,42 @@ end
 % List of files containing null and alternative hypotheses results.
 h0File = '';
 h1Files = {};
+outSumryFile = '';
 for lptype = 1:length(fileTypes)
-    hypType = fileTypes(lptype).hypothesis;
+    hypType = fileTypes(lptype).hypothesis(1:7); % fix the bug that .mat file doesn't consists with .hdf5 file
     structElements = fileTypes(lptype).elements;
     dummyStruct = struct('FilesUsed',{},...
-                'id',struct(),...
-                'fitnessVals',[],...
-                'estSigParams',[]...
-                );
+        'id',struct(),...
+        'fitnessVals',[],...
+        'estSigParams',[]...
+        );
     for lpel = 1:length(structElements)
         dummyStruct(1).FilesUsed = [dummyStruct.FilesUsed,...
-                                   {outStruct(structElements(lpel)).metaData.fileName}];
+            {outStruct(structElements(lpel)).metaData.fileName}];
         dummyStruct(1).fitnessVals = [dummyStruct.fitnessVals;...
-                                   outStruct(structElements(lpel)).fitnessBOR];
+            outStruct(structElements(lpel)).fitnessBOR];
         dummyStruct(1).estSigParams = [dummyStruct.estSigParams;...
-                                   outStruct(structElements(lpel)).estSigParams];        
+            outStruct(structElements(lpel)).estSigParams];
     end
     dummyStruct.id = fileTypes(lptype).id;
     idTag = [...
-             'snr',num2str(dummyStruct.id.snr_id),...
-             '_loc',num2str(dummyStruct.id.loc_id),...
-             '_omg',num2str(dummyStruct.id.omg_id)...
-             ];
+        'snr',num2str(dummyStruct.id.snr_id),...
+        '_loc',num2str(dummyStruct.id.loc_id),...
+        '_omg',num2str(dummyStruct.id.omg_id)...
+        '_parameter',num2str(lptype) % for Multi-Source, using different parameter files for the same data
+        ];
     switch hypType
         case 'H1 data'
+           % disp('it works');
             outSumryFile = [outDir,filesep,'H1stats_',idTag];
             h1Files = [h1Files,{outSumryFile}];
         case 'H0 data'
+            %disp('this one works');
             outSumryFile = [outDir,filesep,'H0stats'];
             h0File = outSumryFile;
     end
-    save(outSumryFile,'-struct','dummyStruct');
+    
+     save(outSumryFile,'dummyStruct');
     
 end
 nh1Files = length(h1Files);
@@ -191,7 +197,7 @@ end
 for lpfiles = 1:nh1Files
     h1Dat = load(h1Files{lpfiles});
     % Detection metrics
-    xh1 = h1Dat.fitnessVals;
+    xh1 = h1Dat.dummyStruct.fitnessVals;
     meanXh1 = mean(-xh1);
     stdevXh1 = std(-xh1);
     if ~isempty(h0File)
@@ -200,11 +206,11 @@ for lpfiles = 1:nh1Files
         effSNR = NaN;
     end
     % Estimation metrics
-    estParams = h1Dat.estSigParams;
+    estParams = h1Dat.dummyStruct.estSigParams;
     meanParams = mean(estParams);
     stdevParams = std(estParams);
     % Store metrics
-    id = h1Dat.id;
+    id = h1Dat.dummyStruct.id;
     idTag = [...
              'snr',num2str(id.snr_id),...
              '_loc',num2str(id.loc_id),...

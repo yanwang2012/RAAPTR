@@ -17,7 +17,16 @@ make -f makefile_omp
 Edit file maxphaseutils.c: Go to the lines (there are two such lines) containing the string FNM_FILE_NAME. Change FNM_FILE_NAME to FNM_PATHNAME.
 
 # Search parameters for PSO
-By using **parameters.m** file we generate two parameter files, **Sim_Params_X.mat** file is for simulation while the other **searchParams_simDataSKA_X.mat** file contains the search range of PSO, users can change the value in **parameters.m** file.
+By using **parameters.m** file we generate two parameter files, **Sim_Params_X.mat** file is for simulation while the other **searchParams_simDataSKA_X.mat** file contains the search range of PSO, users can change the **xmaxmin** value in **parameters.m** file to change the corresponding value in PSO.
+Here's the meaning of **xmaxmin**:
+It is a 7x2 matrix with the first column is the max value and second is min value.
+xmaxmin(1,:): alpha
+xmaxmin(2,:): delta
+xmaxmin(3,:): angular velocity --omega for GW
+xmaxmin(4,:): initial phase
+xmaxmin(5,:): amplitude in sec
+xmaxmin(6,:): inclination
+xmaxmin(7,:): polarization
 
 # Run on LS5
 First on LS5 load the module use
