@@ -6,7 +6,7 @@ function []=gensimdata(path_to_parameters,path_to_pulsar_catalog,path_to_output)
 %specified. D is the path to the file containing information about the
 %pulsars in the PTA. See 'survey_ska.mat' for an example of this file. O is
 %the path to the folder where the data realizations will be stored. 
-%
+
 % Authors: Yi-Qian Qian, Yan Wang, Soumya Mohanty, Sep 16, 2018 
 
 %Sep 2018 
@@ -90,7 +90,7 @@ for i=1:1:N
 end
 
 simParams = struct('Np',Np,'N',N,'sd',sd,...
-                  'alphaP',alphaP,'deltaP',deltaP,'kp',kp);
+                  'alphaP',alphaP,'deltaP',deltaP,'distP',distP,'kp',kp);
 
 % -------------------------------
 % calculate timing residuals induced by GW for each pulsar
@@ -137,7 +137,7 @@ for i=1:1:Np  % number of pulsar
         tmp = FullResiduals(alpha_tmp(j),delta_tmp(j),omega_tmp(j),phi0(j),phiI(i),alphaP(i),deltaP(i),...
             Amp(j),iota(j),thetaN(j),theta,yr);
         
-        timingResiduals_tmp(i,:) = timingResiduals_tmp(i,:) + tmp';
+        timngResiduals_tmp(i,:) = timingResiduals_tmp(i,:) + tmp';
         
         %fftsignal(i,:)=fft(timingResiduals_tmp(i,:));
         

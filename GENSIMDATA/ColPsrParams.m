@@ -1,22 +1,8 @@
-% Gather all the info for the function convertAmp2snr
-% Yiqian Qian 2nd April, 2019
-%% Load the information of pulsar
-function [sourceParams,pulsarParams]=gatherParams(path_to_estimatedData,path_to_pulsar_catalog)
-% path_to_simulationData = '~/Research/PulsarTiming/SimDATA/Mauritius/GWBsimDataSKA/GWBsimDataSKASrlz1Nrlz9.mat';
-% path_to_estimatedData = '~/Research/PulsarTiming/SimDATA/Mauritius/Mauritius_results_mat/6_GWBsimDataSKASrlz1Nrlz9.mat';
-% path_to_pulsar_catalog = '~/Research/PulsarTiming/GENSIMDATA/survey_ska.mat';
-%% Load the information of estimated GW source
-source = load(path_to_estimatedData,'bestRealLoc');
-alpha = source.bestRealLoc(1);
-delta = source.bestRealLoc(2);
-omega = source.bestRealLoc(3);
-phi0 = source.bestRealLoc(4);
-Amp = source.bestRealLoc(5);
-iota = source.bestRealLoc(6);
-thetaN = source.bestRealLoc(7);
+function [pulsarParams]=ColPsrParams(path_to_pulsar_catalog)
+% Collect pulsar paramters for function Amp2Snr
+% [PulsarParams]=ColPsrParams(PATH_TO_PULSAR_CATALOG)
 
-sourceParams = struct('alpha',alpha,'delta',delta,'omega',omega,'phi0',phi0,'Amp',Amp,...
-                        'iota',iota,'thetaN',thetaN);
+% QYQ 9th April, 2019
 %% ==== Constructing a pulsar timing array using Np pulsars ====
 % read in the pulsar catalogue simulated for SKA
 %Get constants

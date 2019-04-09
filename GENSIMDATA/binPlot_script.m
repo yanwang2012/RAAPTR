@@ -38,8 +38,9 @@ for i = 1:length(inDataList)
     %path_to_simulationData = '~/Research/PulsarTiming/SimDATA/Mauritius/GWBsimDataSKA/GWBsimDataSKASrlz1Nrlz9.mat';
     path_to_pulsar_catalog = 'survey_ska.mat';
     estFreq = bestRealLoc(3)/(2*pi*365*24*3600);
-    [sourceParams,pulsarParams]=gatherParams(path_to_estimatedData,path_to_pulsar_catalog);
-    estSNR = convertAmp2snr(sourceParams,pulsarParams);
+    [sourceParams]=ColSrcParams(path_to_estimatedData);
+    [pulsarParams]=ColPsrParams(path_to_pulsar_catalog);
+    estSNR = Amp2Snr(sourceParams,pulsarParams);
     %%
     % Plot the FFT of the timing residuals of the sources in bin 4
     timingResFFt = fft(timingResiduals_tmp');
