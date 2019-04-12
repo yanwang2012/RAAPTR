@@ -47,8 +47,9 @@ xmaxmin(6,2)=0;
 xmaxmin(7,1)=pi;  % polarization
 xmaxmin(7,2)=0;
 %%
-searchParamsFile = 'searchParams_simDataSKA_1';
-simParamsFile = 'sim_Params_1';
+searchParamsFile = 'searchParams_GWBsimDataSKA';
+simParamsFile = 'GWBsimDataSKAParams';
 save(searchParamsFile,'xmaxmin'); % save the range of parameters
-save(simParamsFile);
+save(simParamsFile,'xmaxmin','start','deltaT','N','Ns','Np',...
+      'Nrlz','Nnis');
 % end of function
