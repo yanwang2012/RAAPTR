@@ -4,6 +4,6 @@ Note: Currently, the MPI based codes will not work. Use the OpenMP codes ('perfe
 
 To test the codes:
 1. Create a directory called 'results' inside TESTPERFEVALOMP
-2. Compile the code using makefile_omp
-3. Set the number of threads to use in OpenMP
+2. Compile the code using 'makefile_omp_local' after editing paths to HDF5, GSL etc. ('makefile_omp' is used for compilation on TACC systems.)
+3. Set the number of threads to use in OpenMP: export OMP_NUM_THREADS = <n>
 4. Run the command: ./perfeval_spmd.out searchParams_simDataSKA.hdf5 TESTPERFEVALOMP/noise1.hdf5 TESTPERFEVALOMP/results/noise1_RAAPTR_test_avp.hdf5 avPhase
