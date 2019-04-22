@@ -230,7 +230,7 @@ void perfeval_omp(struct fitFuncParams *ffp, /*!< Parameters for the fitness fun
 		
     // Store all other variables
 	perfevalomp2hdf5file(nRuns, nDim, Np, wallClkTimes,
-					       psoResults, ffp, fitfunc, 
+					       psoResults, ffp, fitfunc, mp_av_select,
 					       outFile);
 						   
     //Close output file
@@ -259,10 +259,13 @@ void perfevalomp2hdf5file(size_t nRuns, size_t nDim, size_t Np,
 					  struct returnData *psoResults[],
 					  struct fitFuncParams *ffp,
                       double (*fitfunc)(gsl_vector *, void *), 
+					  char *mp_av_select,
 					  hid_t outFile){
 
 	//Loop counters
 	size_t lpc1, lpc2, lpc3;
+	//Dummy variable
+	double dummyFitVal;
 	
 	/* Create storage for results from multiple PSO runs. 
 	  (This is very inefficient because it is a translation
@@ -293,6 +296,15 @@ void perfevalomp2hdf5file(size_t nRuns, size_t nDim, size_t Np,
 	//Get the unstandardized coordinates
 	for(lpc1 = 0; lpc1 < nRuns; lpc1++){
 		fitfunc(psoResults[lpc1]->bestLocation,ffp);
+		//For AvPhase, also get the pulsar phases using MaxPhase
+		if(!strcmp(mp_av_select,"avPhase")){
+			/* The previous call to fitfunc sets the real coordinate values,
+			   allowing LogLikelihoodRatioMP5 to be called and pulsar phases to 
+			   be estimated
+			*/
+			dummyFitVal = LogLikelihoodRatioMP5(ffp); 
+	    }
+			 
 		for(lpc2 = 0; lpc2 < nDim; lpc2++){
 			gsl_matrix_set(bestLocRealCPr, lpc1, lpc2, gsl_vector_get(ffp->realCoord,lpc2));
 	    }
