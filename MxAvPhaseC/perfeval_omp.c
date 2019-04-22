@@ -265,7 +265,7 @@ void perfevalomp2hdf5file(size_t nRuns, size_t nDim, size_t Np,
 	//Loop counters
 	size_t lpc1, lpc2, lpc3;
 	//Dummy variable
-	double dummyFitVal;
+	double dummyFitVal, dummyAmp;
 	
 	/* Create storage for results from multiple PSO runs. 
 	  (This is very inefficient because it is a translation
@@ -300,8 +300,13 @@ void perfevalomp2hdf5file(size_t nRuns, size_t nDim, size_t Np,
 		if(!strcmp(mp_av_select,"avPhase")){
 			/* The previous call to fitfunc sets the real coordinate values,
 			   allowing LogLikelihoodRatioMP5 to be called and pulsar phases to 
-			   be estimated
+			   be estimated. However, the amplitude needs to be reconverted back to
+			   log because its anti-log is taken inside LogLikelihoodRatioMP5 and
+			   returned in the fitness function parameter structure.
 			*/
+			dummyAmp = gsl_vector_get(ffp->realCoord,4);
+			dummyAmp = log10(dummyAmp);
+			gsl_vector_set(ffp->realCoord,4,dummyAmp);
 			dummyFitVal = LogLikelihoodRatioMP5(ffp); 
 	    }
 			 
