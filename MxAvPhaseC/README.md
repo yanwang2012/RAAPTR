@@ -1,6 +1,7 @@
-This is the C-code that implements the MaxPhase and AvPhase algorithms. The codes are documented using Doxygen. The 'Doxyfile' is provided as part of the distribution, so run 'doxygen' to generate the documentation. 
-(A global overview of the codes and examples will be provided in a User manual that is under development.)
-Note: Currently, the MPI based codes will not work. Use the OpenMP codes ('perfeval_spmd') instead. The Doxyfile may be out of date.
+This is the C-code that implements the MaxPhase and AvPhase algorithms. The codes are documented using Doxygen. The 'Doxyfile' is provided as part of the distribution, so run 'doxygen' to generate the documentation. The Doxyfile may be out of date.
+A global overview of the codes and examples will be provided in a User manual that is under development.
+
+The main function is 'perfeval_spmd', which is also the default name of the executable. 
 
 To test the codes:
 1. Create a directory called 'results' inside TESTPERFEVALOMP
