@@ -1,20 +1,8 @@
 # About
-This is a program to find the local optimization of the data files by using PSO.
+This is a draft user manual for the codes.
 
-# Preparation
-
-1. Use 'test_gensimdata.m' file to generate simulation data files and search parameter files.
-
-2. Converting the data files and search parameter files from .mat file to HDF5 file using 'mpavinfile2hdf5.m'.
-
-3. Compile the code use command
-
-```
-make -f makefile_omp
-```
-
-**Note:**
-Edit file maxphaseutils.c: Go to the lines (there are two such lines) containing the string FNM_FILE_NAME. Change FNM_FILE_NAME to FNM_PATHNAME.
+# Main steps
+Generate simulated data (if needed) along with the file containing the parameters of the analysis. Read the documentation in RAAPTR/GENSIMDATA on how to generate these files. Convert the generated files from .mat file to HDF5 file using 'mpavinfile2hdf5.m'.
 
 # Search parameters for PSO
 By using **parameters.m** file we generate two parameter files, **Sim_Params_X.mat** file is for simulation while the other **searchParams_simDataSKA_X.mat** file contains the search range of PSO, users can change the **xmaxmin** value in **parameters.m** file to change the corresponding value in PSO.
