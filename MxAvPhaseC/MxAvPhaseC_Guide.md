@@ -19,24 +19,25 @@ xmaxmin(6,:): inclination
 xmaxmin(7,:): polarization
 
 # Run on LS5
-First on LS5 load the module use
+
+First load the modules below using *module load*
 
 ```
-ml gcc/5.2.0
-ml gsl/2.2.1
+gcc gsl hdf5 
 ```
 
-to compile the code.
-
-For running a job use
+to compile the code by this command
 
 ```
-ml gsl/2.2.1
-ml launcher
-export OMP_NUM_THREADS=8
+make -f makefile_omp
 ```
+
+To run the job load *launcher* module use the command mentioned before.
+
+
 
 ## Create the LAUNCHER JOB FILE
+
 The format of the line is:
 
 ```
