@@ -18,21 +18,20 @@ xmaxmin(5,:): amplitude in sec
 xmaxmin(6,:): inclination
 xmaxmin(7,:): polarization
 
+# How to compile RAAPTR codes on LS5 
+
+A change must be made to one of the files on LS5 in order for the code to compile. 
+
+- Edit file maxphaseutils.c: Go to the lines (there are two such lines) containing the string FNM_FILE_NAME. Change FNM_FILE_NAME to FNM_PATHNAME. 
+- The command to compile the codes is: make -f makefile_omp 
+
 # Run on LS5
 
-First load the modules below using *module load*
+First load the modules we need to run the job
 
-```
-gcc gsl hdf5 
-```
+> gcc gsl hdf5 launcher
 
-to compile the code by this command
-
-```
-make -f makefile_omp
-```
-
-To run the job load *launcher* module use the command mentioned before.
+You can load these modules by using command **module load**.
 
 
 
