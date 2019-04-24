@@ -24,25 +24,28 @@ for lpc = 1:length(inFileList)
     
 %     h5create(outFileName,['/',fldName],...
 %         max([size((inFileInfo.(struName).alpha)'); baseSz]));
-    h5create(outFileName,['/',fldName],[7,2])
-    h5write(outFileName,['/',fldName],(inFileInfo.(struName).alpha)',[1,1],[1,2]);
+    h5create(outFileName,['/',fldName],[2,7])% fuck it hdf5 [colum row] but wright horizentally
+    h5write(outFileName,['/',fldName],(inFileInfo.(struName).alpha),[1,1],[2,1]);
     h5writeatt(outFileName,['/',fldName],'alpha',(inFileInfo.(struName).alpha)');
     
-    h5write(outFileName,['/',fldName],(inFileInfo.(struName).delta)',[2,1],[1,2]);
+    h5write(outFileName,['/',fldName],(inFileInfo.(struName).delta),[1,2],[2,1]);
     h5writeatt(outFileName,['/',fldName],'delta',(inFileInfo.(struName).delta)');
     
-    h5write(outFileName,['/',fldName],(inFileInfo.(struName).angular_velocity)',[3,1],[1,2]);
+    h5write(outFileName,['/',fldName],(inFileInfo.(struName).angular_velocity),[1,3],[2,1]);
     h5writeatt(outFileName,['/',fldName],'angular velocity',(inFileInfo.(struName).angular_velocity)');
     
-    h5write(outFileName,['/',fldName],(inFileInfo.(struName).phi0)',[4,1],[1,2]);
+    h5write(outFileName,['/',fldName],(inFileInfo.(struName).phi0),[1,4],[2,1]);
     h5writeatt(outFileName,['/',fldName],'phi0',(inFileInfo.(struName).phi0)');
     
-    h5write(outFileName,['/',fldName],(inFileInfo.(struName).amplitude)',[5,1],[1,2]);
+    h5write(outFileName,['/',fldName],(inFileInfo.(struName).amplitude),[1,5],[2,1]);
     h5writeatt(outFileName,['/',fldName],'amplitude',(inFileInfo.(struName).amplitude)');
     
-    h5write(outFileName,['/',fldName],(inFileInfo.(struName).inclination)',[6,1],[1,2]);
+    h5write(outFileName,['/',fldName],(inFileInfo.(struName).inclination),[1,6],[2,1]);
     h5writeatt(outFileName,['/',fldName],'inclination',(inFileInfo.(struName).inclination)');
     
-    h5write(outFileName,['/',fldName],(inFileInfo.FreqRange)',[7,1],[1,2]);
+    h5write(outFileName,['/',fldName],(inFileInfo.(struName).polarization),[1,7],[2,1]);
+    h5writeatt(outFileName,['/',fldName],'polarization',(inFileInfo.(struName).polarization)');
+    
+    %h5write(outFileName,['/',fldName],(inFileInfo.FreqRange),[1,7],[2,1]);
     h5writeatt(outFileName,['/',fldName],'Frequency range',(inFileInfo.FreqRange)');
 end

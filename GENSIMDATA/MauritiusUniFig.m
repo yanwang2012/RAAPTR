@@ -2,9 +2,9 @@ clear;
 tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
-simParamsDir = '~/Research/PulsarTiming/SimDATA/Mauritius/searchParams_GWBsimDataSKA';
+simParamsDir = '~/Research/PulsarTiming/SimDATA/Mauritius/uniform search params';
 simDataDir = '~/Research/PulsarTiming/SimDATA/Mauritius/GWBsimDataSKA';
-estDataDir = '~/Research/PulsarTiming/SimDATA/Mauritius/MauritiusNew_results_mat';
+estDataDir = '~/Research/PulsarTiming/SimDATA/Mauritius/Mauritius_uni_results_mat';
 % Load the source parameters across the entire frequency range
 load([simDataDir,filesep,'GWBsimDataSKASrlz1Nrlz9.mat'],'omega', 'timingResiduals_tmp', 'yr','snr_chr');
 
@@ -38,10 +38,10 @@ for i = 1:length(inDataList)
     path_to_estimatedData = [estDataDir,filesep,char(inDataNames(i))];
     
     % Find the sources with frequencies in bin 4
-    binsrcOmgIndx = find(omega >= xmaxmin(3,2) & ...
-        omega <= xmaxmin(3,1));
-    ybin_up = [ybin_up xmaxmin(3,1)];% saving the band boundary
-    ybin_low = [ybin_low xmaxmin(3,2)];
+    binsrcOmgIndx = find(omega >= searchParams.angular_velocity(2) & ...
+        omega <= searchParams.angular_velocity(1));
+    ybin_up = [ybin_up searchParams.angular_velocity(1)];% saving the band boundary
+    ybin_low = [ybin_low searchParams.angular_velocity(2)];
     
     if isempty(binsrcOmgIndx)
         disp(["There's no signal injected in band",num2str(i)]);
@@ -99,17 +99,17 @@ ybin_low = ybin_low/(2*pi*365*24*3600);
 ybin_low = repmat(ybin_low,length(binSNR),1);
 %% plot the entire map
 figure(2)
- semilogy(x,y,'o',sx,sy,'*r');
-%plot(x,y,'o',sx,sy,'*r')
+ %semilogy(x,y,'o',sx,sy,'*r');
+ plot(x,y,'o',sx,sy,'*r')
 hold on
 for j=1:10
-    semilogy(binSNR,ybin_up(:,j),'b-');
-    %plot(binSNR,ybin_up(:,j),'b-');
-    semilogy(binSNR,ybin_low(:,j),'b--');
-    %plot(binSNR,ybin_low(:,j),'b--');
+    %semilogy(binSNR,ybin_up(:,j),'b-');
+    plot(binSNR,ybin_up(:,j),'b-');
+    %semilogy(binSNR,ybin_low(:,j),'b--');
+    plot(binSNR,ybin_low(:,j),'b--');
 end
 xlabel('SNR');
 ylabel('Frequency');
-saveas(gcf,'MauritiusNewFig','png');
+saveas(gcf,'MauritiusUniFig','png');
 %saveas(gcf,'MauritiusUniFig','png');
 toc
