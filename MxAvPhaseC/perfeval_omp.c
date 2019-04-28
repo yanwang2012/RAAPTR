@@ -60,6 +60,10 @@ void perfeval_omp(struct fitFuncParams *ffp, /*!< Parameters for the fitness fun
 	 else if(!strcmp(mp_av_select,"avPhase")){
 		 fitfunc = LLR_av;
 	 }
+	 else{
+		 printf("Option %s is not recognized. Use maxPhase or avPhase.\n",mp_av_select);
+		 return;
+	 }
 	
 	/* Choose the random number generation method.
 	   Need independent random number generators 
