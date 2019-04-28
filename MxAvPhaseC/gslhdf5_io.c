@@ -32,7 +32,7 @@ void gslmatrix2hdf5(hid_t outFile, const char *dsetName, const gsl_matrix *gslMa
 	//Size information
     size_t nRows = gslMat->size1;
     size_t nCols = gslMat->size2;
-	printf("%zu %zu\n",nRows, nCols);
+	//printf("%zu %zu\n",nRows, nCols);
 	
 	//Copy GSL vector data to ordinary array
 	double outData[nRows*nCols];
