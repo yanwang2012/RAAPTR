@@ -57,10 +57,11 @@ for i = 1:length(inDataList)
     %% Estimated source
     %path_to_simulationData = '~/Research/PulsarTiming/SimDATA/Mauritius/GWBsimDataSKA/GWBsimDataSKASrlz1Nrlz9.mat';
     path_to_pulsar_catalog = 'survey_ska.mat';
+    phiI = bestRealLoc(8:1007);% esimated pulsar phases
     estFreq = bestRealLoc(3)/(2*pi*365*24*3600);
     [sourceParams]=ColSrcParams(path_to_estimatedData);
     [pulsarParams]=ColPsrParams(path_to_pulsar_catalog);
-    estSNR = Amp2Snr(sourceParams,pulsarParams);
+    estSNR = Amp2Snr(sourceParams,pulsarParams,phiI);
     sy = [sy estFreq];
     sx = [sx estSNR];
     %%

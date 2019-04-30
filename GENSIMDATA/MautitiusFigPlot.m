@@ -6,7 +6,8 @@ simParamsDir = '~/Research/PulsarTiming/SimDATA/Mauritius/searchParams_GWBsimDat
 simDataDir = '~/Research/PulsarTiming/SimDATA/Mauritius/GWBsimDataSKA';
 estDataDir = '~/Research/PulsarTiming/SimDATA/Mauritius/MauritiusNew_results_mat';
 % Load the source parameters across the entire frequency range
-load([simDataDir,filesep,'GWBsimDataSKASrlz1Nrlz9.mat'],'omega', 'timingResiduals_tmp', 'yr','snr_chr');
+load([simDataDir,filesep,'GWBsimDataSKASrlz1Nrlz9.mat'],'omega', ...
+        'timingResiduals_tmp', 'yr','snr_chr','simParams');
 
 %% setting fig axis
 y = [];
@@ -56,11 +57,12 @@ for i = 1:length(inDataList)
     x = [x binsrcSNR];
     %% Estimated source
     %path_to_simulationData = '~/Research/PulsarTiming/SimDATA/Mauritius/GWBsimDataSKA/GWBsimDataSKASrlz1Nrlz9.mat';
-    path_to_pulsar_catalog = 'survey_ska.mat';
+    %path_to_pulsar_catalog = 'survey_ska.mat';
+    phiI = bestRealLoc(8:1007);% esimated pulsar phases
     estFreq = bestRealLoc(3)/(2*pi*365*24*3600);
     [sourceParams]=ColSrcParams(path_to_estimatedData);
-    [pulsarParams]=ColPsrParams(path_to_pulsar_catalog);
-    estSNR = Amp2Snr(sourceParams,pulsarParams);
+    %[pulsarParams]=ColPsrParams(path_to_pulsar_catalog);
+    estSNR = Amp2Snr(sourceParams,simParams,phiI,yr);
     sy = [sy estFreq];
     sx = [sx estSNR];
     %%
@@ -110,6 +112,6 @@ for j=1:10
 end
 xlabel('SNR');
 ylabel('Frequency');
-saveas(gcf,'MauritiusNewFig','png');
+saveas(gcf,'MauritiusNewEstiFig','png');
 %saveas(gcf,'MauritiusUniFig','png');
 toc
