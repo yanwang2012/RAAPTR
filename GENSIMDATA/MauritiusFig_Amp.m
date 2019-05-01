@@ -4,9 +4,10 @@ tic
 % Load the frequency bin edges from the search parameter file for bin X.
 simParamsDir = '~/Research/PulsarTiming/SimDATA/Mauritius/searchParams_GWBsimDataSKA';
 simDataDir = '~/Research/PulsarTiming/SimDATA/Mauritius/GWBsimDataSKA';
-estDataDir = '~/Research/PulsarTiming/SimDATA/Mauritius/Mauritius_results_mat';
+estDataDir = '~/Research/PulsarTiming/SimDATA/Mauritius/MauritiusNew_results_mat';
 % Load the source parameters across the entire frequency range
-load([simDataDir,filesep,'GWBsimDataSKASrlz1Nrlz9.mat'],'omega', 'timingResiduals_tmp', 'yr','Amp');
+load([simDataDir,filesep,'GWBsimDataSKASrlz1Nrlz9.mat'],'omega',...
+    'timingResiduals_tmp','yr','Amp');
 
 %% setting fig axis
 y = [];
@@ -17,22 +18,28 @@ x = [];
 sy = [];
 sx = [];
 
-%% reading the files
+%% reading the files and sort it naturely
 inParamsList = dir([simParamsDir,filesep,'*.mat']);
 inDataList = dir([estDataDir,filesep,'*Nrlz9.mat']);
+inParamNames = {};
+inDataNames = {};
+% get the name and sort it
+for n = 1:10
+    inParamNames = [inParamNames inParamsList(n).name];
+    inDataNames = [inDataNames inDataList(n).name];
+end
+inParamNames = sort_nat(inParamNames);
+inDataNames = sort_nat(inDataNames);
+
+%% data pre-processing
 for i = 1:length(inDataList)
     % load bands and estimated source
-    if i == 10
-        load([simParamsDir,filesep,inParamsList(10).name]);
-        load([estDataDir,filesep,inDataList(1).name],'bestRealLoc');
-        path_to_estimatedData = [estDataDir,filesep,inDataList(1).name];
-    else
-        load([simParamsDir,filesep,inParamsList(i).name]);
-        load([estDataDir,filesep,inDataList(i+1).name],'bestRealLoc');
-        path_to_estimatedData = [estDataDir,filesep,inDataList(i+1).name];
-    end
+    load([simParamsDir,filesep,char(inParamNames(i))]);
+    load([estDataDir,filesep,char(inDataNames(i))],'bestRealLoc');
+    %path_to_estimatedData = [estDataDir,filesep,char(inDataNames(i))];
+    
     % Find the sources with frequencies in bin 4
-    binsrcOmgIndx = find(omega >=xmaxmin(3,2) & omega <=xmaxmin(3,1));
+    binsrcOmgIndx = find(omega >= xmaxmin(3,2) & omega <= xmaxmin(3,1));
     ybin_up = [ybin_up xmaxmin(3,1)];% saving the band boundary
     ybin_low = [ybin_low xmaxmin(3,2)];
     
@@ -43,12 +50,12 @@ for i = 1:length(inDataList)
     % Get their frequencies in Hz
     binsrcOmega = omega(binsrcOmgIndx);
     y = [y binsrcOmega];
-    binsrcF = (binsrcOmega/(2*pi))/(24*3600*365);
+    %binsrcF = (binsrcOmega/(2*pi))/(24*3600*365);
     % Get their SNR
     %binsrcSNR = snr_chr(binsrcOmgIndx);
     % Get their amplitude
-    binAmp = Amp(binsrcOmgIndx);
-    x = [x binAmp];
+    binsrcAmp = Amp(binsrcOmgIndx);
+    x = [x binsrcAmp];
     %% Estimated source
     %path_to_simulationData = '~/Research/PulsarTiming/SimDATA/Mauritius/GWBsimDataSKA/GWBsimDataSKASrlz1Nrlz9.mat';
     %path_to_pulsar_catalog = 'survey_ska.mat';
@@ -68,22 +75,22 @@ for i = 1:length(inDataList)
     % hold on
     % plot(bin5srcF,6e-6,'.')
     %%
-    % Reproduce the Mauritius poster figure (Source frequency vs SNR)
-    figure(1)
-    plot(binAmp,binsrcF,'o',estAmp,estFreq,'r*');
-    xlabel('Network Signal to Noise Ratio');
-    ylabel('Source Frequency (Hz)');
-    legend('Injected source','Estimated source');
-    if i == 1
-        title(['Realization#9 bin',num2str(1)]);
-        figname = ['Realization#9 bin',num2str(1)];
-    elseif i == 2
-        title(['Realization#9 bin',num2str(10)]);
-        figname = ['Realization#9 bin',num2str(10)];
-    else
-        title(['Realization#9 bin',num2str(i-1)]);
-        figname = ['Realization#9 bin',num2str(i-1)];
-    end
+    % Reproduce the Mauritius poster figure (Source frequency vs Amp)
+%     figure(1)
+%     plot(binAmp,binsrcF,'o',estAmp,estFreq,'r*');
+%     xlabel('Network Signal to Noise Ratio');
+%     ylabel('Source Frequency (Hz)');
+%     legend('Injected source','Estimated source');
+%     if i == 1
+%         title(['Realization#9 bin',num2str(1)]);
+%         figname = ['Realization#9 bin',num2str(1)];
+%     elseif i == 2
+%         title(['Realization#9 bin',num2str(10)]);
+%         figname = ['Realization#9 bin',num2str(10)];
+%     else
+%         title(['Realization#9 bin',num2str(i-1)]);
+%         figname = ['Realization#9 bin',num2str(i-1)];
+%     end
     %pause
     %saveas(gcf,figname,'png')
     % Spacing of source frequencies relative to Fourier frequency spacing
@@ -102,24 +109,17 @@ ybin_low = ybin_low/(2*pi*365*24*3600);
 ybin_low = repmat(ybin_low,length(binAmp),1);
 %% plot the entire map
 figure(2)
-semilogy(x,y,'o',sx,sy,'*r');
-hold on
-for j=1:10
-    if j >= 3 && rem(j-1,2) == 0
-        semilogy(binAmp,ybin_up(:,j),'b-');
-        semilogy(binAmp,ybin_low(:,j),'b-');
-    elseif j == 1
-        semilogy(binAmp,ybin_up(:,1),'b--')
-        semilogy(binAmp,ybin_low(:,j),'b--');
-    elseif j == 2
-        semilogy(binAmp,ybin_up(:,2),'b-');
-        semilogy(binAmp,ybin_low(:,j),'b-');
-    else
-        semilogy(binAmp,ybin_up(:,j),'b--');
-        semilogy(binAmp,ybin_low(:,j),'b--');
-    end
-end
+yyaxis left
+semilogy(log10(x),y,'o',log10(sx),sy,'*','MarkerSize',10);
+%hold on
+% for j=1:10
+%     semilogy(binAmp,ybin_up(:,j),'b-');
+%     %plot(binSNR,ybin_up(:,j),'b-');
+%     semilogy(binSNR,ybin_low(:,j),'b--');
+%     %plot(binSNR,ybin_low(:,j),'b--');
+% 
+% end
 xlabel('Amplitude');
 ylabel('Frequency');
-saveas(gcf,'MauritiusFig_Amp','png');
+%saveas(gcf,'MauritiusFig_Amp','png');
 toc

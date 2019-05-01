@@ -6,7 +6,8 @@ simParamsDir = '~/Research/PulsarTiming/SimDATA/Mauritius/uniform search params'
 simDataDir = '~/Research/PulsarTiming/SimDATA/Mauritius/GWBsimDataSKA';
 estDataDir = '~/Research/PulsarTiming/SimDATA/Mauritius/Mauritius_uni_results_mat';
 % Load the source parameters across the entire frequency range
-load([simDataDir,filesep,'GWBsimDataSKASrlz1Nrlz9.mat'],'omega', 'timingResiduals_tmp', 'yr','snr_chr');
+load([simDataDir,filesep,'GWBsimDataSKASrlz1Nrlz9.mat'],'omega',...
+     'timingResiduals_tmp', 'yr','snr_chr','simParams');
 
 %% setting fig axis
 y = [];
@@ -50,18 +51,18 @@ for i = 1:length(inDataList)
     % Get their frequencies in Hz
     binsrcOmega = omega(binsrcOmgIndx);
     y = [y binsrcOmega];
-    binsrcF = (binsrcOmega/(2*pi))/(24*3600*365);
+    %binsrcF = (binsrcOmega/(2*pi))/(24*3600*365);
     % Get their SNR
     binsrcSNR = snr_chr(binsrcOmgIndx);
     x = [x binsrcSNR];
     %% Estimated source
     %path_to_simulationData = '~/Research/PulsarTiming/SimDATA/Mauritius/GWBsimDataSKA/GWBsimDataSKASrlz1Nrlz9.mat';
-    path_to_pulsar_catalog = 'survey_ska.mat';
+    %     path_to_pulsar_catalog = 'survey_ska.mat';
     phiI = bestRealLoc(8:1007);% esimated pulsar phases
     estFreq = bestRealLoc(3)/(2*pi*365*24*3600);
     [sourceParams]=ColSrcParams(path_to_estimatedData);
-    [pulsarParams]=ColPsrParams(path_to_pulsar_catalog);
-    estSNR = Amp2Snr(sourceParams,pulsarParams,phiI);
+    %     [pulsarParams]=ColPsrParams(path_to_pulsar_catalog);
+    estSNR = Amp2Snr(sourceParams,simParams,phiI,yr);
     sy = [sy estFreq];
     sx = [sx estSNR];
     %%
@@ -76,14 +77,14 @@ for i = 1:length(inDataList)
     % plot(bin5srcF,6e-6,'.')
     %%
     % Reproduce the Mauritius poster figure (Source frequency vs SNR)
-    figure(1)
-    plot(binsrcSNR,binsrcF,'o',estSNR,estFreq,'r*');
-    xlabel('Network Signal to Noise Ratio');
-    ylabel('Source Frequency (Hz)');
-    legend('Injected source','Estimated source');
-    
-    title(['Realization#9 bin',num2str(i)]);
-    figname = ['Realization#9 bin',num2str(i)];
+    %     figure(1)
+    %     plot(binsrcSNR,binsrcF,'o',estSNR,estFreq,'r*');
+    %     xlabel('Network Signal to Noise Ratio');
+    %     ylabel('Source Frequency (Hz)');
+    %     legend('Injected source','Estimated source');
+    %
+    %     title(['Realization#9 bin',num2str(i)]);
+    %     figname = ['Realization#9 bin',num2str(i)];
     %saveas(gcf,figname,'png')
     % Spacing of source frequencies relative to Fourier frequency spacing
     % [bin5srcFsort,bin5srcFsortIndx] = sort(bin5srcF,'descend');
@@ -100,17 +101,19 @@ ybin_low = ybin_low/(2*pi*365*24*3600);
 ybin_low = repmat(ybin_low,length(binSNR),1);
 %% plot the entire map
 figure(2)
- %semilogy(x,y,'o',sx,sy,'*r');
- plot(x,y,'o',sx,sy,'*r')
-hold on
-for j=1:10
-    %semilogy(binSNR,ybin_up(:,j),'b-');
-    plot(binSNR,ybin_up(:,j),'b-');
-    %semilogy(binSNR,ybin_low(:,j),'b--');
-    plot(binSNR,ybin_low(:,j),'b--');
-end
+yyaxis right
+semilogy(log10(x),y,'o',log10(sx),sy,'d','MarkerSize',10);
+%plot(x,y,'o',sx,sy,'s')
+%hold on
+% for j=1:10
+%     %semilogy(binSNR,ybin_up(:,j),'b-');
+%     plot(binSNR,ybin_up(:,j),'b-');
+%     %semilogy(binSNR,ybin_low(:,j),'b--');
+%     plot(binSNR,ybin_low(:,j),'b--');
+% end
 xlabel('SNR');
 ylabel('Frequency');
-saveas(gcf,'MauritiusUniFig','png');
-%saveas(gcf,'MauritiusUniFig','png');
+legend('True','Log-Estimated','Uni-Estimated','Location','northwest');
+title('Log-Log Axis SNR')
+saveas(gcf,'Axis Log-Log SNR','png');
 toc
