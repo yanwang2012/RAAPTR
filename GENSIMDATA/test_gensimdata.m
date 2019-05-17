@@ -12,11 +12,13 @@ Ns = 100;
 Np = 1000; % for the specific pulsar catalog
 Nrlz = 5;
 Nnis = 3;
-parameters(Ns,Np,Nrlz,Nnis)
+frqRng = [2*10^-8,10^-7];
+parameters(Ns,Np,Nrlz,Nnis);
 
-mkdir('TESTDATA');
+mkdir('GWBsimDataSKA');
 
 gensimdata('GWBsimDataSKAParams.mat',...
            'survey_ska.mat',...
-            'TESTDATA')
+             'GWBsimDataSKA',...
+             frqRng); %% frequency range
 toc;

@@ -1,15 +1,17 @@
-function []=gensimdata(path_to_parameters,path_to_pulsar_catalog,path_to_output)
+function []=gensimdata(path_to_parameters,path_to_pulsar_catalog,path_to_output,frqRng)
 %Generate PTA data realizations with multiple SMBHB sources
-%GENSIMDATA(P,D,O)
+%GENSIMDATA(P,D,O,LowFrqRng,UpFrqRng)
 %P is the path to a .mat file containing the parameters for generating the
 %data. See the help for PARAMETERS for details about the parameters that must be
 %specified. D is the path to the file containing information about the
 %pulsars in the PTA. See 'survey_ska.mat' for an example of this file. O is
-%the path to the folder where the data realizations will be stored. 
+%the path to the folder where the data realizations will be stored. frqRng
+%is the frequency range of the sources, if it is empty, use the default
+%value, i.e. the whole frequency range.
 
-% Authors: Yi-Qian Qian, Yan Wang, Soumya Mohanty, Sep 16, 2018 
+% Authors: Yi-Qian Qian, Yan Wang, Soumya Mohanty, Sep 16, 2018
 
-%Sep 2018 
+%Sep 2018
 %Original code by YW. Turned into a function by YQ.
 
 %Get constants
@@ -23,8 +25,29 @@ simDataDir = path_to_output;
 rng('shuffle')  % initialize the random number generator using a different seed
 %% ==== Generate random GW sources ====
 [Amp,alpha_tmp,delta_tmp,fgw,iota,thetaN,phi0,r]=GenerateRandomGWSource(Ns);
-omega_tmp = 2*pi* fgw * 3.156*10^7;  % convert sec^-1 (Hz) to yr^-1
-
+omega_tmp = zeros(1,3);
+% setting up the freq filter
+if nargin == 3
+    disp("using default value.");
+    omega_tmp = 2*pi* fgw * 3.156*10^7;  % convert sec^-1 (Hz) to yr^-1
+    NNs = Ns;
+    
+elseif nargin == 4
+    m = 1;
+    fgwl = frqRng(1);
+    fgwu = frqRng(2);
+    disp("The lower limit is:" + fgwl);
+    disp("The upper limit is:" + fgwu);
+    for i = 1:1:Ns
+        if fgw(i) >= fgwl && fgw(i) <= fgwu
+            omega_tmp(m) = 2*pi* fgw(i) * 3.156*10^7;
+            m = m+1;
+        end
+    end
+    NNs = m-1;
+    disp("The number of sources is:" + NNs);
+    %disp("m is:" + m);
+end
 %% ==== Constructing a pulsar timing array using Np pulsars ====
 % read in the pulsar catalogue simulated for SKA
 skamsp=load(path_to_pulsar_catalog);% load input data
@@ -41,7 +64,7 @@ dy=zeros(N,1);  % observation epoch, in day
 yr=zeros(N,1);  % observation epoch, in year
 
 
-%% 
+%%
 InList=zeros(1,2);
 OutList=zeros(1,2);
 for i=1:1:Np
@@ -72,7 +95,7 @@ end
 % deltaP(1)=(4+51/60)*pi/180;
 % distP(1)=0.28*kilo*pc2ly;  % in ly
 % sd(1)=79.2*10^(-8); %0.148;
-% 
+%
 % pname={tmp1 tmp2 tmp3 tmp4 tmp5 tmp6 tmp7 tmp8 tmp9};c
 tmp1='place_holder';
 pname={tmp1};
@@ -90,7 +113,7 @@ for i=1:1:N
 end
 
 simParams = struct('Np',Np,'N',N,'sd',sd,...
-                  'alphaP',alphaP,'deltaP',deltaP,'distP',distP,'kp',kp);
+    'alphaP',alphaP,'deltaP',deltaP,'distP',distP,'kp',kp);
 
 % -------------------------------
 % calculate timing residuals induced by GW for each pulsar
@@ -104,14 +127,14 @@ noise=zeros(Np,N);  % noise
 
 CA4filenames=cell(Nrlz+Nnis,1);  % cell array for file names of simulated data
 
-perfect_fitness=zeros(Ns,1);  % fitness value for the true parameters
+perfect_fitness=zeros(NNs,1);  % fitness value for the true parameters
 
 %Standardized true parameter values
-%stdTrueCoord = zeros(1,12);  % 4+Np 
-stdTrueCoord = zeros(Ns,7); % 7 parameters other than pulsar phases
+%stdTrueCoord = zeros(1,12);  % 4+Np
+stdTrueCoord = zeros(NNs,7); % 7 parameters other than pulsar phases
 
 % calculate SNR
-snr_chr2_tmp=zeros(Np,Ns);  % squared characteristic srn for each pulsar and source
+snr_chr2_tmp=zeros(Np,NNs);  % squared characteristic srn for each pulsar and source
 %snr_chr=zeros(Np,1);  % characteristic srn = <\rho> = sqrt[(h,h)] srn of signal -- the strenghth of signal
 %snr_mf=0;  % snr of matched filter = \rho = x/\sigma, normalized matched filter
 
@@ -119,7 +142,7 @@ genHypothesis='H1 data';
 
 tmp=zeros(1,N); % noiseless timing residuals from a source
 for i=1:1:Np  % number of pulsar
-    for j=1:1:Ns  % number of GW source
+    for j=1:1:NNs  % number of GW source
         
         % GW sky location in Cartesian coordinate
         k=zeros(1,3);  % unit vector pointing from SSB to source
@@ -173,7 +196,7 @@ for jj=1:1:Nrlz
     loc_id=0;
     omg_id=0;
     id=struct('snr_id',snr_id,'loc_id',loc_id,'omg_id',omg_id,'rlz_id',rlz_id);
-        
+    
     for i=1:1:Np
         
         % generating a realization of noise
@@ -183,14 +206,14 @@ for jj=1:1:Nrlz
         
         %snr_tmp=snr_tmp+ fftsignal(i,:)*fftsignal(i,:)/fftnoise(i,:);
         timingResiduals(i,:)=timingResiduals_tmp(i,:)+noise(i,:);  % add noise on signal
-
+        
     end
     
     inParams = struct('Np',Np,'N',N,'s',timingResiduals,'sd',sd,...
         'alphaP',alphaP,'deltaP',deltaP,'kp',kp,'yr',yr,...
         'xmaxmin',xmaxmin);
     
-    for j=1:1:Ns
+    for j=1:1:NNs
         perfect_fitness(j) = LLR_PSOmpp(stdTrueCoord(j,:),inParams);  % - LogLikelihoodRatio, minimization
         %true_fitness = fitnessTrue_ie(alpha_tmp(j),delta_tmp(j),omega_tmp(l),Amp,iota,thetaN,phi0,phiI,inParams);
     end
@@ -230,7 +253,7 @@ for ii=1:1:Nnis
     rlz_id=ii; %num2str(ii);
     
     id=struct('snr_id',snr_id,'loc_id',loc_id,'omg_id',omg_id,'rlz_id',rlz_id);
-
+    
     for i=1:1:Np
         
         % generating a realization of noise

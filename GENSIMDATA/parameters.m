@@ -5,6 +5,7 @@ function []=parameters(Ns,Np,Nrlz,Nnis)
 % .mat file stores these variables.
 %% A script to generate the all the parameters and save it to .mat
 % for the function FSGWB
+
 % Yi-Qian, Sep 16, 2018
 %% parameters
 % ==== Generate random GW sources ====
