@@ -31,6 +31,7 @@ if nargin == 3
     disp("using default value.");
     omega_tmp = 2*pi* fgw * 3.156*10^7;  % convert sec^-1 (Hz) to yr^-1
     NNs = Ns;
+    disp("NNs = :"+NNs)
     
 elseif nargin == 4
     m = 1;

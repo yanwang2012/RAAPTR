@@ -14,11 +14,11 @@ Nrlz = 5;
 Nnis = 3;
 frqRng = [2*10^-8,10^-7];
 parameters(Ns,Np,Nrlz,Nnis);
-
-mkdir('GWBsimDataSKA');
+outDir = 'GWBsimDataSKASpecRng';
+mkdir(outDir);
 
 gensimdata('GWBsimDataSKAParams.mat',...
            'survey_ska.mat',...
-             'GWBsimDataSKA',...
+             outDir,...
              frqRng); %% frequency range
 toc;
