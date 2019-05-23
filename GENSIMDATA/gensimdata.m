@@ -22,14 +22,21 @@ load(path_to_parameters);% load all the constants and parameters
 % master directory for simulated data
 simDataDir = path_to_output;
 
-rng('shuffle')  % initialize the random number generator using a different seed
+%rng('shuffle')  % initialize the random number generator using a different seed
+rng(1) % for repeatable works
 %% ==== Generate random GW sources ====
-[Amp,alpha_tmp,delta_tmp,fgw,iota,thetaN,phi0,r]=GenerateRandomGWSource(Ns);
-omega_tmp = zeros(1,3);
+[AmpOut,alphaOut,deltaOut,fgwOut,iotaOut,thetaNOut,phi0Out,r]=GenerateRandomGWSource(Ns);
+
 % setting up the freq filter
 if nargin == 3
     disp("using default value.");
-    omega_tmp = 2*pi* fgw * 3.156*10^7;  % convert sec^-1 (Hz) to yr^-1
+    Amp_tmp = AmpOut;
+    alpha_tmp = alphaOut;
+    delta_tmp = deltaOut;
+    iota_tmp = iotaOut;
+    thetaN_tmp = thetaNOut;
+    phi0_tmp = phi0Out;
+    omega_tmp = 2*pi * fgwOut * 3.156*10^7;  % convert sec^-1 (Hz) to yr^-1
     NNs = Ns;
     disp("NNs = :"+NNs)
     
@@ -40,15 +47,22 @@ elseif nargin == 4
     disp("The lower limit is:" + fgwl);
     disp("The upper limit is:" + fgwu);
     for i = 1:1:Ns
-        if fgw(i) >= fgwl && fgw(i) <= fgwu
-            omega_tmp(m) = 2*pi* fgw(i) * 3.156*10^7;
+        if fgwOut(i) >= fgwl && fgwOut(i) <= fgwu
+            Amp_tmp(m) = AmpOut(i);
+            omega_tmp(m) = 2*pi * fgwOut(i) * 3.156*10^7;
+            alpha_tmp(m) = alphaOut(i);
+            delta_tmp(m) = deltaOut(i);
+            iota_tmp(m) = iotaOut(i);
+            thetaN_tmp(m) = thetaNOut(i);
+            phi0_tmp(m) = phi0Out(i);
             m = m+1;
         end
     end
     NNs = m-1;
-    disp("The number of sources is:" + NNs);
-    %disp("m is:" + m);
 end
+    disp("The number of sources is: " + NNs);
+    disp("The size of Amp_tmp is: " + length(Amp_tmp));
+    %disp("m is:" + m);
 %% ==== Constructing a pulsar timing array using Np pulsars ====
 % read in the pulsar catalogue simulated for SKA
 skamsp=load(path_to_pulsar_catalog);% load input data
@@ -154,12 +168,12 @@ for i=1:1:Np  % number of pulsar
         %sprintf('%d pulsar theta=%g',i,theta)
         %phiI(i)=mod(phi0-omega*distP(i)*(1-cos(theta)), 2*pi);  % modulus after division
         %phiI(i)=mod(2*phi0-omega_tmp(l)*distP(i)*(1-cos(theta)), pi);  % modulus after division, YW 09/10/13
-        phiI(i)=mod(phi0(j)-0.5*omega_tmp(j)*distP(i)*(1-cos(theta)), pi);  % modulus after division, YW 04/30/14 check original def. of phiI
+        phiI(i)=mod(phi0_tmp(j)-0.5*omega_tmp(j)*distP(i)*(1-cos(theta)), pi);  % modulus after division, YW 04/30/14 check original def. of phiI
         
         %disp(['pulsar = ', num2str(i), ' ', num2str(phiI(i))])
         
-        tmp = FullResiduals(alpha_tmp(j),delta_tmp(j),omega_tmp(j),phi0(j),phiI(i),alphaP(i),deltaP(i),...
-            Amp(j),iota(j),thetaN(j),theta,yr);
+        tmp = FullResiduals(alpha_tmp(j),delta_tmp(j),omega_tmp(j),phi0_tmp(j),phiI(i),alphaP(i),deltaP(i),...
+            Amp_tmp(j),iota_tmp(j),thetaN_tmp(j),theta,yr);
         
         timngResiduals_tmp(i,:) = timingResiduals_tmp(i,:) + tmp';
         
@@ -173,10 +187,10 @@ for i=1:1:Np  % number of pulsar
         stdTrueCoord(j,1)=(alpha_tmp(j)-xmaxmin(1,2))/(xmaxmin(1,1)-xmaxmin(1,2));  % [0, 2*pi]
         stdTrueCoord(j,2)=(delta_tmp(j)-xmaxmin(2,2))/(xmaxmin(2,1)-xmaxmin(2,2));  % [-pi/2, pi/2]
         stdTrueCoord(j,3)=(omega_tmp(j)-xmaxmin(3,2))/(xmaxmin(3,1)-xmaxmin(3,2));  % [2, 20]
-        stdTrueCoord(j,4)= mod(phi0(j),pi)/pi;  % [0, pi]
-        stdTrueCoord(j,5)=(log10(Amp(j))-xmaxmin(5,2))/(xmaxmin(5,1)-xmaxmin(5,2));
-        stdTrueCoord(j,6)=(iota(j)-xmaxmin(6,2))/(xmaxmin(6,1)-xmaxmin(6,2));
-        stdTrueCoord(j,7)=(thetaN(j)-xmaxmin(7,2))/(xmaxmin(7,1)-xmaxmin(7,2));
+        stdTrueCoord(j,4)= mod(phi0_tmp(j),pi)/pi;  % [0, pi]
+        stdTrueCoord(j,5)=(log10(Amp_tmp(j))-xmaxmin(5,2))/(xmaxmin(5,1)-xmaxmin(5,2));
+        stdTrueCoord(j,6)=(iota_tmp(j)-xmaxmin(6,2))/(xmaxmin(6,1)-xmaxmin(6,2));
+        stdTrueCoord(j,7)=(thetaN_tmp(j)-xmaxmin(7,2))/(xmaxmin(7,1)-xmaxmin(7,2));
         
     end
     
@@ -228,6 +242,10 @@ for jj=1:1:Nrlz
     alpha=alpha_tmp;
     delta=delta_tmp;
     omega=omega_tmp;
+    Amp = Amp_tmp;
+    iota = iota_tmp;
+    thetaN = thetaN_tmp;
+    phi0 = phi0_tmp;
     CA4filenames{nf}=filename;
     
     save([simDataDir,filesep,filename],'genHypothesis','snr','alpha','delta','omega','iota','thetaN','phi0',...
@@ -237,8 +255,8 @@ end
 
 % save the GW source parameters into a file, have duplication with data files
 filename=strcat('GWB_','Srlz',num2str(1),'.mat');
-save([simDataDir,filesep,filename],'Amp','alpha_tmp','delta_tmp',...
-    'omega_tmp','fgw','iota','thetaN','phi0','r','stdTrueCoord');
+save([simDataDir,filesep,filename],'AmpOut','alphaOut','deltaOut',...
+    'omega_tmp','fgwOut','iotaOut','thetaNOut','phi0Out','r','stdTrueCoord');
 
 % simulating noise without signal
 %Nnis=10; %100;  % number of realization of noise
