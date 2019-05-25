@@ -41,7 +41,15 @@ if nargin == 3
     disp("NNs = :"+NNs)
     
 elseif nargin == 4
+    % initialization
     m = 1;
+    Amp_tmp = zeros(1,3);
+    omega_tmp = zeros(1,3);% unit change to yr^-1
+    alpha_tmp = zeros(1,3);
+    delta_tmp = zeros(1,3);
+    iota_tmp = zeros(1,3);
+    thetaN_tmp = zeros(1,3);
+    phi0_tmp = zeros(1,3);
     fgwl = frqRng(1);
     fgwu = frqRng(2);
     disp("The lower limit is:" + fgwl);
@@ -49,7 +57,7 @@ elseif nargin == 4
     for i = 1:1:Ns
         if fgwOut(i) >= fgwl && fgwOut(i) <= fgwu
             Amp_tmp(m) = AmpOut(i);
-            omega_tmp(m) = 2*pi * fgwOut(i) * 3.156*10^7;
+            omega_tmp(m) = 2*pi * fgwOut(i) * 3.156*10^7; % unit change to yr^-1
             alpha_tmp(m) = alphaOut(i);
             delta_tmp(m) = deltaOut(i);
             iota_tmp(m) = iotaOut(i);
@@ -60,9 +68,9 @@ elseif nargin == 4
     end
     NNs = m-1;
 end
-    disp("The number of sources is: " + NNs);
-    disp("The size of Amp_tmp is: " + length(Amp_tmp));
-    %disp("m is:" + m);
+disp("The number of sources is: " + NNs);
+disp("The size of Amp_tmp is: " + length(Amp_tmp));
+%disp("m is:" + m);
 %% ==== Constructing a pulsar timing array using Np pulsars ====
 % read in the pulsar catalogue simulated for SKA
 skamsp=load(path_to_pulsar_catalog);% load input data
