@@ -183,7 +183,7 @@ for i=1:1:Np  % number of pulsar
         tmp = FullResiduals(alpha_tmp(j),delta_tmp(j),omega_tmp(j),phi0_tmp(j),phiI(i),alphaP(i),deltaP(i),...
             Amp_tmp(j),iota_tmp(j),thetaN_tmp(j),theta,yr);
         
-        timngResiduals_tmp(i,:) = timingResiduals_tmp(i,:) + tmp';
+        timingResiduals_tmp(i,:) = timingResiduals_tmp(i,:) + tmp';
         
         %fftsignal(i,:)=fft(timingResiduals_tmp(i,:));
         
