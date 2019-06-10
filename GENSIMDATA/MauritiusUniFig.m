@@ -3,11 +3,11 @@ tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
 simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test3/searchParams_Nyquist';
-simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test3/SimulationFull';
-estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test3/Results';
+simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test4';
+estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test4/Results/origin';
 % Load the source parameters across the entire frequency range
 load([simDataDir,filesep,'GWBsimDataSKASrlz1Nrlz3.mat'],'omega',...
-     'timingResiduals_tmp', 'yr','snr_chr','simParams');
+    'timingResiduals_tmp', 'yr','snr_chr','simParams');
 
 %% setting fig axis
 y = [];
@@ -64,7 +64,7 @@ for i = 1:N
     [sourceParams]=ColSrcParams(path_to_estimatedData);
     %     [pulsarParams]=ColPsrParams(path_to_pulsar_catalog);
     %disp(sourceParams.Amp)
-    estSNR = Amp2Snr(sourceParams,simParams,phiI,yr);
+    [estSNR,estTimRes] = Amp2Snr(sourceParams,simParams,phiI,yr);
     sy = [sy estFreq];
     sx = [sx estSNR];
     %%
@@ -101,6 +101,7 @@ ybin_up = ybin_up/(2*pi*365*24*3600);
 ybin_up = repmat(ybin_up,length(binSNR),1);% stack itself vertically to broadcast to the dimension of x
 ybin_low = ybin_low/(2*pi*365*24*3600);
 ybin_low = repmat(ybin_low,length(binSNR),1);
+
 %% plot the entire map
 figure(2)
 %yyaxis right
@@ -120,7 +121,13 @@ hold off
 xlabel('SNR');
 ylabel('Frequency');
 legend('True','Uni-Estimated','Location','northeast');
-title('Investigation 3')
-saveas(gcf,'Inves3','png');
-savefig('Inves3.fig')
+title('Investigation 4')
+saveas(gcf,'Inves4','png');
+savefig('Inves4.fig')
+
+%% subtract src
+filename = 'GWBsimDataSKASrlz1Nrlz3.mat';% simulation data file name
+outFile = 'GWBsimDataSKASrlz1Nrlz3_1.mat';% post processed out file name
+subtractSrc(estTimRes,simDataDir,filename,outFile);
+
 toc
