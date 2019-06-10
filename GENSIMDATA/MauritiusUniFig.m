@@ -4,9 +4,9 @@ tic
 % Load the frequency bin edges from the search parameter file for bin X.
 simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test3/searchParams_Nyquist';
 simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test4';
-estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test4/Results/origin';
+estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test4/Results';
 % Load the source parameters across the entire frequency range
-load([simDataDir,filesep,'GWBsimDataSKASrlz1Nrlz3.mat'],'omega',...
+load([simDataDir,filesep,'GWBsimDataSKASrlz1Nrlz3_1.mat'],'omega',...
     'timingResiduals_tmp', 'yr','snr_chr','simParams');
 
 %% setting fig axis
@@ -121,13 +121,13 @@ hold off
 xlabel('SNR');
 ylabel('Frequency');
 legend('True','Uni-Estimated','Location','northeast');
-title('Investigation 4')
-saveas(gcf,'Inves4','png');
-savefig('Inves4.fig')
+title('Investigation 4 subtraction 1')
+saveas(gcf,'Inves4_1','png');
+savefig('Inves4_1.fig')
 
 %% subtract src
-filename = 'GWBsimDataSKASrlz1Nrlz3.mat';% simulation data file name
-outFile = 'GWBsimDataSKASrlz1Nrlz3_1.mat';% post processed out file name
-subtractSrc(estTimRes,simDataDir,filename,outFile);
+filename = 'GWBsimDataSKASrlz1Nrlz3_1.mat';% simulation data file name
+outfilename = 'GWBsimDataSKASrlz1Nrlz3_2.mat';% post processed out file name
+subtractSrc(estTimRes,simDataDir,filename,outfilename);
 
 toc
