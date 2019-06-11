@@ -1,13 +1,16 @@
-function []=subtractSrc(estTimRes,simDir,infilename,outfilename)
-% Source subtract function
-% []=subtractSrc(estTimRes,simDir,filename,outFilename)
+function []=subtractSrc(estTimRes,DataDir,inputFile,outputFile)
+% Source subtraction script
 % subtract the estimated timing residuals from simulation data and create 
-% a new data file with the same name
+% a new data file.
 
 % QYQ 2019.6.9
 
-load([simDir,filesep,infilename]);
+% clear;
+% timResFile = 'estTimRes.mat';
+% load(timResFile);
+load([DataDir,filesep,inputFile])
 timingResiduals = timingResiduals - estTimRes;
-% disp("File name is "+infilename);
-% disp("outFile is "+outfilename);
-save(outfilename);
+disp("Input file name "+inputFile);
+disp("Output file name "+outputFile);
+save(outputFile, '-regexp',...
+     '^(?!(estTimRes|DataDir|inputFile|outputFile)$).');% save all the variables except estTimRes

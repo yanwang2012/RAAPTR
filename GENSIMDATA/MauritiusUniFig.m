@@ -6,7 +6,7 @@ simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test3/
 simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test4';
 estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test4/Results';
 % Load the source parameters across the entire frequency range
-load([simDataDir,filesep,'GWBsimDataSKASrlz1Nrlz3_1.mat'],'omega',...
+load([simDataDir,filesep,'GWBsimDataSKASrlz1Nrlz3_2.mat'],'omega',...
     'timingResiduals_tmp', 'yr','snr_chr','simParams');
 
 %% setting fig axis
@@ -121,13 +121,14 @@ hold off
 xlabel('SNR');
 ylabel('Frequency');
 legend('True','Uni-Estimated','Location','northeast');
-title('Investigation 4 subtraction 1')
-saveas(gcf,'Inves4_1','png');
-savefig('Inves4_1.fig')
+title('Investigation 4 subtracition 2')
+saveas(gcf,'Inves4_2','png');
+savefig('Inves4_2.fig')
+save('estTimRes3.mat','estTimRes');
 
-%% subtract src
-filename = 'GWBsimDataSKASrlz1Nrlz3_1.mat';% simulation data file name
-outfilename = 'GWBsimDataSKASrlz1Nrlz3_2.mat';% post processed out file name
-subtractSrc(estTimRes,simDataDir,filename,outfilename);
+%% subtract estimated source
+inputFileName = 'GWBsimDataSKASrlz1Nrlz3_2.mat';
+outputFileName = 'GWBsimDataSKASrlz1Nrlz3_3.mat';
+subtractSrc(estTimRes,simDataDir,inputFileName,outputFileName);
 
 toc
