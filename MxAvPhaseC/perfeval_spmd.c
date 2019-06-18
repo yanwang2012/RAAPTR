@@ -29,7 +29,7 @@ defining the search interval along a particular parameter for PSO.
 ## Format of input data file
 See the documentation for the simulation data generation code.
 */
-struct fitFuncParams * file2ffparam(char *);
+struct fitFuncParams * file2ffparam(char *); //decleration
 
 int main(int argc, char *argv[]){
 	/* General purpose variables */
