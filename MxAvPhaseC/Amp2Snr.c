@@ -18,12 +18,11 @@ This function reads the amplitude stored in estimated file and convert it back
 to SNR, mean while returns the timing residuals of the estimated source.
 */
 
-struct estParams {
+struct srcParams {
   double Np;
   double N;
   double alpha;
   double delta;
   double omega;
   double phi0;
-}estparams;
-void Amp2SNR(struct *)
+}srcparams;
