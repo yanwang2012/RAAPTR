@@ -2,3 +2,4 @@
 *.o
 *.out
 .vscode
+makefile_omp_local_QYQ
