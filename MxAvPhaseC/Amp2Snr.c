@@ -37,5 +37,4 @@ void Amp2Snr(char *inputFileName)
     {
         fprintf(stdout, "Error closing file %s \n", inputFileName);
     }
-    
 }
