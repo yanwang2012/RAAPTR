@@ -1,4 +1,4 @@
-#include "hdf5.h"
+#include "hdf5_hl.h"
 #include "gslhdf5_io.h"
 #include "perfeval_omp.h"
 #include <gsl/gsl_vector.h>
