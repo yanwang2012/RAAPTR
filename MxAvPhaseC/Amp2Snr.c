@@ -1,3 +1,4 @@
+#include "Amp2Snr.h"
 #include "hdf5_hl.h"
 #include "gslhdf5_io.h"
 #include "perfeval_omp.h"
@@ -16,8 +17,13 @@
 This function reads the estimated file and calculate the corresponding SNR and timing residual of the estimated source. 
 Then subtract the timing residual from it and creat a new input data file.
  */
-void Amp2Snr(char *inputFileName)
-{
+int main(char *arg[]){
+    fprintf(stdout,"The input file is:%s",arg[0]);
+    Amp2Snr(arg[0]);
+    return 0;
+}
+
+void Amp2Snr(char *inputFileName){
 
     // load the .hdf5 file
     herr_t status;
