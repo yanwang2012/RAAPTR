@@ -9,17 +9,20 @@
 #include <time.h>
 #include <math.h>
 /*! \file
-/brief Subtract timing residuals of estimated source from input data and creat a new input data file.
+/brief Subtract timing residual of the estimated source from output data and creat a new input data file.
 
 \author Yiqian Qian
  */
 /*!
-This function reads the estimated file and calculate the corresponding SNR and timing residual of the estimated source. 
-Then subtract the timing residual from it and creat a new input data file.
+This function calculates the estimated timing residual of the estimated source and 
+Then subtract the timing residual from it to creat a new input data file.
  */
-int main(char *arg[]){
-    fprintf(stdout,"The input file is:%s",arg[0]);
-    Amp2Snr(arg[0]);
+int main(int argc, char *OutFile[]){
+   // char *whatisthis = OutFile[0];
+    char *Filename = OutFile[1];
+    printf("Output file is: %s \n", Filename);
+   // fprintf(stdout,"What is adress 0 %s",whatisthis);
+   Amp2Snr(Filename);
     return 0;
 }
 
