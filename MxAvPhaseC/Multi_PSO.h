@@ -6,4 +6,4 @@
 /*! \file
 \brief Header file for Amp2Snr().
 */
-void Amp2Snr(char *inputFileName);
+struct llr_pso_params * Amp2Snr(char *inputFileName);
