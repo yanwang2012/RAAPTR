@@ -1,30 +1,44 @@
 #include "Multi_PSO.h"
-#include "hdf5_hl.h"
-#include "gslhdf5_io.h"
+#include "maxphase.h"
+#include "LLR_Mp_Av.h"
+#include "ptapso.h"
 #include "perfeval_omp.h"
+#include "hdf5.h"
+#include "gslhdf5_io.h"
 #include <gsl/gsl_vector.h>
-#include <gsl/gsl_matrix.h>
+#include <sys/stat.h>
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
-#include <math.h>
-/*! \file
-/brief Post processing program for estimated output files from perfeval_omp().
 
-\author Yiqian Qian
- */
-/*!
-This function will call perfeval_omp() as many times as user want or meet the threshold set by user to subtract timing residual of 
-estimated source recursively untill meets the user's demand.
- */
+/*! \file
+\brief Run perfeval_spmd() on an input data file.
+
+\author Soumya D. Mohanty
+
+# Usage
+perfeval_spmd.out search_param_file input_data_dir output_file mp_av_select
+- search_param_file: Full path to a .hdf5 file containing the parameters for the run.
+- input_file: Full path to the  the .hdf5 input file to analysis.
+- output_file: Full path to the output file that will be created.
+- mp_av_select: 'maxPhase' or 'avPhase' algorithm
+
+## Format of search_param_file
+This is a .hdf5 file. It should contain a dataset called 'xmaxmin'.
+This is a two column matrix. Each row contains the minimum and maximum values, in that order,
+defining the search interval along a particular parameter for PSO.
+
+## Format of input data file
+See the documentation for the simulation data generation code.
+*/
+struct fitFuncParams * file2ffparam(char *); //decleration
+
 int main(int argc, char *argv[]){
-    // will be in a for loop
-    /* General purpose variables */
-	size_t lpc1, lpc2, lpc3;
+	/* General purpose variables */
+	size_t lpc1, lpc2, lpc3, ite;
     int stat;
 
-	if (argc != 5){
-		fprintf(stdout,"Usage: %s parameter_file_path input_file_path output_file_path mp_av_select\n", argv[0]);
+	if (argc != 6){
+		fprintf(stdout,"Usage: %s parameter_file_path input_file_path output_file_path mp_av_select number_of_iterations\n", argv[0]);
 		return 1;
 	}
 	/* Full path to search parameter file */
@@ -38,6 +52,14 @@ int main(int argc, char *argv[]){
 	/* Which algorithm to use */
 	char *mp_av_select = argv[4];
 
+    /* Number of iterations */
+    size_t num_ite = argv[5];
+
+    for (ite = 0; ite < num_ite; ite++)
+    {
+        /* Multi PSO Process */
+    
+    
 	/* Error handling off */
 	gsl_error_handler_t *old_handler = gsl_set_error_handler_off ();
 
@@ -56,56 +78,18 @@ int main(int argc, char *argv[]){
 	Deallocate storage
 	-----------------------------*/
 	ffparam_free(ffp);
+    }
+	
+	/*--------------------------
+	Add manipulations for output files here
+	---------------------------- */
 
-    // new part should be done
-    /* This part should gather the information fo estimated source and calculate its corresponding timing residual
-    and subtract it from the simulation data, then creat a new input data file pass to PSO(upper part). 
-     */
-   // char *whatisthis = OutFile[0];
-    char *Filename = argv[1];
-    printf("Output file is: %s \n", Filename);
-   // fprintf(stdout,"What is adress 0 %s",whatisthis);
-   struct llo_pso_params * llp;
-   llp = Amp2Snr(Filename);
-   printf("Year is %10.5f",llp->yr);
 
-   
-   /* Everyting excuted successfully */
-    return 0;
+
+	/* Everything executed successfully */
+	return 0;
 }
 
-struct llr_pso_params * Amp2Snr(char *inputFileName){
-
-    // load the .hdf5 file
-    herr_t status;
-    hid_t inFile = H5Fopen(inputFileName, H5F_ACC_RDONLY, H5P_DEFAULT);
-    if (inFile < 0)
-    {
-        fprintf(stdout, "Error opening file\n");
-        abort();
-    }
-    //Remaining data loads into special parameter structure
-    size_t Np = (size_t)hdf52dscalar(inFile,"Np");
-	size_t N = (size_t)hdf52dscalar(inFile,"N");
-    struct llr_pso_params *llp = llrparam_alloc((unsigned int) N, (unsigned int) Np);
-    llp = loadfile2llrparam(inFile);
-
-    //Close file
-    status = H5Fclose(inFile);
-    if (status < 0)
-    {
-        fprintf(stdout, "Error closing file %s \n", inputFileName);
-    }
-
-    //Wrap up
-	gsl_vector_free(yr_Pr);
-	gsl_matrix_free(trPr);
-	gsl_vector_free(sd_Pr);
-	gsl_vector_free(alphaP_Pr);
-	gsl_vector_free(deltaP_Pr);
-
-    return llp;
-}
 
 struct fitFuncParams * file2ffparam(char *srchParamsFile){
 
@@ -138,4 +122,8 @@ struct fitFuncParams * file2ffparam(char *srchParamsFile){
 	gsl_matrix_free(xmaxmin);
 
 	return ffp;
+}
+
+struct estSrcParams * Amp2SNR(char *){
+	
 }
