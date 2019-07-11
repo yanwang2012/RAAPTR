@@ -52,9 +52,9 @@ int main(int argc, char *argv[]){
 	char *mp_av_select = argv[4];
 
     /* Number of iterations */
-    size_t num_ite = argv[5];
-
-    for (ite = 0; ite < num_ite; ite++)
+    char *num_ite = argv[5];
+	printf("Number of iteration is: %s\n",num_ite);
+    for (ite = 0; ite < *num_ite; ite++)
     {
         /* Multi PSO Process */
     
