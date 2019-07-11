@@ -16,11 +16,12 @@
 \author Soumya D. Mohanty
 
 # Usage
-perfeval_spmd.out search_param_file input_data_dir output_file mp_av_select
+Multi_PSO.exe search_param_file input_data_dir output_file mp_av_select number_of_iteration
 - search_param_file: Full path to a .hdf5 file containing the parameters for the run.
 - input_file: Full path to the  the .hdf5 input file to analysis.
 - output_file: Full path to the output file that will be created.
 - mp_av_select: 'maxPhase' or 'avPhase' algorithm
+- number_of_iteration: An integer number describes how many times you want pso to run.
 
 ## Format of search_param_file
 This is a .hdf5 file. It should contain a dataset called 'xmaxmin'.
@@ -34,8 +35,6 @@ See the documentation for the simulation data generation code.
 int main(int argc, char *argv[]){
 	/* General purpose variables */
 	size_t lpc1, lpc2, lpc3, ite;
-    int stat;
-
 	if (argc != 6){
 		fprintf(stdout,"Usage: %s parameter_file_path input_file_path output_file_path mp_av_select number_of_iterations\n", argv[0]);
 		return 1;
@@ -43,6 +42,8 @@ int main(int argc, char *argv[]){
 	/* Full path to search parameter file */
 	char *srchParamsFile = argv[1];
 	/* Full path to input file */
+	printf("First argument is:%s\n",srchParamsFile);
+
 	char *inputFileName = argv[2];
 
 	/* Path to output file */
@@ -52,9 +53,9 @@ int main(int argc, char *argv[]){
 	char *mp_av_select = argv[4];
 
     /* Number of iterations */
-    char *num_ite = argv[5];
-	printf("Number of iteration is: %s\n",num_ite);
-    for (ite = 0; ite < *num_ite; ite++)
+    int num_ite = atoi(argv[5]); // transfer char to integer
+	printf("Number of iteration is: %d\n", num_ite);
+    for (ite = 1; ite < num_ite; ite++)
     {
         /* Multi PSO Process */
     
