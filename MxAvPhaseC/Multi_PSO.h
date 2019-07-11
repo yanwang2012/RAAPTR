@@ -7,7 +7,14 @@
 \brief Header file for Amp2Snr().
 */
 struct estSrcParams{
-
+    double alpha;
+    double delta;
+    double omega;
+    double phi0;
+    double Amp;
+    double iota;
+    double thetaN;
 };
 
-struct estSrcParams(char *);
+struct estSrcParams * file2Srcparam(char *);
+struct fitFuncParams * file2ffparam(char *);

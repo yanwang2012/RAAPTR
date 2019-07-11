@@ -1,18 +1,18 @@
-# Makefile
+# Makefile for Multi_PSO
 # Yiqian-Qian 06/24/2019.
 
-OBJ = Amp2Snr.o perfeval_omp.o  LLR_Mp_Av.o  maxphaseutils.o ptapso.o gslhdf5_io.o
+OBJ = Multi_PSO.o perfeval_omp.o  LLR_Mp_Av.o  maxphaseutils.o ptapso.o gslhdf5_io.o
 CC = gcc-9 -O3 -fopenmp
 GSLFLAGS :=  /usr/local/Cellar/gsl/2.5/include
 GSLLIBS := /usr/local/Cellar/gsl/2.5/lib
 HDF5FLAGS := /usr/local/Cellar/hdf5/1.10.5_1/include
 HDF5LIBS := /usr/local/Cellar/hdf5/1.10.5_1/lib
 
-Amp2Snr.exe: $(OBJ)
-	$(CC) $(OBJ)  -L$(HDF5LIBS) -lhdf5 -lhdf5_hl -lz -L$(GSLLIBS) -lm -lgsl -lgslcblas -o Amp2Snr.exe
+Multi_PSO.exe: $(OBJ)
+	$(CC) $(OBJ)  -L$(HDF5LIBS) -lhdf5 -lhdf5_hl -lz -L$(GSLLIBS) -lm -lgsl -lgslcblas -o Multi_PSO.exe
 
-Amp2Snr.o: Amp2Snr.c
-	$(CC) -c  -I$(HDF5FLAGS) -I$(GSLFLAGS) Amp2Snr.c
+Multi_PSO.o: Multi_PSO.c
+	$(CC) -c  -I$(HDF5FLAGS) -I$(GSLFLAGS) Multi_PSO.c
 
 gslhdf5_io.o: gslhdf5_io.c
 	$(CC) -c -I$(HDF5FLAGS) -I$(GSLFLAGS) gslhdf5_io.c

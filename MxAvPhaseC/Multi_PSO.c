@@ -30,8 +30,7 @@ defining the search interval along a particular parameter for PSO.
 ## Format of input data file
 See the documentation for the simulation data generation code.
 */
-struct fitFuncParams * file2ffparam(char *); //decleration
-
+ 
 int main(int argc, char *argv[]){
 	/* General purpose variables */
 	size_t lpc1, lpc2, lpc3, ite;
@@ -78,14 +77,14 @@ int main(int argc, char *argv[]){
 	Deallocate storage
 	-----------------------------*/
 	ffparam_free(ffp);
-    }
-	
-	/*--------------------------
-	Add manipulations for output files here
-	---------------------------- */
 
+	/*------------------------------------------
+	Transfer output files to estSrcParams struct
+	--------------------------------------------*/
+	struct estSrcParams *srcp;
+	srcp = file2Srcparam(outputFileName);
 
-
+	}
 	/* Everything executed successfully */
 	return 0;
 }
@@ -124,6 +123,13 @@ struct fitFuncParams * file2ffparam(char *srchParamsFile){
 	return ffp;
 }
 
-struct estSrcParams * Amp2SNR(char *){
-	
+struct estSrcParams * file2Srcparam(char *outputFileName){
+	herr_t status;
+	hid_t SrcPar = H5Fopen(outputFileName, H5F_ACC_RDONLY, H5P_DEFAULT);
+	if (SrcPar < 0)
+	{
+		printf("Error opening file %s\n", outputFileName);
+	}
+	struct estSrcParams *srcp;// need to be modified
+	return srcp;
 }
