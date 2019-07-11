@@ -34,7 +34,7 @@ See the documentation for the simulation data generation code.
  
 int main(int argc, char *argv[]){
 	/* General purpose variables */
-	size_t lpc1, lpc2, lpc3, ite;
+	size_t lpc1, lpc2, lpc3;
 	if (argc != 6){
 		fprintf(stdout,"Usage: %s parameter_file_path input_file_path output_file_path mp_av_select number_of_iterations\n", argv[0]);
 		return 1;
@@ -42,7 +42,7 @@ int main(int argc, char *argv[]){
 	/* Full path to search parameter file */
 	char *srchParamsFile = argv[1];
 	/* Full path to input file */
-	printf("First argument is:%s\n",srchParamsFile);
+	// printf("First argument is:%s\n",srchParamsFile);
 
 	char *inputFileName = argv[2];
 
@@ -54,8 +54,8 @@ int main(int argc, char *argv[]){
 
     /* Number of iterations */
     int num_ite = atoi(argv[5]); // transfer char to integer
-	printf("Number of iteration is: %d\n", num_ite);
-    for (ite = 1; ite < num_ite; ite++)
+	// printf("Number of iteration is: %d\n", num_ite);
+    for (int ite = 1; ite < num_ite; ite++)
     {
         /* Multi PSO Process */
     
