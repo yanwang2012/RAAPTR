@@ -102,8 +102,10 @@ ybin_low = repmat(ybin_low,length(binSNR),1);
 %% plot the entire map
 figure(2)
 yyaxis left
-semilogy(log10(x),y,'o',log10(sx),sy,'*','MarkerSize',10);
+loglog(sx,sy,'*','MarkerSize',10);
 %plot(x,y,'o',sx,sy,'*');
+% semilogy(x,y,'o',sx,sy,'*');
+% plot grids
 %hold on
 % for j=1:10
 %     semilogy(binSNR,ybin_up(:,j),'b-');

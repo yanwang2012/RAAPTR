@@ -2,12 +2,12 @@ clear;
 tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
-simParamsDir = '~/Research/PulsarTiming/SimDATA/Mauritius/uniform search params';
-simDataDir = '~/Research/PulsarTiming/SimDATA/Mauritius/GWBsimDataSKA';
-estDataDir = '~/Research/PulsarTiming/SimDATA/Mauritius/Mauritius_uni_results_mat';
+simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test3/searchParams_Nyquist';
+simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test4';
+estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test4/Results';
 % Load the source parameters across the entire frequency range
-load([simDataDir,filesep,'GWBsimDataSKASrlz1Nrlz9.mat'],'omega',...
-     'timingResiduals_tmp', 'yr','snr_chr','simParams');
+load([simDataDir,filesep,'GWBsimDataSKASrlz1Nrlz3_2.mat'],'omega',...
+    'timingResiduals_tmp', 'yr','snr_chr','simParams');
 
 %% setting fig axis
 y = [];
@@ -20,11 +20,12 @@ sx = [];
 
 %% reading the files
 inParamsList = dir([simParamsDir,filesep,'*.mat']);
-inDataList = dir([estDataDir,filesep,'*Nrlz9.mat']);
+inDataList = dir([estDataDir,filesep,'*Nrlz3.mat']);
 inParamNames = {};
 inDataNames = {};
+N = length(inParamsList);% number of files
 % get the name and sort it
-for n = 1:10
+for n = 1:N
     inParamNames = [inParamNames inParamsList(n).name];
     inDataNames = [inDataNames inDataList(n).name];
 end
@@ -32,7 +33,7 @@ inParamNames = sort_nat(inParamNames);
 inDataNames = sort_nat(inDataNames);
 
 %% data pre-processing
-for i = 1:length(inDataList)
+for i = 1:N
     % load bands and estimated data
     load([simParamsDir,filesep,char(inParamNames(i))]);
     load([estDataDir,filesep,char(inDataNames(i))],'bestRealLoc');
@@ -59,10 +60,11 @@ for i = 1:length(inDataList)
     %path_to_simulationData = '~/Research/PulsarTiming/SimDATA/Mauritius/GWBsimDataSKA/GWBsimDataSKASrlz1Nrlz9.mat';
     %     path_to_pulsar_catalog = 'survey_ska.mat';
     phiI = bestRealLoc(8:1007);% esimated pulsar phases
-    estFreq = bestRealLoc(3)/(2*pi*365*24*3600);
+    estFreq = bestRealLoc(3)/(2*pi*365*24*3600);% convert unit from yr-1 to Hz
     [sourceParams]=ColSrcParams(path_to_estimatedData);
     %     [pulsarParams]=ColPsrParams(path_to_pulsar_catalog);
-    estSNR = Amp2Snr(sourceParams,simParams,phiI,yr);
+    %disp(sourceParams.Amp)
+    [estSNR,estTimRes] = Amp2Snr(sourceParams,simParams,phiI,yr);
     sy = [sy estFreq];
     sx = [sx estSNR];
     %%
@@ -99,21 +101,34 @@ ybin_up = ybin_up/(2*pi*365*24*3600);
 ybin_up = repmat(ybin_up,length(binSNR),1);% stack itself vertically to broadcast to the dimension of x
 ybin_low = ybin_low/(2*pi*365*24*3600);
 ybin_low = repmat(ybin_low,length(binSNR),1);
+
 %% plot the entire map
 figure(2)
-yyaxis right
-semilogy(log10(x),y,'o',log10(sx),sy,'d','MarkerSize',10);
-%plot(x,y,'o',sx,sy,'s')
-%hold on
-% for j=1:10
-%     %semilogy(binSNR,ybin_up(:,j),'b-');
-%     plot(binSNR,ybin_up(:,j),'b-');
-%     %semilogy(binSNR,ybin_low(:,j),'b--');
-%     plot(binSNR,ybin_low(:,j),'b--');
-% end
+%yyaxis right
+%loglog(x,y,'o',sx,sy,'kd','MarkerSize',10);
+plot(x,y,'o',sx,sy,'s')
+% disp(sy)
+% plot the grid
+hold on
+for j=1:N
+    %semilogy(binSNR,ybin_up(:,j),'b-');
+    plot(binSNR,ybin_up(:,j),'b-');
+    %semilogy(binSNR,ybin_low(:,j),'b--');
+    plot(binSNR,ybin_low(:,j),'b--');
+end
+hold off
+
 xlabel('SNR');
 ylabel('Frequency');
-legend('True','Log-Estimated','Uni-Estimated','Location','northwest');
-title('Log-Log Axis SNR')
-saveas(gcf,'Axis Log-Log SNR','png');
+legend('True','Uni-Estimated','Location','northeast');
+title('Investigation 4 subtracition 2')
+saveas(gcf,'Inves4_2','png');
+savefig('Inves4_2.fig')
+save('estTimRes3.mat','estTimRes');
+
+%% subtract estimated source
+inputFileName = 'GWBsimDataSKASrlz1Nrlz3_2.mat';
+outputFileName = 'GWBsimDataSKASrlz1Nrlz3_3.mat';
+subtractSrc(estTimRes,simDataDir,inputFileName,outputFileName);
+
 toc
