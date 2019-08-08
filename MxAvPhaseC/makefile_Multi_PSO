@@ -8,8 +8,8 @@ GSLLIBS := /usr/local/Cellar/gsl/2.5/lib
 HDF5FLAGS := /usr/local/Cellar/hdf5/1.10.5_1/include
 HDF5LIBS := /usr/local/Cellar/hdf5/1.10.5_1/lib
 
-Multi_PSO.exe: $(OBJ)
-	$(CC) $(OBJ)  -L$(HDF5LIBS) -lhdf5 -lhdf5_hl -lz -L$(GSLLIBS) -lm -lgsl -lgslcblas -o Multi_PSO.exe
+Multi_PSO.out: $(OBJ)
+	$(CC) $(OBJ)  -L$(HDF5LIBS) -lhdf5 -lhdf5_hl -lz -L$(GSLLIBS) -lm -lgsl -lgslcblas -o Multi_PSO.out
 
 Multi_PSO.o: Multi_PSO.c
 	$(CC) -c  -I$(HDF5FLAGS) -I$(GSLFLAGS) Multi_PSO.c
