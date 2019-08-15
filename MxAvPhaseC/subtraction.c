@@ -13,6 +13,7 @@
 
 \author Yiqian Qian.
 */
+
 struct estSrcParams * file2Srcparam(char *outputFileName){
 	herr_t status;
 	hid_t SrcPar = H5Fopen(outputFileName, H5F_ACC_RDONLY, H5P_DEFAULT);
@@ -20,6 +21,6 @@ struct estSrcParams * file2Srcparam(char *outputFileName){
 	{
 		printf("Error opening file %s\n", outputFileName);
 	}
-	struct estSrcParams *srcp; // need to be modified
+	struct estSrcParams *srcp;
 	return srcp;
 }
