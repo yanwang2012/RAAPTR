@@ -1,4 +1,4 @@
-#include "Multi_PSO.h"
+#include "subtraction.h"
 #include "maxphase.h"
 #include "LLR_Mp_Av.h"
 #include "ptapso.h"
@@ -11,9 +11,10 @@
 #include <string.h>
 
 /*! \file
-\brief Run perfeval_spmd() on an input data file.
+\brief Run perfeval_spmd() on an input data file for a specified 
+requirement by user.
 
-\author Soumya D. Mohanty
+\author Soumya D. Mohanty & Yiqian Qian.
 
 # Usage
 Multi_PSO.exe search_param_file input_data_dir output_file mp_av_select number_of_iteration
@@ -22,6 +23,7 @@ Multi_PSO.exe search_param_file input_data_dir output_file mp_av_select number_o
 - output_file: Full path to the output file that will be created.
 - mp_av_select: 'maxPhase' or 'avPhase' algorithm
 - number_of_iteration: An integer number describes how many times you want pso to run.
+- threshold: lowest snr can approach.
 
 ## Format of search_param_file
 This is a .hdf5 file. It should contain a dataset called 'xmaxmin'.
@@ -80,11 +82,10 @@ int main(int argc, char *argv[]){
 	ffparam_free(ffp);
 
 	/*------------------------------------------
-	Transfer output files to estSrcParams struct
+	Transfer output files to estSrcParams struct, need to be done.
 	--------------------------------------------*/
 	struct estSrcParams *srcp;
 	srcp = file2Srcparam(outputFileName);
-
 	}
 	/* Everything executed successfully */
 	return 0;
@@ -122,15 +123,4 @@ struct fitFuncParams * file2ffparam(char *srchParamsFile){
 	gsl_matrix_free(xmaxmin);
 
 	return ffp;
-}
-
-struct estSrcParams * file2Srcparam(char *outputFileName){
-	herr_t status;
-	hid_t SrcPar = H5Fopen(outputFileName, H5F_ACC_RDONLY, H5P_DEFAULT);
-	if (SrcPar < 0)
-	{
-		printf("Error opening file %s\n", outputFileName);
-	}
-	struct estSrcParams *srcp;// need to be modified
-	return srcp;
 }
