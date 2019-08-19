@@ -69,23 +69,24 @@ int main(int argc, char *argv[]){
 	struct fitFuncParams *ffp;
 	ffp = file2ffparam(srchParamsFile);
 
-	/* Analyze input file*/
-	fprintf(stdout, "Analyzing file %s \n",inputFileName);
-	fprintf(stdout, "Output will be stored in %s\n",outputFileName);
-	fprintf(stdout,"******************************************\n");
-
-    perfeval_omp(ffp, inputFileName, outputFileName, mp_av_select);
-
-	/* ----------------------------
-	Deallocate storage
-	-----------------------------*/
-	ffparam_free(ffp);
-
 	/*------------------------------------------
 	Transfer output files to estSrcParams struct, need to be done.
 	--------------------------------------------*/
 	struct estSrcParams *srcp;
 	srcp = file2Srcparam(outputFileName);
+	
+
+	/* Analyze input file*/
+	fprintf(stdout, "Analyzing file %s \n",inputFileName);
+	fprintf(stdout, "Output will be stored in %s\n",outputFileName);
+	fprintf(stdout,"******************************************\n");
+	/*Main function. Will be called several times according to user specified requirement.*/
+    perfeval_omp(ffp, inputFileName, outputFileName, mp_av_select);
+	
+	/* ----------------------------
+	Deallocate storage
+	-----------------------------*/
+	ffparam_free(ffp);
 	}
 	/* Everything executed successfully */
 	return 0;
