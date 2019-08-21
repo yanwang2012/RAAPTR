@@ -1,3 +1,4 @@
+#include "backcomp.h"
 #include "maxphase.h"
 #include "LLR_Mp_Av.h"
 #include "ptapso.h"
@@ -122,6 +123,7 @@ void perfeval_omp(struct fitFuncParams *ffp, /*!< Parameters for the fitness fun
 	status = H5Fclose(inFile);
 	if(status < 0){
 		fprintf(stdout,"Error closing file %s \n", inputFileName);
+		abort();
 	}
 
 	//Load special parameter struct into fitness function struct	
@@ -374,7 +376,33 @@ struct  llr_pso_params * loadfile2llrparam(hid_t inFile){
 	
 	double **s;
 	
-	gsl_vector *yr_Pr = hdf52gslvector(inFile,"yr");
+	//struct llr_pso_params *llp = (struct llr_pso_params *)malloc(sizeof(struct llr_pso_params)); 
+	size_t Np = (size_t)hdf52dscalar(inFile,"Np");
+	size_t N = (size_t)hdf52dscalar(inFile,"N");
+
+	gsl_matrix *yr_Pr = hdf52gslmatrix(inFile,"yr");
+
+	// Backward compatibility with older data files
+	if (yr_Pr == NULL)
+	{
+		/* yr may have been stored as vector (older data file).
+		Try reading it in as a vector. */
+		gsl_vector *yr_Pr_tmp = hdf52gslvector(inFile,"yr");
+		if (yr_Pr_tmp == NULL)
+		{
+			fprintf(stdout,"Something wrong with loading yr\n");
+			abort();
+		}
+
+		//Copy vector yr to matrix 
+        yr_Pr = raaptr_vec2mat(yr_Pr_tmp,Np);
+		if(yr_Pr == NULL){
+			fprintf(stdout,"Could not complete backward compatibility\n");
+			abort();
+		}
+		gsl_vector_free(yr_Pr_tmp);
+	}
+	
 	
 	gsl_matrix *trPr = hdf52gslmatrix(inFile,"timingResiduals");
 
@@ -386,9 +414,6 @@ struct  llr_pso_params * loadfile2llrparam(hid_t inFile){
 	
 	/* Load fitness function parameter structure */
 	size_t lpc1, lpc2;
-	//struct llr_pso_params *llp = (struct llr_pso_params *)malloc(sizeof(struct llr_pso_params)); 
-	size_t Np = (size_t)hdf52dscalar(inFile,"Np");
-	size_t N = (size_t)hdf52dscalar(inFile,"N");
 	struct llr_pso_params *llp = llrparam_alloc((unsigned int) N, (unsigned int) Np);
 	// llp->Np = Np;
 	// llp->N = N;
@@ -402,8 +427,10 @@ struct  llr_pso_params * loadfile2llrparam(hid_t inFile){
 		llp->deltaP[lpc1] = gsl_vector_get(deltaP_Pr,lpc1);
 	}
 	// llp->yr = (double *) malloc(N*sizeof(double));
-	for (lpc1 = 0; lpc1 < N; lpc1++){
-		llp->yr[lpc1] = gsl_vector_get(yr_Pr,lpc1);
+	for (lpc1 = 0; lpc1 < Np; lpc1++){
+		for (lpc2 = 0; lpc2 < N; lpc2++){
+			llp->yr[lpc1][lpc2] = gsl_matrix_get(yr_Pr,lpc1,lpc2);
+		}
 	}
 
 	/* load timing residuals into fitness function param struct */
@@ -412,15 +439,15 @@ struct  llr_pso_params * loadfile2llrparam(hid_t inFile){
 	// for (lpc1 = 0; lpc1 < Np; lpc1++){
 	// 	s[lpc1] = (double *) malloc(N*sizeof(double));
 	// }
-	for (lpc2 = 0; lpc2 < Np; lpc2++){
-		for (lpc1 = 0; lpc1 < N; lpc1++){
-			llp->s[lpc2][lpc1] = gsl_matrix_get(trPr, lpc2, lpc1);
+	for (lpc1 = 0; lpc1 < Np; lpc1++){
+		for (lpc2 = 0; lpc2 < N; lpc2++){
+			llp->s[lpc1][lpc2] = gsl_matrix_get(trPr, lpc1, lpc2);
 		}
 	}
 	// llp->s = s;
 	
 	//Wrap up
-	gsl_vector_free(yr_Pr); 
+	gsl_matrix_free(yr_Pr); 
 	gsl_matrix_free(trPr); 
 	gsl_vector_free(sd_Pr);
 	gsl_vector_free(alphaP_Pr);

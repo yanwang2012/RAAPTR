@@ -26,6 +26,9 @@ struct fitFuncParams * ffparam_alloc(size_t nDim /*!> Number of dimensions */){
 
 /*!
 Deallocate a fitness function parameter structure.
+Any special parameter structure contained in the 
+fitness function parameter structure must be freed 
+before calling this function.
 */
 void ffparam_free(struct fitFuncParams *ffp){
 	if (ffp == NULL){

@@ -45,15 +45,20 @@ inFileInfo = rmfield(inFileInfo,'pname');
 
 %Generate output file name
 [inFilePath,inFileName,~] = fileparts(inFile);
+if ~isempty(inFilePath)
+    inFilePath = [inFilePath,filesep];
+else
+    inFilePath = '';
+end
 if nargin < 2
     %default file name
-    outFile = [inFilePath,filesep,inFileName,'.hdf5'];
+    outFile = [inFilePath,inFileName,'.hdf5'];
 else
     outFile = varargin{1};
 end
 
 %Temporaty .mat file
-outFileTmp = [inFilePath,filesep,inFileName,'_tmp.mat'];
+outFileTmp = [inFilePath,inFileName,'_tmp.mat'];
 save(outFileTmp,'-struct','inFileInfo');
 
 %Convert temporary file to HDF5

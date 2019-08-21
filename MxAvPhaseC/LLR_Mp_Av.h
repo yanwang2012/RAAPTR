@@ -24,8 +24,8 @@ struct llr_pso_params{
 	double *alphaP;
 	/*!  (Np,1), declination, in radian */
 	double *deltaP;
-	/*! (N,1), observation epoch, in year */
-	double *yr;
+	/*! (Np,N), observation epoch, in year */
+	double **yr;
 	/*! Estimated phases (1, Np) */
 	double *phiI;
 };
