@@ -1,7 +1,7 @@
 # makefile for MaxPhase project.  Mar 17, 2016
 
 OBJ = perfeval_spmd.o perfeval_omp.o  LLR_Mp_Av.o  maxphaseutils.o ptapso.o gslhdf5_io.o
-# CC = gcc -O3
+CC = gcc -O3
 GSLFLAGS :=  $(TACC_GSL_INC)
 GSLLIBS := $(TACC_GSL_LIB)
 HDF5FLAGS := $(TACC_HDF5_INC)

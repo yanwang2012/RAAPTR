@@ -144,7 +144,7 @@ char ** listfileswext (const char *ext, const char *dirName, size_t *nFiles, siz
   if (dp != NULL){
       while ((ep = readdir(dp))){
 	        /*printf("Checking file %s\n",ep->d_name);*/
-			if(!fnmatch(pattern, ep->d_name, (FNM_FILE_NAME|FNM_PERIOD))){
+			if(!fnmatch(pattern, ep->d_name, (FNM_PATHNAME|FNM_PERIOD))){
 				/* Match. Increment counter */
 				/*printf("found match with pattern %s\n",pattern);*/
 				countValidFiles++;
@@ -168,7 +168,7 @@ char ** listfileswext (const char *ext, const char *dirName, size_t *nFiles, siz
   dp = opendir(dirName);
   if (dp != NULL){
       while ((ep = readdir(dp))){
-			if(!fnmatch(pattern, ep->d_name, (FNM_FILE_NAME|FNM_PERIOD))){
+			if(!fnmatch(pattern, ep->d_name, (FNM_PATHNAME|FNM_PERIOD))){
 				fileList[countValidFiles] = (char *)malloc((strlen(ep->d_name)+1)*sizeof(char));
 				strcpy(fileList[countValidFiles],ep->d_name);
 				/* Match. Increment counter */
