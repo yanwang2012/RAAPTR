@@ -1,14 +1,14 @@
 # makefile for MaxPhase project.  Mar 17, 2016
 
 OBJ = perfeval_spmd.o perfeval_omp.o  LLR_Mp_Av.o  maxphaseutils.o ptapso.o gslhdf5_io.o
-CC = gcc -O3 -fopenmp
+CC = gcc -O3
 GSLFLAGS :=  /Usr/local/include
 GSLLIBS := /Usr/local/lib
 HDF5FLAGS := /opt/local/include
 HDF5LIBS := /opt/local/lib
 
 perfeval_spmd.out: $(OBJ)
-	$(CC)  $(OBJ) -L$(HDF5LIBS) -lhdf5 -lhdf5_hl -lz -L$(GSLLIBS) -lm -lgsl -lgslcblas -o perfeval_spmd.out
+	$(CC) -fopenmp $(OBJ) -L$(HDF5LIBS) -lhdf5 -lhdf5_hl -lz -L$(GSLLIBS) -lm -lgsl -lgslcblas -o perfeval_spmd.out
 
 perfeval_spmd.o: perfeval_spmd.c
 	$(CC) -c  -I$(HDF5FLAGS) -I$(GSLFLAGS) perfeval_spmd.c
