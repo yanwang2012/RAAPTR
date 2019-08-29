@@ -17,7 +17,7 @@ gslhdf5_io.o: gslhdf5_io.c
 	$(CC) -c -I$(HDF5FLAGS) -I$(GSLFLAGS) gslhdf5_io.c
 
 perfeval_omp.o: perfeval_omp.c
-	$(CC) -c -I$(HDF5FLAGS) -I$(GSLFLAGS) perfeval_omp.c
+	$(CC) -c -fopenmp -I$(HDF5FLAGS) -I$(GSLFLAGS) perfeval_omp.c
 
 LLR_Mp_Av.o: LLR_Mp_Av.c
 	$(CC) -c LLR_Mp_Av.c -I$(GSLFLAGS)
