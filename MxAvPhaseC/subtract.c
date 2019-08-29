@@ -14,14 +14,6 @@
 \author Yiqian Qian.
 */
 
-int main(int argc, char *argv[]){
-	char *outputFileName = argv[0];
-	struct estSrcParams * srcp;
-	srcp = estSrcParams(outputFileName);
-	printParam(srcp);
-	return 0;
-}
-
 struct estSrcParams * file2Srcparam(char *outputFileName){
 	herr_t status;
 	int size1;
@@ -33,6 +25,7 @@ struct estSrcParams * file2Srcparam(char *outputFileName){
 	struct estSrcParams *srcp;
 	gsl_vector * bestRealLoc = hdf52gslvector(SrcPar, "bestRealLoc");
 	size_t nDim = sizeof(bestRealLoc)/sizeof(bestRealLoc[0]);
+	printf("nDim: %d",nDim);
 	srcp->alpha = gsl_vector_get(bestRealLoc,0);
 	srcp->delta = gsl_vector_get(bestRealLoc,1);
 	srcp->omega = gsl_vector_get(bestRealLoc,2);
@@ -41,10 +34,10 @@ struct estSrcParams * file2Srcparam(char *outputFileName){
 	srcp->iota = gsl_vector_get(bestRealLoc,5);
 	srcp->thetaN = gsl_vector_get(bestRealLoc,6);
 	srcp->psrPhase = gsl_vector_calloc(nDim-7); // initialize dimensionality of pulsar phase.
-	int lpc1;
-	for(lpc1 = 0; lpc1 < nDim-7; lpc1++){
-		gsl_vector_set(srcp->psrPhase,lpc1,gsl_vector_get(bestRealLoc,lpc1+7));
-	}
+	//int lpc1;
+	//for(lpc1 = 0; lpc1 < nDim-7; lpc1++){
+		//gsl_vector_set(srcp->psrPhase,lpc1,gsl_vector_get(bestRealLoc,lpc1+6));
+	//}
 	status = H5Fclose(SrcPar);
 	if(status < 0){
 		fprintf(stdout,"Error closing file %s \n",outputFileName);
