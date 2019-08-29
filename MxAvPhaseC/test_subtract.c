@@ -10,10 +10,11 @@
 #include <string.h>
 
 int main(int argc, char *argv[]){
-	char *outputFileName = argv[0];
-	struct estSrcParams * srcp;
-	srcp = estSrcParams(outputFileName);
-	printParam(srcp);
+    char * outFileName = argv[1];
+    printf("output file name: %s",outFileName);
+    struct estSrcParams * srcp;
+    srcp = file2Srcparam(outFileName);
+    printParam(srcp);
     srcpara_free(srcp);
-	return 0;
+    return 0;
 }
