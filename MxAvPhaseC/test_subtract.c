@@ -11,10 +11,14 @@
 
 int main(int argc, char *argv[]){
     char * outFileName = argv[1];
-    printf("output file name: %s",outFileName);
+    printf("output file name: %s\n", outFileName);
     struct estSrcParams * srcp;
     srcp = file2Srcparam(outFileName);
     printParam(srcp);
     srcpara_free(srcp);
+    
+    /* success message */
+    printf("All Done!");
+
     return 0;
 }

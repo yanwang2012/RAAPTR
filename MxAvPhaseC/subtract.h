@@ -16,9 +16,10 @@ struct estSrcParams{
     double Amp;
     double iota;
     double thetaN;
-    gsl_vector *psrPhase;
+    gsl_vector * psrPhase;
 };
 
 struct estSrcParams * file2Srcparam(char *);
+struct estSrcParams * srcp_alloc(size_t);
 void printParam(struct estSrcParams *);
 void srcpara_free(struct estSrcParams *);
