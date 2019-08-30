@@ -32,30 +32,28 @@ struct estSrcParams * file2Srcparam(char *outputFileName){
 	size_t nDim = bestRealLoc->size;
 	printf("nDim is: %zu \n",nDim);
 
-	struct estSrcParams * srcp = srcp_alloc(nDim);
+	struct estSrcParams * srcp = srcp_alloc(nDim-7);
 
 	srcp->alpha = gsl_vector_get(bestRealLoc,0);
-	printf("alpha is: %lf \n",srcp->alpha);
-
+	// printf("alpha is: %lf \n",srcp->alpha);
 	srcp->delta = gsl_vector_get(bestRealLoc,1);
 	srcp->omega = gsl_vector_get(bestRealLoc,2);
 	srcp->phi0 = gsl_vector_get(bestRealLoc,3);
 	srcp->Amp = gsl_vector_get(bestRealLoc,4);
 	srcp->iota = gsl_vector_get(bestRealLoc,5);
 	srcp->thetaN = gsl_vector_get(bestRealLoc,6);
-	printf("thetaN is: %lf \n",srcp->thetaN);
-
-	FILE * f;
-	f = fopen("psrPhase.txt","w");
-	// srcp->psrPhase = gsl_vector_calloc(nDim-7); // initialize dimensionality of pulsar phase.
-	printf("faaaak this");
-	gsl_vector_fprintf(f,srcp->psrPhase,"%f");
-	fclose(f);
+	// printf("thetaN is: %lf \n",srcp->thetaN);
 
 	size_t lpc1;
 	for(lpc1 = 0; lpc1 < nDim-7; lpc1++){
 		gsl_vector_set(srcp->psrPhase,lpc1,gsl_vector_get(bestRealLoc,lpc1+7));
 	}
+
+	FILE * Fpsr;
+	Fpsr = fopen("psrPhase.txt","w");
+	gsl_vector_fprintf(Fpsr,srcp->psrPhase,"%f");
+	fclose(Fpsr);
+
 	status = H5Fclose(SrcPar);
 	if(status < 0){
 		fprintf(stdout,"Error closing file %s \n",outputFileName);
@@ -85,5 +83,6 @@ void printParam(struct estSrcParams *srcp){
 
 struct estSrcParams * srcp_alloc(size_t nDim){
 	struct estSrcParams * srcp = (struct estSrcParams *)malloc(sizeof(struct estSrcParams));
-	srcp->psrPhase = gsl_vector_calloc(nDim-7);
+	srcp->psrPhase = gsl_vector_calloc(nDim);
+	return srcp;
 }
