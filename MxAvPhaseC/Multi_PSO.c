@@ -75,7 +75,6 @@ int main(int argc, char *argv[]){
 	struct estSrcParams *srcp;
 	srcp = file2Srcparam(outputFileName);
 	
-
 	/* Analyze input file*/
 	fprintf(stdout, "Analyzing file %s \n",inputFileName);
 	fprintf(stdout, "Output will be stored in %s\n",outputFileName);
@@ -87,6 +86,7 @@ int main(int argc, char *argv[]){
 	Deallocate storage
 	-----------------------------*/
 	ffparam_free(ffp);
+	srcpara_free(srcp);
 	}
 	/* Everything executed successfully */
 	return 0;
