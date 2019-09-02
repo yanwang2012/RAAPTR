@@ -13,6 +13,9 @@
 \brief Header file for perfeval_omp().
 */
 
+/* Load search parameters from file */
+struct fitFuncParams * file2ffparam(char *);
+
 void perfeval_omp(struct fitFuncParams *, char *, char *, char *);
 
 /* Load special fitness function parameters from file*/
