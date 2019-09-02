@@ -109,7 +109,7 @@ double LLR_av(gsl_vector *xVec, /*!< Standardized Particle Coordinates*/
 				                           containing information for conversion
 				                          of standardized to real coordinates*/
 			   ){
-
+  //printf("In LLR_av\n");
 	//Set to 0 if angular variables do not have a periodic boundary conditions
 	size_t wrapAngles = 1;
 
@@ -401,10 +401,8 @@ double AvPhaseLLR(struct fitFuncParams *inParams){
  free(output->v);
  free(output);
  free(Phi);
- for (i=0; i<Np; i++){
-   free(s[i]);
- }
  free(s);
+ fflush(stdout);
  // for (i = 0; i < Np; i++) {
  //   free(phiItmp[i]);
  //   free(lh[i]);
@@ -1171,7 +1169,7 @@ struct llr_pso_params * llrparam_alloc(unsigned int N, unsigned int Np){
 	llp->deltaP = (double *)malloc(Np*sizeof(double));
 	llp->phiI = (double *)malloc(Np*sizeof(double)); 
 	llp->yr = (double **) malloc(Np*sizeof(double *));
-  for (lpc1 = 0; lpc1 < Np; lpc1++){
+  for (size_t lpc1 = 0; lpc1 < Np; lpc1++){
     llp->yr[lpc1] = (double *)malloc(N*sizeof(double));
   }
 
