@@ -159,7 +159,7 @@ void perfeval_omp(struct fitFuncParams *ffp, /*!< Parameters for the fitness fun
 	struct psoParamStruct psoParams;
 #pragma omp parallel for private(psoStartTime,psoStopTime,ffpCopy,psoParams)
 	for (lpc1 = 0; lpc1 < nRuns; lpc1++){
-		fprintf(stdout,"Running PSO run %zu on worker %d\n",lpc1,omp_get_thread_num());
+		//fprintf(stdout,"Running PSO run %zu on worker %d\n",lpc1,omp_get_thread_num());
 		/* Initialize random number generator separately for each worker*/
 		gsl_rng_set(rngGen[lpc1],rngSeeds[lpc1]);
 	    /* Configure PSO parameters*/
@@ -383,7 +383,8 @@ struct  llr_pso_params * loadfile2llrparam(hid_t inFile){
 	gsl_matrix *yr_Pr = hdf52gslmatrix(inFile,"yr");
 
 	// Backward compatibility with older data files
-	if (yr_Pr == NULL)
+	//printf("nRows = %zu, nCols = %zu for yr\n",yr_Pr->size1,yr_Pr->size2);
+	if (yr_Pr->size1 == 1 || yr_Pr->size2 == 1)
 	{
 		/* yr may have been stored as vector (older data file).
 		Try reading it in as a vector. */
@@ -405,28 +406,23 @@ struct  llr_pso_params * loadfile2llrparam(hid_t inFile){
 	
 	
 	gsl_matrix *trPr = hdf52gslmatrix(inFile,"timingResiduals");
-
+    //printf("Done reading timing residuals\n");
 	gsl_vector *sd_Pr = hdf52gslvector(inFile,"sd");
-	
+	//printf("Done reading sd\n");
 	gsl_vector *alphaP_Pr = hdf52gslvector(inFile,"alphaP");
-		
+	//printf("Done reading alphaP\n");	
 	gsl_vector *deltaP_Pr = hdf52gslvector(inFile,"deltaP");
-	
+	//printf("Done reading deltaP\n");
 	/* Load fitness function parameter structure */
 	size_t lpc1, lpc2;
 	struct llr_pso_params *llp = llrparam_alloc((unsigned int) N, (unsigned int) Np);
-	// llp->Np = Np;
-	// llp->N = N;
-	// llp->sd = (double *)malloc(Np*sizeof(double));
-	// llp->alphaP = (double *)malloc(Np*sizeof(double));
-	// llp->deltaP = (double *)malloc(Np*sizeof(double));
-	// llp->phiI = (double *)malloc(Np*sizeof(double));
+	//printf("llr parameters struct allocated\n");
+
 	for (lpc1 = 0; lpc1 < Np; lpc1++){
 		llp->sd[lpc1] = gsl_vector_get(sd_Pr,lpc1);	
 		llp->alphaP[lpc1] = gsl_vector_get(alphaP_Pr,lpc1);
 		llp->deltaP[lpc1] = gsl_vector_get(deltaP_Pr,lpc1);
 	}
-	// llp->yr = (double *) malloc(N*sizeof(double));
 	for (lpc1 = 0; lpc1 < Np; lpc1++){
 		for (lpc2 = 0; lpc2 < N; lpc2++){
 			llp->yr[lpc1][lpc2] = gsl_matrix_get(yr_Pr,lpc1,lpc2);
@@ -454,4 +450,39 @@ struct  llr_pso_params * loadfile2llrparam(hid_t inFile){
 	gsl_vector_free(deltaP_Pr);
 	
 	return llp;
+}
+
+/*! Load search parameters from the specified .hdf5 file.
+*/
+struct fitFuncParams * file2ffparam(char *srchParamsFile){
+	
+	herr_t status;
+	hid_t srchPar = H5Fopen(srchParamsFile, H5F_ACC_RDONLY, H5P_DEFAULT);
+	if (srchPar < 0){
+		fprintf(stdout,"Error opening file %s\n", srchParamsFile);
+		abort();
+	}
+	
+	/* Read xmaxmin from srchParamsFile file */
+	gsl_matrix *xmaxmin = hdf52gslmatrix(srchPar,"xmaxmin");
+	/* Search Space dimensionality */
+	size_t nDim = xmaxmin->size1;
+	
+	/* transfer xmaxmin to fitness function parameter struct */
+	struct fitFuncParams *ffp = ffparam_alloc(nDim);
+    size_t lpc1;
+	for(lpc1 = 0; lpc1 < nDim; lpc1++){
+		gsl_vector_set(ffp->rmin,lpc1,gsl_matrix_get(xmaxmin,lpc1,1));
+		gsl_vector_set(ffp->rangeVec,lpc1,gsl_matrix_get(xmaxmin,lpc1,0)-gsl_matrix_get(xmaxmin,lpc1,1));
+		//fprintf(stdout,"%f %f\n",gsl_vector_get(ffp->rmin,lpc1), gsl_vector_get(ffp->rangeVec,lpc1));
+	}
+	/* Close file */
+	status = H5Fclose(srchPar);
+	if(status < 0){
+		fprintf(stdout,"Error closing file %s \n", srchParamsFile);
+	}
+	
+	gsl_matrix_free(xmaxmin);
+	
+	return ffp;
 }
