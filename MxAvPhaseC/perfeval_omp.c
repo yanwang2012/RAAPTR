@@ -376,7 +376,6 @@ struct  llr_pso_params * loadfile2llrparam(hid_t inFile){
 	
 	double **s;
 	
-	//struct llr_pso_params *llp = (struct llr_pso_params *)malloc(sizeof(struct llr_pso_params)); 
 	size_t Np = (size_t)hdf52dscalar(inFile,"Np");
 	size_t N = (size_t)hdf52dscalar(inFile,"N");
 
@@ -387,7 +386,8 @@ struct  llr_pso_params * loadfile2llrparam(hid_t inFile){
 	if (yr_Pr->size1 == 1 || yr_Pr->size2 == 1)
 	{
 		/* yr may have been stored as vector (older data file).
-		Try reading it in as a vector. */
+		Free the matrix and try reading yr in again as a vector. */
+		gsl_matrix_free(yr_Pr);
 		gsl_vector *yr_Pr_tmp = hdf52gslvector(inFile,"yr");
 		if (yr_Pr_tmp == NULL)
 		{
