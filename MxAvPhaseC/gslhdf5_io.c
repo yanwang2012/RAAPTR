@@ -210,6 +210,7 @@ gsl_matrix * hdf52gslmatrix(hid_t inFile, const char *dsetName){
 	}
 	size_t nRows = (size_t)dims[0];
 	size_t nCols = (size_t)dims[1];
+	//printf("%s, nRows = %zu, nCols = %zu\n",dsetName,nRows,nCols);
 	
 	//Get the number of samples
 	size_t nSamples = nRows * nCols;
@@ -229,7 +230,9 @@ gsl_matrix * hdf52gslmatrix(hid_t inFile, const char *dsetName){
 			countElements++;
 		}
 	}
-	
+
+	//printf("Done hdf52gslmatrix\n");
+
 	//Wrap up
 	free(dims);
 	free(dataVec);
