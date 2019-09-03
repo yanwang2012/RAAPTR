@@ -69,17 +69,18 @@ struct estSrcParams *file2Srcparam(char *outputFileName)
 	return srcp;
 }
 
-double timingResiduals(struct estSrcParams *srcp, struct fitFuncParams *inParams)
+gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct fitFuncParams *inParams)
 {
 	struct llr_pso_params *splParams = (struct llr_pso_params *)inParams->splParams;
 	unsigned int Np;
+	size_t N;
 	/* estimated source parameters. */
 	double alpha, delta, omega, phi0, Amp, iota, thetaN;
 	gsl_vector *psrPhase = gsl_vector_calloc(Np);
 	gsl_vector *skyLocSrc = gsl_vector_calloc(3);
 	gsl_vector *skyLocPsr = gsl_vector_calloc(3);
 	/* pulsar parameters. */
-	double *alphaP, *deltaP, *yr;
+	double *alphaP, *deltaP, *yr, *tmp;
 	double theta, res;
 
 	alpha = srcp->alpha;
@@ -93,7 +94,14 @@ double timingResiduals(struct estSrcParams *srcp, struct fitFuncParams *inParams
 	deltaP = splParams->deltaP;
 	yr = splParams->yr;
 	Np = splParams->Np;
+	N = sizeof(yr)/sizeof(yr[0]);
+
+	tmp = (double *)malloc(N * sizeof(double));
+	gsl_matrix * timingResiduals = gsl_matrix_calloc(Np,N);
+
 	unsigned int i;
+	size_t j;
+
 	for (i == 0; i < Np; i++)
 	{
 		gsl_vector_set(psrPhase, i, gsl_vector_get(srcp->psrPhase, i));
@@ -111,7 +119,19 @@ double timingResiduals(struct estSrcParams *srcp, struct fitFuncParams *inParams
 
 		gsl_blas_ddot(skyLocSrc, skyLocPsr, &res);
 		theta = acos(res);
+		tmp = FullResiduals(alpha, delta, omega, phi0, gsl_vector_get(psrPhase,i), alphaP[i], deltaP[i],
+			Amp, iota, thetaN, theta, yr);
+		for (j = 0; j < N; j++){
+			gsl_matrix_set(timingResiduals,i,j,tmp[j]);
+		}
 	}
+
+	free(tmp);
+	gsl_vector_free(psrPhase);
+	gsl_vector_free(skyLocSrc);
+	gsl_vector_free(skyLocPsr);
+	
+	return timingResiduals;
 }
 
 double * FullResiduals(double alpha, double delta, double omega, double phi0, double phiI, double alphaP, double deltaP, double Amp, double iota, double thetaN, double theta, double *yr)
