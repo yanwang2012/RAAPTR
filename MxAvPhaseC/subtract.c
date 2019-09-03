@@ -80,8 +80,9 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct fitFuncParams *in
 	gsl_vector *skyLocSrc = gsl_vector_calloc(3);
 	gsl_vector *skyLocPsr = gsl_vector_calloc(3);
 	/* pulsar parameters. */
-	double *alphaP, *deltaP, *yr, *tmp;
+	double *alphaP, *deltaP, *yr;
 	double theta, res;
+	gsl_matrix * tmp = gsl_matrix_calloc(N,1);
 
 	alpha = srcp->alpha;
 	delta = srcp->delta;
@@ -94,10 +95,9 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct fitFuncParams *in
 	deltaP = splParams->deltaP;
 	yr = splParams->yr;
 	Np = splParams->Np;
-	N = sizeof(yr)/sizeof(yr[0]);
+	N = splParams->N;
 
-	tmp = (double *)malloc(N * sizeof(double));
-	gsl_matrix * timingResiduals = gsl_matrix_calloc(Np,N);
+	gsl_matrix * timResiduals = gsl_matrix_calloc(Np,N);
 
 	unsigned int i;
 	size_t j;
@@ -119,29 +119,41 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct fitFuncParams *in
 
 		gsl_blas_ddot(skyLocSrc, skyLocPsr, &res);
 		theta = acos(res);
-		tmp = FullResiduals(alpha, delta, omega, phi0, gsl_vector_get(psrPhase,i), alphaP[i], deltaP[i],
-			Amp, iota, thetaN, theta, yr);
+		tmp = FullResiduals(srcp, alphaP[i], deltaP[i],gsl_vector_get(psrPhase,i),theta,yr);
+
 		for (j = 0; j < N; j++){
-			gsl_matrix_set(timingResiduals,i,j,tmp[j]);
+			gsl_matrix_set(timResiduals,i,j,gsl_matrix_get(tmp,j,0));
 		}
 	}
 
-	free(tmp);
+	gsl_matrix_free(tmp);
 	gsl_vector_free(psrPhase);
 	gsl_vector_free(skyLocSrc);
 	gsl_vector_free(skyLocPsr);
 	
-	return timingResiduals;
+	return timResiduals;
 }
 
-double * FullResiduals(double alpha, double delta, double omega, double phi0, double phiI, double alphaP, double deltaP, double Amp, double iota, double thetaN, double theta, double *yr)
+gsl_matrix * FullResiduals(struct estSrcParams * srcp, double alphaP, double deltaP,double phiI, double theta, double *yr)
 {
-	size_t N = sizeof(yr) / sizeof(yr[0]);
+
+
+	size_t N = sizeof(yr)/sizeof(yr[0]);
+	double alpha, delta, omega, phi0, Amp, iota, thetaN;
+	alpha = srcp->alpha;
+	delta = srcp->delta;
+	omega = srcp->omega;
+	phi0 = srcp->phi0;
+	Amp = srcp->Amp;
+	iota = srcp->iota;
+	thetaN = srcp->thetaN;
+
 	size_t i, j;
 	gsl_matrix *C = gsl_matrix_calloc(8, 1);
 	gsl_matrix *A = gsl_matrix_calloc(N, 8);
+	gsl_matrix *r = gsl_matrix_calloc(N,1);
 	double alphatilde;
-	double a, b, c, d, e, f, *r;
+	double a, b, c, d, e, f;
 	double Pp, Pc, Fp, Fc, FpC, FpS, FcC, FcS;
 	double CosIota, TwoThetaN, tmp1, tmp2, tmpC, tmpC2, tmpS, tmpS2;
 	double *omegaT;
@@ -197,6 +209,10 @@ double * FullResiduals(double alpha, double delta, double omega, double phi0, do
 	}
 
 	gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, A, C, 0, r);
+
+	gsl_matrix_free(A);
+	gsl_matrix_free(C);
+
 	return r;
 }
 
