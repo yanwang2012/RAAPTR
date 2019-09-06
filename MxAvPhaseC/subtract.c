@@ -69,9 +69,9 @@ struct estSrcParams *file2Srcparam(char *outputFileName)
 	return srcp;
 }
 
-gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct fitFuncParams *inParams)
+gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *splParams)
 {
-	struct llr_pso_params *splParams = (struct llr_pso_params *)inParams->splParams;
+	//struct llr_pso_params *splParams = (struct llr_pso_params *)inParams->splParams;
 	unsigned int Np;
 	size_t N;
 	/* estimated source parameters. */
