@@ -29,7 +29,6 @@ defining the search interval along a particular parameter for PSO.
 ## Format of input data file
 See the documentation for the simulation data generation code.
 */
-struct fitFuncParams * file2ffparam(char *);
 
 int main(int argc, char *argv[]){
 	/* General purpose variables */
@@ -75,35 +74,3 @@ int main(int argc, char *argv[]){
 }
 
 
-struct fitFuncParams * file2ffparam(char *srchParamsFile){
-	
-	herr_t status;
-	hid_t srchPar = H5Fopen(srchParamsFile, H5F_ACC_RDONLY, H5P_DEFAULT);
-	if (srchPar < 0){
-		fprintf(stdout,"Error opening file %s\n", srchParamsFile);
-		abort();
-	}
-	
-	/* Read xmaxmin from srchParamsFile file */
-	gsl_matrix *xmaxmin = hdf52gslmatrix(srchPar,"xmaxmin");
-	/* Search Space dimensionality */
-	size_t nDim = xmaxmin->size1;
-	
-	/* transfer xmaxmin to fitness function parameter struct */
-	struct fitFuncParams *ffp = ffparam_alloc(nDim);
-    size_t lpc1;
-	for(lpc1 = 0; lpc1 < nDim; lpc1++){
-		gsl_vector_set(ffp->rmin,lpc1,gsl_matrix_get(xmaxmin,lpc1,1));
-		gsl_vector_set(ffp->rangeVec,lpc1,gsl_matrix_get(xmaxmin,lpc1,0)-gsl_matrix_get(xmaxmin,lpc1,1));
-		//fprintf(stdout,"%f %f\n",gsl_vector_get(ffp->rmin,lpc1), gsl_vector_get(ffp->rangeVec,lpc1));
-	}
-	/* Close file */
-	status = H5Fclose(srchPar);
-	if(status < 0){
-		fprintf(stdout,"Error closing file %s \n", srchParamsFile);
-	}
-	
-	gsl_matrix_free(xmaxmin);
-	
-	return ffp;
-}

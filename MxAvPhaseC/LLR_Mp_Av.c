@@ -44,10 +44,11 @@ struct fitFuncParams * ffparams_clone(struct fitFuncParams *srcffp){
 		for(lpc2 = 0; lpc2 < srcllp->N; lpc2++){
 			llp->s[lpc1][lpc2] = srcllp->s[lpc1][lpc2];
 		}
-	}
-	for (lpc2 = 0; lpc2 < srcllp->N; lpc2++){
-		llp->yr[lpc2] = srcllp->yr[lpc2];
-	}
+	  for (lpc2 = 0; lpc2 < srcllp->N; lpc2++){
+		  llp->yr[lpc1][lpc2] = srcllp->yr[lpc1][lpc2];
+	  }
+  }
+	
 	
 	dstffp->splParams = llp;
 	
@@ -108,7 +109,7 @@ double LLR_av(gsl_vector *xVec, /*!< Standardized Particle Coordinates*/
 				                           containing information for conversion
 				                          of standardized to real coordinates*/
 			   ){
-
+  //printf("In LLR_av\n");
 	//Set to 0 if angular variables do not have a periodic boundary conditions
 	size_t wrapAngles = 1;
 
@@ -177,7 +178,7 @@ double AvPhaseLLR(struct fitFuncParams *inParams){
 
   double tmp;
   double res;
-  unsigned int lpr, i, j, j1, j2, j3, jj;
+  size_t lpr, i, j, j1, j2, j3, jj, jp;
 //  size_t pp[6];   not used.
   const size_t kk = 1, stride = 1, nn = 6;  // gsl_sort_largest_index
   //double src[6] = {1.0, 3.0, 6.0, 4.0, 5.0, 2.0};  //
@@ -195,7 +196,7 @@ double AvPhaseLLR(struct fitFuncParams *inParams){
   // transfer parameters from structure inParams
   //printf("MP5: Np = %d\n", Np);
   //printf("MP5: N = %d\n", N);
-  double *yr;
+  double **yr;
   //yr = (double *)malloc(N * sizeof(double));
   double *sd;
   //sd = malloc(Np * sizeof(double));
@@ -248,7 +249,7 @@ double AvPhaseLLR(struct fitFuncParams *inParams){
   iota = gsl_vector_get(inParams->realCoord,5);
   thetaN = gsl_vector_get(inParams->realCoord,6);
 
-  s = (double **)malloc(Np * sizeof(double));
+  s = (double **)malloc(Np * sizeof(double *));
   for (i = 0; i < Np; i++) {
     //*(s+i) = (double *)malloc(N * sizeof(double));  // not needed!
     s[i] = splParams->s[i];
@@ -273,10 +274,10 @@ double AvPhaseLLR(struct fitFuncParams *inParams){
   gsl_vector_set(skyLocSrc, 1, cos(delta)*sin(alpha));
   gsl_vector_set(skyLocSrc, 2, sin(delta));
 
-  for (i = 0; i < N; i++) {
+  /*for (i = 0; i < N; i++) {
     Phi[i] = yr[i] * omega;
     //printf("MP5: *(Phi+i) = %e, *(yr+i) = %e\n", *(Phi+i), *(yr+i));
-  }
+  }*/
 
   double bs[5], tmp0, NN, result, error ;
 
@@ -309,6 +310,9 @@ double AvPhaseLLR(struct fitFuncParams *inParams){
 //printf("AvPhaseLLR: Np = %d\n", Np);
 
   for (i = 0; i < Np; i++){
+    for (jp = 0; jp < N; jp++) {
+      Phi[jp] = yr[i][jp] * omega;
+    }
     //printf("AvPhaseLLR: i = %d\n", i);
     M = 0.0;
   //printf("MP5: i = %d\n", i);
@@ -398,6 +402,7 @@ double AvPhaseLLR(struct fitFuncParams *inParams){
  free(output);
  free(Phi);
  free(s);
+ fflush(stdout);
  // for (i = 0; i < Np; i++) {
  //   free(phiItmp[i]);
  //   free(lh[i]);
@@ -660,7 +665,7 @@ double LogLikelihoodRatioMP5(struct fitFuncParams *inParams){
 
   double tmp;
   double res;
-  unsigned int lpr, i, j;
+  size_t lpr, i, j, jp;
   size_t pp[6];
   const size_t kk = 1, stride = 1, nn = 6;  // gsl_sort_largest_index
   //double src[6] = {1.0, 3.0, 6.0, 4.0, 5.0, 2.0};  //
@@ -678,7 +683,7 @@ double LogLikelihoodRatioMP5(struct fitFuncParams *inParams){
   // transfer parameters from structure inParams
   //printf("MP5: Np = %d\n", Np);
   //printf("MP5: N = %d\n", N);
-  double *yr;
+  double **yr;
   //yr = (double *)malloc(N * sizeof(double));
   double *sd;
   //sd = malloc(Np * sizeof(double));
@@ -746,7 +751,7 @@ double LogLikelihoodRatioMP5(struct fitFuncParams *inParams){
 //    *(c+i) = malloc(N * sizeof(double));
 // }
 
-  s = (double **)malloc(Np * sizeof(double));
+  s = (double **)malloc(Np * sizeof(double *));
   for (i = 0; i < Np; i++) {
     //*(s+i) = (double *)malloc(N * sizeof(double));  // not needed!
     s[i] = splParams->s[i];
@@ -791,15 +796,19 @@ double LogLikelihoodRatioMP5(struct fitFuncParams *inParams){
   gsl_vector_set(skyLocSrc, 2, sin(delta));
 
 //printf("MP5: omega = %f\n", omega);
-  for (i = 0; i < N; i++) {
+ /* for (i = 0; i < N; i++) {
     Phi[i] = yr[i] * omega;
     //printf("MP5: *(Phi+i) = %e, *(yr+i) = %e\n", *(Phi+i), *(yr+i));
   }
+  */
 
   gsl_poly_complex_workspace * w
         = gsl_poly_complex_workspace_alloc(5);
 
   for (i = 0; i < Np; i++){
+      for (jp = 0; jp < N; jp++) {
+        Phi[jp] = yr[i][jp] * omega;
+      }
   //printf("MP5: i = %d\n", i);
   //printf("alphaP = %f, deltaP = %f \n", *(alphaP+i), *(deltaP+i));
     gsl_vector_set(skyLocPulsar, 0, cos(deltaP[i])*cos(alphaP[i]) );
@@ -1159,7 +1168,11 @@ struct llr_pso_params * llrparam_alloc(unsigned int N, unsigned int Np){
 	llp->alphaP = (double *)malloc(Np*sizeof(double));
 	llp->deltaP = (double *)malloc(Np*sizeof(double));
 	llp->phiI = (double *)malloc(Np*sizeof(double)); 
-	llp->yr = (double *) malloc(N*sizeof(double));
+	llp->yr = (double **) malloc(Np*sizeof(double *));
+  for (size_t lpc1 = 0; lpc1 < Np; lpc1++){
+    llp->yr[lpc1] = (double *)malloc(N*sizeof(double));
+  }
+
 
 	double **s = (double **)malloc(Np*sizeof(double *));
 	size_t lpc1;
@@ -1186,6 +1199,9 @@ void llrparam_free(struct llr_pso_params *llp){
 	free(llp->sd);
 	free(llp->alphaP);
 	free(llp->deltaP);
+  for (lpc = 0; lpc < Np; lpc++){
+    free(llp->yr[lpc]);
+  }
 	free(llp->yr);
 	free(llp->phiI);
 	free(llp);
