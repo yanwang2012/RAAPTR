@@ -1,0 +1,37 @@
+# makefile for test_many_yr
+
+OBJ = test_loadfile2llrparam.o perfeval_omp.o  LLR_Mp_Av.o ptapso.o maxphaseutils.o gslhdf5_io.o backcomp.o
+CC = gcc 
+GSLFLAGS :=  /Usr/local/include
+GSLLIBS := /Usr/local/lib
+HDF5FLAGS := /opt/local/include
+HDF5LIBS := /opt/local/lib
+
+test_loadfile2llrparam.out: $(OBJ)
+	$(CC)  $(OBJ) -L$(HDF5LIBS) -lhdf5 -lhdf5_hl -lz -L$(GSLLIBS) -lm -lgsl -lgslcblas -o test_loadfile2llrparam.out
+
+test_loadfile2llrparam.o: test_loadfile2llrparam.c
+	$(CC) -c  -I$(HDF5FLAGS) -I$(GSLFLAGS) test_loadfile2llrparam.c
+
+gslhdf5_io.o: gslhdf5_io.c
+	$(CC) -c -I$(HDF5FLAGS) -I$(GSLFLAGS) gslhdf5_io.c
+
+perfeval_omp.o: perfeval_omp.c
+	$(CC) -c -I$(HDF5FLAGS) -I$(GSLFLAGS) perfeval_omp.c
+
+LLR_Mp_Av.o: LLR_Mp_Av.c
+	$(CC) -c LLR_Mp_Av.c -I$(GSLFLAGS)
+
+ptapso.o: ptapso.c
+	$(CC) -c ptapso.c -I$(GSLFLAGS)
+
+maxphaseutils.o: maxphaseutils.c
+	$(CC) -c maxphaseutils.c -I$(GSLFLAGS)
+
+backcomp.o: backcomp.c
+	$(CC) -c backcomp.c -I$(GSLFLAGS)
+
+.PHONY: clean
+clean:
+		rm *.o
+# EOF
