@@ -1,6 +1,7 @@
 # makefile for MaxPhase project.  Mar 17, 2016
 
-OBJ = perfeval_spmd.o perfeval_omp.o  LLR_Mp_Av.o  maxphaseutils.o ptapso.o gslhdf5_io.o
+OBJ = perfeval_spmd.o perfeval_omp.o  LLR_Mp_Av.o  maxphaseutils.o ptapso.o gslhdf5_io.o backcomp.o
+CC = gcc -O3 -fopenmp
 # CC = gcc -O3
 GSLFLAGS :=  $(TACC_GSL_INC)
 GSLLIBS := $(TACC_GSL_LIB)
@@ -27,6 +28,9 @@ maxphaseutils.o: maxphaseutils.c
 
 ptapso.o: ptapso.c
 	$(CC) -c ptapso.c -I$(GSLFLAGS)
+
+backcomp.o: backcomp.c
+	$(CC) -c backcomp.c -I$(GSLFLAGS)
 
 .PHONY: clean
 clean:
