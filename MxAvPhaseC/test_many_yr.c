@@ -32,6 +32,7 @@ defining the search interval along a particular parameter for PSO.
 
 ## Format of input data file
 See the documentation for the simulation data generation codes in RAAPTR/GENSIMDATA.
+
 */
 int main(int argc, char *argv[]){
 	/* General purpose variables */
