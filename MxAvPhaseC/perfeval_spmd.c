@@ -1,10 +1,5 @@
 #include "maxphase.h"
-#include "LLR_Mp_Av.h"
-#include "ptapso.h"
 #include "perfeval_omp.h"
-#include "hdf5.h"
-#include "gslhdf5_io.h"
-#include <gsl/gsl_vector.h>
 #include <sys/stat.h>
 #include <stdio.h>
 #include <string.h>
