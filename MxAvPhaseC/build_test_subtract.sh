@@ -1,4 +1,4 @@
-# Breif script to compile test_subtract.out
+# Brief script to compile test_subtract.out
 gcc -g -c -I$TACC_HDF5_INC -I$TACC_GSL_INC gslhdf5_io.c
 gcc -g -c -I$TACC_HDF5_INC -I$TACC_GSL_INC subtract.c
 gcc -g -c -I$TACC_HDF5_INC -I$TACC_GSL_INC test_subtract.c
