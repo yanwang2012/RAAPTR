@@ -43,7 +43,7 @@ struct estSrcParams *file2Srcparam(char *outputFileName)
 	srcp->omega = gsl_vector_get(bestRealLoc, 2);
 	srcp->phi0 = gsl_vector_get(bestRealLoc, 3);
 	srcp->Amp = gsl_vector_get(bestRealLoc, 4);
-	printf("Amp is: %lf\n", srcp->Amp);
+	//printf("Amp is: %e\n", srcp->Amp);
 	srcp->iota = gsl_vector_get(bestRealLoc, 5);
 	srcp->thetaN = gsl_vector_get(bestRealLoc, 6);
 	// printf("thetaN is: %lf \n",srcp->thetaN);
