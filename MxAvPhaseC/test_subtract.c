@@ -48,7 +48,7 @@ int main(int argc, char *argv[]){
 
     FILE * residuals;
     residuals = fopen("timingResiduals.txt","w");
-    gsl_matrix_fprintf(residuals,timResiduals,"g");
+    gsl_matrix_fprintf(residuals,timResiduals,"%g");
     fclose(residuals);
 
     printParam(srcp);
