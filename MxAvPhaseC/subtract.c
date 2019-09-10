@@ -26,12 +26,12 @@ struct estSrcParams *file2Srcparam(char *outputFileName)
 	}
 
 	gsl_vector *bestRealLoc = hdf52gslvector(SrcPar, "bestRealLoc");
-	
-	FILE * fPtr;
-	fPtr = fopen("bestRealLoc.txt","w");
-	gsl_vector_fprintf(fPtr,bestRealLoc,"%f");
+	/*
+	FILE *fPtr;
+	fPtr = fopen("bestRealLoc.txt", "w");
+	gsl_vector_fprintf(fPtr, bestRealLoc, "%f");
 	fclose(fPtr);
-	
+	*/
 	size_t nDim = bestRealLoc->size;
 	printf("nDim is: %zu \n", nDim);
 
@@ -53,12 +53,12 @@ struct estSrcParams *file2Srcparam(char *outputFileName)
 	{
 		gsl_vector_set(srcp->psrPhase, lpc1, gsl_vector_get(bestRealLoc, lpc1 + 7));
 	}
-	
-	FILE * Fpsr;
-	Fpsr = fopen("psrPhase.txt","w");
-	gsl_vector_fprintf(Fpsr,srcp->psrPhase,"%f");
+	/*
+	FILE *Fpsr;
+	Fpsr = fopen("psrPhase.txt", "w");
+	gsl_vector_fprintf(Fpsr, srcp->psrPhase, "%f");
 	fclose(Fpsr);
-	
+	*/
 	status = H5Fclose(SrcPar);
 	if (status < 0)
 	{
@@ -70,7 +70,7 @@ struct estSrcParams *file2Srcparam(char *outputFileName)
 	return srcp;
 }
 
-gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *splParams)
+gsl_matrix *timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *splParams)
 {
 	//struct llr_pso_params *splParams = (struct llr_pso_params *)inParams->splParams;
 	size_t Np;
@@ -83,7 +83,6 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 	/* pulsar parameters. */
 	double *alphaP, *deltaP, *yr;
 	double theta, res;
-
 
 	alpha = srcp->alpha;
 	delta = srcp->delta;
@@ -99,13 +98,14 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 	Np = (size_t)splParams->Np;
 	N = (size_t)splParams->N;
 
-	gsl_matrix * timResiduals = gsl_matrix_calloc(Np,N);
+	gsl_matrix *timResiduals = gsl_matrix_calloc(Np, N);
 	gsl_vector *psrPhase = gsl_vector_calloc(Np);
-	gsl_matrix * tmp = gsl_matrix_calloc(N,1);
+	gsl_matrix *tmp = gsl_matrix_calloc(N, 1);
 
-	size_t i,j,k;
+	size_t i, j, k;
 
-	for (i = 0; i < Np; i++){
+	for (i = 0; i < Np; i++)
+	{
 		gsl_vector_set(psrPhase, i, gsl_vector_get(srcp->psrPhase, i));
 	}
 
@@ -113,7 +113,8 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 	gsl_vector_set(skyLocSrc, 1, cos(delta) * sin(alpha));
 	gsl_vector_set(skyLocSrc, 2, sin(delta));
 
-	for (j = 0; j < Np; j++){
+	for (j = 0; j < Np; j++)
+	{
 		gsl_vector_set(skyLocPsr, 0, cos(deltaP[j]) * cos(alphaP[j]));
 		gsl_vector_set(skyLocPsr, 1, cos(deltaP[j]) * sin(alphaP[j]));
 		gsl_vector_set(skyLocPsr, 2, sin(deltaP[j]));
@@ -121,18 +122,18 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 		gsl_blas_ddot(skyLocSrc, skyLocPsr, &res);
 		theta = acos(res);
 		//printf("timing_theta is: %e\n",theta);
-		tmp = FullResiduals(srcp, alphaP[j], deltaP[j],gsl_vector_get(psrPhase,j),theta,yr, N);
+		tmp = FullResiduals(srcp, alphaP[j], deltaP[j], gsl_vector_get(psrPhase, j), theta, yr, N);
 		//printf("length of tmp: %zu %zu\n", tmp->size1, tmp->size2);
-		for (k = 0; k < N; k++){
+		for (k = 0; k < N; k++)
+		{
 			//printf("j, k: %zu %zu \n",j,k);
-			gsl_matrix_set(timResiduals,j,k,gsl_matrix_get(tmp,k,0));
-
-			FILE * f;
-			f = fopen("timingResiduals.txt","w");
-			gsl_matrix_fprintf(f,timResiduals,"%e");
-			fclose(f);
-			//printf("%e, ",gsl_matrix_get(timResiduals,j,k));
+			gsl_matrix_set(timResiduals, j, k, gsl_matrix_get(tmp, k, 0));
 		}
+		FILE *f;
+		f = fopen("timingResiduals.txt", "w");
+		gsl_matrix_fprintf(f, timResiduals, "%e");
+		fclose(f);
+		//printf("%e, ",gsl_matrix_get(timResiduals,j,k));
 		//printf("/n");
 	}
 
@@ -140,13 +141,12 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 	gsl_vector_free(psrPhase);
 	gsl_vector_free(skyLocSrc);
 	gsl_vector_free(skyLocPsr);
-	
+
 	return timResiduals;
 }
 
-gsl_matrix * FullResiduals(struct estSrcParams * srcp, double alphaP, double deltaP,double phiI, double theta, double *yr, size_t N)
+gsl_matrix *FullResiduals(struct estSrcParams *srcp, double alphaP, double deltaP, double phiI, double theta, double *yr, size_t N)
 {
-
 
 	double alpha, delta, omega, phi0, Amp, iota, thetaN;
 	alpha = srcp->alpha;
@@ -161,7 +161,7 @@ gsl_matrix * FullResiduals(struct estSrcParams * srcp, double alphaP, double del
 	//printf("Full residuals N: %zu\n", N);
 	gsl_matrix *C = gsl_matrix_calloc(8, 1);
 	gsl_matrix *A = gsl_matrix_calloc(N, 8);
-	gsl_matrix *r = gsl_matrix_calloc(N,1);
+	gsl_matrix *r = gsl_matrix_calloc(N, 1);
 	double alphatilde;
 	double a, b, c, d, e, f;
 	double Pp, Pc, Fp, Fc, FpC, FpS, FcC, FcS;
@@ -187,19 +187,19 @@ gsl_matrix * FullResiduals(struct estSrcParams * srcp, double alphaP, double del
 
 	CosIota = cos(iota);
 	TwoThetaN = 2 * thetaN;
-	tmp1 = Amp * (1 + pow(CosIota,2.0));
+	tmp1 = Amp * (1 + pow(CosIota, 2.0));
 	tmp2 = Amp * 2 * CosIota;
 	tmpC = cos(TwoThetaN);
 	tmpS = sin(TwoThetaN);
 
-	gsl_matrix_set(C,0,0, -tmp1 * tmpC);
-	gsl_matrix_set(C,1,0, -tmp2 * tmpS);
-	gsl_matrix_set(C,2,0, -gsl_matrix_get(C,0,0));
-	gsl_matrix_set(C,3,0, gsl_matrix_get(C,1,0));
-	gsl_matrix_set(C,4,0, tmp1 * tmpS);
-	gsl_matrix_set(C,5,0, -tmp2 * tmpC);
-	gsl_matrix_set(C,6,0, -gsl_matrix_get(C,4,0));
-	gsl_matrix_set(C,7,0, gsl_matrix_get(C,5,0));
+	gsl_matrix_set(C, 0, 0, -tmp1 * tmpC);
+	gsl_matrix_set(C, 1, 0, -tmp2 * tmpS);
+	gsl_matrix_set(C, 2, 0, -gsl_matrix_get(C, 0, 0));
+	gsl_matrix_set(C, 3, 0, gsl_matrix_get(C, 1, 0));
+	gsl_matrix_set(C, 4, 0, tmp1 * tmpS);
+	gsl_matrix_set(C, 5, 0, -tmp2 * tmpC);
+	gsl_matrix_set(C, 6, 0, -gsl_matrix_get(C, 4, 0));
+	gsl_matrix_set(C, 7, 0, gsl_matrix_get(C, 5, 0));
 
 	tmpC2 = cos(2 * phi0) - cos(2 * phiI);
 	tmpS2 = sin(2 * phi0) - sin(2 * phiI);
@@ -208,13 +208,16 @@ gsl_matrix * FullResiduals(struct estSrcParams * srcp, double alphaP, double del
 	FcC = Fc * tmpC2;
 	FcS = Fc * tmpS2;
 
-	for(i = 0; i < N; i++){
+	for (i = 0; i < N; i++)
+	{
 		omegaT[i] = omega * yr[i];
 	}
 
-	for(j = 0; j < 8; j++){
-		for(k = 0; k < N; k++){
-			gsl_matrix_set(A,k,j, FpC * cos(omegaT[k]));
+	for (j = 0; j < 8; j++)
+	{
+		for (k = 0; k < N; k++)
+		{
+			gsl_matrix_set(A, k, j, FpC * cos(omegaT[k]));
 		}
 	}
 
@@ -246,7 +249,7 @@ void printParam(struct estSrcParams *srcp)
 		   "Amp: %e \n"
 		   "iota: %lf \n"
 		   "thetaN: %lf \n",
-		   srcp->alpha, srcp->delta, srcp->omega, srcp->phi0, 
+		   srcp->alpha, srcp->delta, srcp->omega, srcp->phi0,
 		   srcp->Amp, srcp->iota, srcp->thetaN);
 }
 
