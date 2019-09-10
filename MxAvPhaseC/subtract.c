@@ -235,7 +235,7 @@ void printParam(struct estSrcParams *srcp)
 		   "delta: %lf \n"
 		   "omega: %lf \n"
 		   "phi0: %lf \n"
-		   "Amp: %lf \n"
+		   "Amp: %e \n"
 		   "iota: %lf \n"
 		   "thetaN: %lf \n",
 		   srcp->alpha, srcp->delta, srcp->omega, srcp->phi0, 
