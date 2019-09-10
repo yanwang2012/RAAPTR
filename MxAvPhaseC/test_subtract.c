@@ -47,6 +47,11 @@ int main(int argc, char *argv[]){
     gsl_matrix * timResiduals = gsl_matrix_calloc(Np,N);
     timResiduals = timingResiduals(srcp,llp);
     printf("Dimension of timResiduals: %zu %zu\n", timResiduals->size1, timResiduals->size2);
+
+    FILE * f;
+    f = fopen("timingResiduals.txt", "w");
+    fclose(f);
+    printMatrix(f,timResiduals,Np,N);// print timing residual to file f. 
     
     printParam(srcp);
     srcpara_free(srcp);

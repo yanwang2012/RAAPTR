@@ -128,12 +128,8 @@ gsl_matrix *timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *sp
 		{
 			//printf("j, k: %zu %zu \n",j,k);
 			gsl_matrix_set(timResiduals, j, k, gsl_matrix_get(tmp, k, 0));
+			//printf("%e, ",gsl_matrix_get(timResiduals,j,k));
 		}
-		FILE *f;
-		f = fopen("timingResiduals.txt", "w+");
-		gsl_matrix_fprintf(f, timResiduals, "%e");
-		fclose(f);
-		//printf("%e, ",gsl_matrix_get(timResiduals,j,k));
 		//printf("/n");
 	}
 
@@ -258,4 +254,14 @@ struct estSrcParams *srcp_alloc(size_t nDim)
 	struct estSrcParams *srcp = (struct estSrcParams *)malloc(sizeof(struct estSrcParams));
 	srcp->psrPhase = gsl_vector_calloc(nDim);
 	return srcp;
+}
+void printMatrix(FILE * f, gsl_matrix * m, size_t row, size_t col){
+	size_t i,j;
+	for(i = 0; i < row; i++){
+		for(j = 0; j < col; j++){
+			fprintf(f,"%e\t", gsl_matrix_get(m,i,j));
+		}
+
+		fprintf(f,"\n");
+	}
 }
