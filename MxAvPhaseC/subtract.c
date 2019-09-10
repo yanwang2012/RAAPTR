@@ -43,6 +43,7 @@ struct estSrcParams *file2Srcparam(char *outputFileName)
 	srcp->omega = gsl_vector_get(bestRealLoc, 2);
 	srcp->phi0 = gsl_vector_get(bestRealLoc, 3);
 	srcp->Amp = gsl_vector_get(bestRealLoc, 4);
+	printf("Amp is: %lf\n", srcp->Amp);
 	srcp->iota = gsl_vector_get(bestRealLoc, 5);
 	srcp->thetaN = gsl_vector_get(bestRealLoc, 6);
 	// printf("thetaN is: %lf \n",srcp->thetaN);
@@ -122,7 +123,7 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 		printf("timing_theta is: %e\n",theta);
 		tmp = FullResiduals(srcp, alphaP[j], deltaP[j],gsl_vector_get(psrPhase,j),theta,yr);
 
-		for (k = 0; k < N; k++){
+		for (k == 0; k < N; k++){
 			gsl_matrix_set(timResiduals,j,k,gsl_matrix_get(tmp,k,0));
 		}
 	}
@@ -237,7 +238,7 @@ void printParam(struct estSrcParams *srcp)
 		   "Amp: %lf \n"
 		   "iota: %lf \n"
 		   "thetaN: %lf \n",
-		   srcp->alpha, srcp->delta, srcp->omega, srcp->phi0,
+		   srcp->alpha, srcp->delta, srcp->omega, srcp->phi0, 
 		   srcp->Amp, srcp->iota, srcp->thetaN);
 }
 
