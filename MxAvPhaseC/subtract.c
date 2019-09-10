@@ -72,7 +72,7 @@ struct estSrcParams *file2Srcparam(char *outputFileName)
 gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *splParams)
 {
 	//struct llr_pso_params *splParams = (struct llr_pso_params *)inParams->splParams;
-	unsigned int Np;
+	size_t Np;
 	size_t N;
 	/* estimated source parameters. */
 	double alpha, delta, omega, phi0, Amp, iota, thetaN;
@@ -94,13 +94,12 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 	alphaP = splParams->alphaP;
 	deltaP = splParams->deltaP;
 	yr = splParams->yr;
-	Np = splParams->Np;
-	N = splParams->N;
+	Np = (size_t)splParams->Np;
+	N = (size_t)splParams->N;
 
 	gsl_matrix * timResiduals = gsl_matrix_calloc(Np,N);
 
-	unsigned int i;
-	size_t j;
+	size_t i,j;
 
 	for (i == 0; i < Np; i++)
 	{
@@ -139,6 +138,7 @@ gsl_matrix * FullResiduals(struct estSrcParams * srcp, double alphaP, double del
 
 
 	size_t N = sizeof(yr)/sizeof(yr[0]);
+	printf("Size of yr is: %zu\n", N);
 	double alpha, delta, omega, phi0, Amp, iota, thetaN;
 	alpha = srcp->alpha;
 	delta = srcp->delta;
