@@ -4,3 +4,4 @@
 .vscode
 makefile_omp_local_QYQ
 *.exe
+*.txt
