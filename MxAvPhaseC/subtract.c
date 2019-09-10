@@ -122,7 +122,7 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 		theta = acos(res);
 		printf("timing_theta is: %e\n",theta);
 		tmp = FullResiduals(srcp, alphaP[j], deltaP[j],gsl_vector_get(psrPhase,j),theta,yr);
-
+		printf("length of tmp: %zu %zu\n", tmp->size1, tmp->size2);
 		for (k = 0; k < N; k++){
 			printf("j, k: %zu %zu \n",j,k);
 			gsl_matrix_set(timResiduals,j,k,gsl_matrix_get(tmp,k,0));
