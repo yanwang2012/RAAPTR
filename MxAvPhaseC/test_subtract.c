@@ -11,7 +11,7 @@ int main(int argc, char *argv[]){
     char * inFileName = argv[1];
     char * outFileName = argv[2];
 
-    unsigned int Np,N;
+    size_t Np,N;
     double **tres; /*! timing residuals in input file */
 
     printf("Input file name is: %s\n", inFileName);
@@ -37,10 +37,10 @@ int main(int argc, char *argv[]){
     llp = loadfile2llrparam(inFile);
     srcp = file2Srcparam(outFileName);
 
-    N = llp->N;
-    printf("N: %u\n",N);
-    Np = llp->Np;
-    printf("Np: %u\n",Np);
+    N = (size_t)llp->N;
+    printf("N: %zu\n",N);
+    Np = (size_t)llp->Np;
+    printf("Np: %zu\n",Np);
     tres = llp->s;
 
     gsl_matrix * timResiduals = gsl_matrix_calloc(Np,N);
