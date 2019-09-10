@@ -124,6 +124,7 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 		tmp = FullResiduals(srcp, alphaP[j], deltaP[j],gsl_vector_get(psrPhase,j),theta,yr);
 
 		for (k = 0; k < N; k++){
+			printf("j is: %zu\n",j);
 			gsl_matrix_set(timResiduals,j,k,gsl_matrix_get(tmp,k,0));
 		}
 	}
