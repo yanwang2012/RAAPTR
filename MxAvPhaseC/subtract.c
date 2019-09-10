@@ -104,8 +104,7 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 
 	size_t i,j,k;
 
-	for (i == 0; i < Np; i++)
-	{
+	for (i == 0; i < Np; i++){
 		gsl_vector_set(psrPhase, i, gsl_vector_get(srcp->psrPhase, i));
 	}
 
@@ -113,8 +112,7 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 	gsl_vector_set(skyLocSrc, 1, cos(delta) * sin(alpha));
 	gsl_vector_set(skyLocSrc, 2, sin(delta));
 
-	for (j == 0; j < Np; j++)
-	{
+	for (j == 0; j < Np; j++){
 		gsl_vector_set(skyLocPsr, 0, cos(deltaP[j]) * cos(alphaP[j]));
 		gsl_vector_set(skyLocPsr, 1, cos(deltaP[j]) * sin(alphaP[j]));
 		gsl_vector_set(skyLocPsr, 2, sin(deltaP[j]));
