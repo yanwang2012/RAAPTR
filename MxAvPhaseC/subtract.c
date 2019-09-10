@@ -214,12 +214,13 @@ gsl_matrix * FullResiduals(struct estSrcParams * srcp, double alphaP, double del
 	}
 
 	gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, A, C, 0, r);
-
+	/*
 	FILE * fr;
 	fr = fopen("r.txt","w");
 	gsl_matrix_fprintf(fr,r,"%e");
 	fclose(fr);
-	printf("Dimension of r: %zu %zu\n",r->size1,r->size2);
+	*/
+	//printf("Dimension of r: %zu %zu\n",r->size1,r->size2);
 	gsl_matrix_free(A);
 	gsl_matrix_free(C);
 
