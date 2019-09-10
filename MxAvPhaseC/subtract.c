@@ -101,7 +101,7 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 
 	gsl_matrix * timResiduals = gsl_matrix_calloc(Np,N);
 	gsl_vector *psrPhase = gsl_vector_calloc(Np);
-	gsl_matrix * tmp = gsl_matrix_calloc(N,(size_t)1);
+	gsl_matrix * tmp = gsl_matrix_calloc(N,1);
 
 	size_t i,j,k;
 
@@ -120,15 +120,15 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 
 		gsl_blas_ddot(skyLocSrc, skyLocPsr, &res);
 		theta = acos(res);
-		printf("timing_theta is: %e\n",theta);
+		//printf("timing_theta is: %e\n",theta);
 		tmp = FullResiduals(srcp, alphaP[j], deltaP[j],gsl_vector_get(psrPhase,j),theta,yr, N);
-		printf("length of tmp: %zu %zu\n", tmp->size1, tmp->size2);
+		//printf("length of tmp: %zu %zu\n", tmp->size1, tmp->size2);
 		for (k = 0; k < N; k++){
 			//printf("j, k: %zu %zu \n",j,k);
 			gsl_matrix_set(timResiduals,j,k,gsl_matrix_get(tmp,k,0));
-			printf("%e, ",gsl_matrix_get(timResiduals,j,k));
+			//printf("%e, ",gsl_matrix_get(timResiduals,j,k));
 		}
-		printf("/n");
+		//printf("/n");
 	}
 
 	gsl_matrix_free(tmp);
@@ -217,9 +217,9 @@ gsl_matrix * FullResiduals(struct estSrcParams * srcp, double alphaP, double del
 
 	FILE * fr;
 	fr = fopen("r.txt","w");
-	gsl_matrix_fprintf(fr,r,"%g");
+	gsl_matrix_fprintf(fr,r,"%e");
 	fclose(fr);
-
+	printf("Dimension of r: %zu %zu\n",r->size1,r->size2);
 	gsl_matrix_free(A);
 	gsl_matrix_free(C);
 

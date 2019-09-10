@@ -39,13 +39,14 @@ int main(int argc, char *argv[]){
     srcp = file2Srcparam(outFileName);
 
     N = (size_t)llp->N;
-    printf("N: %zu\n",N);
+    //printf("N: %zu\n",N);
     Np = (size_t)llp->Np;
-    printf("Np: %zu\n",Np);
+    //printf("Np: %zu\n",Np);
     tres = llp->s;
 
     gsl_matrix * timResiduals = gsl_matrix_calloc(Np,N);
     timResiduals = timingResiduals(srcp,llp);
+    printf("Dimension of timResiduals: %zu %zu\n", timResiduals->size1, timResiduals->size2);
 
     FILE * residuals;
     residuals = fopen("timingResiduals.txt","w");
