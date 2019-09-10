@@ -105,7 +105,7 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 
 	size_t i,j,k;
 
-	for (i == 0; i < Np; i++){
+	for (i = 0; i < Np; i++){
 		gsl_vector_set(psrPhase, i, gsl_vector_get(srcp->psrPhase, i));
 	}
 
@@ -113,7 +113,7 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 	gsl_vector_set(skyLocSrc, 1, cos(delta) * sin(alpha));
 	gsl_vector_set(skyLocSrc, 2, sin(delta));
 
-	for (j == 0; j < Np; j++){
+	for (j = 0; j < Np; j++){
 		gsl_vector_set(skyLocPsr, 0, cos(deltaP[j]) * cos(alphaP[j]));
 		gsl_vector_set(skyLocPsr, 1, cos(deltaP[j]) * sin(alphaP[j]));
 		gsl_vector_set(skyLocPsr, 2, sin(deltaP[j]));
@@ -123,7 +123,7 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 		printf("timing_theta is: %e\n",theta);
 		tmp = FullResiduals(srcp, alphaP[j], deltaP[j],gsl_vector_get(psrPhase,j),theta,yr);
 
-		for (k == 0; k < N; k++){
+		for (k = 0; k < N; k++){
 			gsl_matrix_set(timResiduals,j,k,gsl_matrix_get(tmp,k,0));
 		}
 	}
@@ -201,11 +201,11 @@ gsl_matrix * FullResiduals(struct estSrcParams * srcp, double alphaP, double del
 	FcC = Fc * tmpC2;
 	FcS = Fc * tmpS2;
 
-	for(i == 0; i < N; i++){
+	for(i = 0; i < N; i++){
 		omegaT[i] = omega * yr[i];
 	}
 
-	for(j == 0; j < 8; j++){
+	for(j = 0; j < 8; j++){
 		for(k = 0; k < N; k++){
 			gsl_matrix_set(A,k,j, FpC * cos(omegaT[k]));
 		}
