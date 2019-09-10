@@ -124,9 +124,11 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 		tmp = FullResiduals(srcp, alphaP[j], deltaP[j],gsl_vector_get(psrPhase,j),theta,yr, N);
 		printf("length of tmp: %zu %zu\n", tmp->size1, tmp->size2);
 		for (k = 0; k < N; k++){
-			printf("j, k: %zu %zu \n",j,k);
+			//printf("j, k: %zu %zu \n",j,k);
 			gsl_matrix_set(timResiduals,j,k,gsl_matrix_get(tmp,k,0));
+			printf("%e, ",gsl_matrix_get(timResiduals,j,k));
 		}
+		printf("/n");
 	}
 
 	gsl_matrix_free(tmp);
@@ -151,7 +153,7 @@ gsl_matrix * FullResiduals(struct estSrcParams * srcp, double alphaP, double del
 	thetaN = srcp->thetaN;
 
 	size_t i, j, k;
-	printf("Full residuals N: %zu\n", N);
+	//printf("Full residuals N: %zu\n", N);
 	gsl_matrix *C = gsl_matrix_calloc(8, 1);
 	gsl_matrix *A = gsl_matrix_calloc(N, 8);
 	gsl_matrix *r = gsl_matrix_calloc(N,1);
