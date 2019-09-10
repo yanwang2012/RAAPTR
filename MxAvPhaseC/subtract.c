@@ -130,7 +130,7 @@ gsl_matrix *timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *sp
 			gsl_matrix_set(timResiduals, j, k, gsl_matrix_get(tmp, k, 0));
 		}
 		FILE *f;
-		f = fopen("timingResiduals.txt", "w");
+		f = fopen("timingResiduals.txt", "w+");
 		gsl_matrix_fprintf(f, timResiduals, "%e");
 		fclose(f);
 		//printf("%e, ",gsl_matrix_get(timResiduals,j,k));
