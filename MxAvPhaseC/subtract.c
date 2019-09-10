@@ -26,12 +26,12 @@ struct estSrcParams *file2Srcparam(char *outputFileName)
 	}
 
 	gsl_vector *bestRealLoc = hdf52gslvector(SrcPar, "bestRealLoc");
-	/*
+	
 	FILE * fPtr;
 	fPtr = fopen("bestRealLoc.txt","w");
 	gsl_vector_fprintf(fPtr,bestRealLoc,"%f");
 	fclose(fPtr);
-	*/
+	
 	size_t nDim = bestRealLoc->size;
 	printf("nDim is: %zu \n", nDim);
 
@@ -52,12 +52,12 @@ struct estSrcParams *file2Srcparam(char *outputFileName)
 	{
 		gsl_vector_set(srcp->psrPhase, lpc1, gsl_vector_get(bestRealLoc, lpc1 + 7));
 	}
-	/*
+	
 	FILE * Fpsr;
 	Fpsr = fopen("psrPhase.txt","w");
 	gsl_vector_fprintf(Fpsr,srcp->psrPhase,"%f");
 	fclose(Fpsr);
-	*/
+	
 	status = H5Fclose(SrcPar);
 	if (status < 0)
 	{
@@ -76,13 +76,13 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 	size_t N;
 	/* estimated source parameters. */
 	double alpha, delta, omega, phi0, Amp, iota, thetaN;
-	gsl_vector *psrPhase = gsl_vector_calloc(Np);
-	gsl_vector *skyLocSrc = gsl_vector_calloc(3);
-	gsl_vector *skyLocPsr = gsl_vector_calloc(3);
+
+	gsl_vector *skyLocSrc = gsl_vector_calloc((size_t)3);
+	gsl_vector *skyLocPsr = gsl_vector_calloc((size_t)3);
 	/* pulsar parameters. */
 	double *alphaP, *deltaP, *yr;
 	double theta, res;
-	gsl_matrix * tmp = gsl_matrix_calloc(N,1);
+
 
 	alpha = srcp->alpha;
 	delta = srcp->delta;
@@ -91,6 +91,7 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 	Amp = srcp->Amp;
 	iota = srcp->iota;
 	thetaN = srcp->thetaN;
+
 	alphaP = splParams->alphaP;
 	deltaP = splParams->deltaP;
 	yr = splParams->yr;
@@ -98,6 +99,8 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 	N = (size_t)splParams->N;
 
 	gsl_matrix * timResiduals = gsl_matrix_calloc(Np,N);
+	gsl_vector *psrPhase = gsl_vector_calloc(Np);
+	gsl_matrix * tmp = gsl_matrix_calloc(N,(size_t)1);
 
 	size_t i,j;
 
@@ -118,6 +121,7 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 
 		gsl_blas_ddot(skyLocSrc, skyLocPsr, &res);
 		theta = acos(res);
+		printf("timing_theta is: %e\n",theta);
 		tmp = FullResiduals(srcp, alphaP[i], deltaP[i],gsl_vector_get(psrPhase,i),theta,yr);
 
 		for (j = 0; j < N; j++){
@@ -209,6 +213,11 @@ gsl_matrix * FullResiduals(struct estSrcParams * srcp, double alphaP, double del
 	}
 
 	gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, A, C, 0, r);
+
+	FILE * fr;
+	fr = fopen("r.txt","w");
+	gsl_matrix_fprintf(fr,r,"%g");
+	fclose(fr);
 
 	gsl_matrix_free(A);
 	gsl_matrix_free(C);
