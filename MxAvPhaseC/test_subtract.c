@@ -50,8 +50,8 @@ int main(int argc, char *argv[]){
 
     FILE * f;
     f = fopen("timingResiduals.txt", "w");
-    fclose(f);
     printMatrix(f,timResiduals,Np,N);// print timing residual to file f. 
+    fclose(f);
     
     printParam(srcp);
     srcpara_free(srcp);
