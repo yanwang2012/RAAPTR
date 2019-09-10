@@ -121,7 +121,7 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 		gsl_blas_ddot(skyLocSrc, skyLocPsr, &res);
 		theta = acos(res);
 		printf("timing_theta is: %e\n",theta);
-		tmp = FullResiduals(srcp, alphaP[j], deltaP[j],gsl_vector_get(psrPhase,j),theta,yr);
+		tmp = FullResiduals(srcp, alphaP[j], deltaP[j],gsl_vector_get(psrPhase,j),theta,yr, N);
 		printf("length of tmp: %zu %zu\n", tmp->size1, tmp->size2);
 		for (k = 0; k < N; k++){
 			printf("j, k: %zu %zu \n",j,k);
@@ -137,12 +137,10 @@ gsl_matrix * timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *s
 	return timResiduals;
 }
 
-gsl_matrix * FullResiduals(struct estSrcParams * srcp, double alphaP, double deltaP,double phiI, double theta, double *yr)
+gsl_matrix * FullResiduals(struct estSrcParams * srcp, double alphaP, double deltaP,double phiI, double theta, double *yr, size_t N)
 {
 
 
-	size_t N = sizeof(yr)/sizeof(yr[0]);
-	printf("Size of yr is: %zu\n", N);
 	double alpha, delta, omega, phi0, Amp, iota, thetaN;
 	alpha = srcp->alpha;
 	delta = srcp->delta;
@@ -153,6 +151,7 @@ gsl_matrix * FullResiduals(struct estSrcParams * srcp, double alphaP, double del
 	thetaN = srcp->thetaN;
 
 	size_t i, j, k;
+	printf("Full residuals N: %zu\n", N);
 	gsl_matrix *C = gsl_matrix_calloc(8, 1);
 	gsl_matrix *A = gsl_matrix_calloc(N, 8);
 	gsl_matrix *r = gsl_matrix_calloc(N,1);

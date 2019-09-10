@@ -23,4 +23,4 @@ struct estSrcParams * srcp_alloc(size_t);
 void printParam(struct estSrcParams *);
 void srcpara_free(struct estSrcParams *);
 gsl_matrix * timingResiduals(struct estSrcParams *, struct llr_pso_params *);
-gsl_matrix * FullResiduals(struct estSrcParams *, double, double, double, double, double *);
+gsl_matrix * FullResiduals(struct estSrcParams *, double, double, double, double, double *, size_t);
