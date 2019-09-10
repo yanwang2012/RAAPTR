@@ -3,6 +3,7 @@
 #include "hdf5_hl.h"
 #include "gslhdf5_io.h"
 #include <gsl/gsl_vector.h>
+#include <gsl/gsl_matrix.h>
 #include <sys/stat.h>
 #include <stdio.h>
 #include <string.h>
