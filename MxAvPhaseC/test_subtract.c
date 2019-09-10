@@ -43,12 +43,12 @@ int main(int argc, char *argv[]){
 
     FILE * residuals;
     residuals = fopen("timingResiduals.txt","w");
-    gsl_matrix_fprintf(residuals,timingResiduals,"g");
+    gsl_matrix_fprintf(residuals,timResiduals,"g");
     fclose(residuals);
 
     printParam(srcp);
     srcpara_free(srcp);
-    gsl_matrix_free(timingResiduals);
+    gsl_matrix_free(timResiduals);
 
     /* success message */
     printf("All Done!");
