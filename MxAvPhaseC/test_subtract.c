@@ -48,6 +48,14 @@ int main(int argc, char *argv[]){
     timResiduals = timingResiduals(srcp,llp);
     printf("Dimension of timResiduals: %zu %zu\n", timResiduals->size1, timResiduals->size2);
 
+    /*! Subtract estimated timing residuals from input timing residuals.*/
+    size_t i,j;
+    for(i = 0; i < Np; i++){
+        for(j = 0; j < N; j++){
+            gsl_matrix_set(timResiduals,i,j, tres[i][j] - gsl_matrix_get(timResiduals,i,j)); 
+        }
+    }
+
     FILE * f;
     f = fopen("timingResiduals.txt", "w");
     printMatrix(f,timResiduals,Np,N);// print timing residual to file f. 
