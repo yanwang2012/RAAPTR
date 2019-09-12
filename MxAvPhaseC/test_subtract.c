@@ -48,19 +48,28 @@ int main(int argc, char *argv[]){
     timResiduals = timingResiduals(srcp,llp);
     printf("Dimension of timResiduals: %zu %zu\n", timResiduals->size1, timResiduals->size2);
 
-    /*! Subtract estimated timing residuals from input timing residuals.*/
+    /* Subtract estimated timing residual from source. */
     size_t i,j;
     for(i = 0; i < Np; i++){
         for(j = 0; j < N; j++){
-            gsl_matrix_set(timResiduals,i,j, tres[i][j] - gsl_matrix_get(timResiduals,i,j)); 
+            gsl_matrix_set(timResiduals,i,j, tres[i][j] - gsl_matrix_get(timResiduals,i,j));
         }
     }
 
+    /* Put subtracted timing residuals into input file.*/
+   /* herr_t status;
+    hid_t inFile;
+    inFile = H5Fopen(inFileName, H5F_ACC_RDONLY, H5P_DEFAULT);
+    gslmatrix2hdf5(inFile,"timingResiduals",timResiduals);
+    H5Fclose(inFile);*/
+
+    
     FILE * f;
     f = fopen("timingResiduals.txt", "w");
     printMatrix(f,timResiduals,Np,N);// print timing residual to file f. 
     fclose(f);
     
+
     printParam(srcp);
     srcpara_free(srcp);
     gsl_matrix_free(timResiduals);
