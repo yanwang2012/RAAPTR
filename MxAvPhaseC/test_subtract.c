@@ -50,7 +50,7 @@ int main(int argc, char *argv[]){
         for(int n = 0; n < Np; n++){
             fprintf(fsrc,"%e\t", tres[m][n]);
         }
-        printf(fsrc,"\n");
+        fprintf(fsrc,"\n");
     }
     fclose(fsrc);
 
