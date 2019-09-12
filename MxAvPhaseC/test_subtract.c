@@ -44,9 +44,24 @@ int main(int argc, char *argv[]){
     //printf("Np: %zu\n",Np);
     tres = llp->s;
 
+    FILE * fsrc;
+    fsrc = fopen("SrcRes.txt","w");
+    for(int m = 0; m < Np; m++){
+        for(int n = 0; n < Np; n++){
+            fprintf(fsrc,"%e\t", tres[m][n]);
+        }
+        printf(fsrc,"\n");
+    }
+    fclose(fsrc);
+
     gsl_matrix * timResiduals = gsl_matrix_calloc(Np,N);
     timResiduals = timingResiduals(srcp,llp);
     printf("Dimension of timResiduals: %zu %zu\n", timResiduals->size1, timResiduals->size2);
+
+    FILE * fest;
+    fest = fopen("estRes.txt","w");
+    printMatrix(fest,timResiduals,Np,N);
+    fclose(fest);
 
     /* Subtract estimated timing residual from source. */
     size_t i,j;
