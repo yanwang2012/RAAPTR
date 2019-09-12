@@ -33,12 +33,16 @@ defining the search interval along a particular parameter for PSO.
 ## Format of input data file
 See the documentation for the simulation data generation code.
 */
- 
-int main(int argc, char *argv[]){
+
+int main(int argc, char *argv[])
+{
 	/* General purpose variables */
 	size_t lpc1, lpc2, lpc3;
-	if (argc != 6){
-		fprintf(stdout,"Usage: %s parameter_file_path input_file_path output_file_path mp_av_select number_of_iterations\n", argv[0]);
+	size_t Np, N;
+	double **tres;
+	if (argc != 6)
+	{
+		fprintf(stdout, "Usage: %s parameter_file_path input_file_path output_file_path mp_av_select number_of_iterations\n", argv[0]);
 		return 1;
 	}
 	/* Full path to search parameter file */
@@ -54,71 +58,146 @@ int main(int argc, char *argv[]){
 	/* Which algorithm to use */
 	char *mp_av_select = argv[4];
 
-    /* Number of iterations */
-    int num_ite = atoi(argv[5]); // transfer char to integer
-	// printf("Number of iteration is: %d\n", num_ite);
-    for (int ite = 1; ite < num_ite; ite++)
-    {
-        /* Multi PSO Process */
-    
-    
-	/* Error handling off */
-	gsl_error_handler_t *old_handler = gsl_set_error_handler_off ();
+	/* Number of iterations */
+	int num_ite = atoi(argv[5]); // transfer char to integer
+								 // printf("Number of iteration is: %d\n", num_ite);
+	for (int ite = 1; ite < num_ite; ite++)
+	{
+		/* Multi PSO Process */
 
-	//Obtain fitness function parameter struct
-	struct fitFuncParams *ffp;
-	ffp = file2ffparam(srchParamsFile);
+		/* Error handling off */
+		gsl_error_handler_t *old_handler = gsl_set_error_handler_off();
 
-	/*------------------------------------------
-	Transfer output files to estSrcParams struct, need to be done.
+		//Obtain fitness function parameter struct
+		struct fitFuncParams *ffp;
+		ffp = file2ffparam(srchParamsFile);
+
+		/* Analyze input file*/
+		fprintf(stdout, "Analyzing file %s \n", inputFileName);
+		fprintf(stdout, "Output will be stored in %s\n", outputFileName);
+		fprintf(stdout, "******************************************\n");
+		/*Main function. Will be called several times according to user specified requirement.*/
+		perfeval_omp(ffp, inputFileName, outputFileName, mp_av_select);
+
+		/*------------------------------------------
+	Subtraction estimated timing residuals from source.
 	--------------------------------------------*/
-	struct estSrcParams *srcp;
-	srcp = file2Srcparam(outputFileName);
-	
-	/* Analyze input file*/
-	fprintf(stdout, "Analyzing file %s \n",inputFileName);
-	fprintf(stdout, "Output will be stored in %s\n",outputFileName);
-	fprintf(stdout,"******************************************\n");
-	/*Main function. Will be called several times according to user specified requirement.*/
-    perfeval_omp(ffp, inputFileName, outputFileName, mp_av_select);
-	
-	/* ----------------------------
+		struct estSrcParams *srcp;
+		struct llr_pso_params *llp;
+		srcp = file2Srcparam(outputFileName);
+		//Load data from specified .hdf5 input file
+		herr_t status;
+		hid_t inFile = H5Fopen(inputFileName, H5F_ACC_RDONLY, H5P_DEFAULT);
+		if (inFile < 0)
+		{
+			fprintf(stdout, "Error opening file\n");
+			abort();
+		}
+		char genHypothesis[10];
+		status = H5LTread_dataset_string(inFile, "genHypothesis", genHypothesis);
+		if (status < 0)
+		{
+			fprintf(stdout, "Error reading genHypothesis\n");
+			abort();
+		}
+
+		llp = loadfile2llrparam(inFile);
+
+		N = (size_t)llp->N;
+		//printf("N: %zu\n",N);
+		Np = (size_t)llp->Np;
+		//printf("Np: %zu\n",Np);
+		tres = llp->s;
+		/*
+    FILE * fsrc;
+    fsrc = fopen("SrcRes.txt","w");
+    for(int m = 0; m < Np; m++){
+        for(int n = 0; n < Np; n++){
+            fprintf(fsrc,"%e\t", tres[m][n]);
+        }
+        fprintf(fsrc,"\n");
+    }
+    fclose(fsrc);
+*/
+		gsl_matrix *timResiduals = gsl_matrix_calloc(Np, N);
+		timResiduals = timingResiduals(srcp, llp);
+		//printf("Dimension of timResiduals: %zu %zu\n", timResiduals->size1, timResiduals->size2);
+		/*
+    FILE * fest;
+    fest = fopen("estRes.txt","w");
+    printMatrix(fest,timResiduals,Np,N);
+    fclose(fest);
+*/
+
+		size_t i, j;
+		for (i = 0; i < Np; i++)
+		{
+			for (j = 0; j < N; j++)
+			{
+				gsl_matrix_set(timResiduals, i, j, tres[i][j] - gsl_matrix_get(timResiduals, i, j));
+			}
+		}
+
+		/* Put subtracted timing residuals into input file as the new input file. */
+		herr_t status;
+		hid_t inFile;
+		inFile = H5Fopen(inputFileName, H5F_ACC_RDONLY, H5P_DEFAULT);
+		gslmatrix2hdf5(inFile, "timingResiduals", timResiduals);
+		H5Fclose(inFile);
+
+		/*
+    FILE * f;
+    f = fopen("timingResiduals.txt", "w");
+    printMatrix(f,timResiduals,Np,N);// print timing residual to file f. 
+    fclose(f);
+*/
+
+		/* Creat new output file. */
+		sprintf(outputFileName, "%s_%d", argv[3], ite);
+
+		/* ----------------------------
 	Deallocate storage
 	-----------------------------*/
-	ffparam_free(ffp);
-	srcpara_free(srcp);
+		ffparam_free(ffp);
+		srcpara_free(srcp);
+		srcpara_free(srcp);
+		gsl_matrix_free(timResiduals);
 	}
 	/* Everything executed successfully */
+	printf("All Done!");
 	return 0;
 }
 
-
-struct fitFuncParams * file2ffparam(char *srchParamsFile){
+struct fitFuncParams *file2ffparam(char *srchParamsFile)
+{
 
 	herr_t status;
 	hid_t srchPar = H5Fopen(srchParamsFile, H5F_ACC_RDONLY, H5P_DEFAULT);
-	if (srchPar < 0){
-		fprintf(stdout,"Error opening file %s\n", srchParamsFile);
+	if (srchPar < 0)
+	{
+		fprintf(stdout, "Error opening file %s\n", srchParamsFile);
 		abort();
 	}
 
 	/* Read xmaxmin from srchParamsFile file */
-	gsl_matrix *xmaxmin = hdf52gslmatrix(srchPar,"xmaxmin");
+	gsl_matrix *xmaxmin = hdf52gslmatrix(srchPar, "xmaxmin");
 	/* Search Space dimensionality */
 	size_t nDim = xmaxmin->size1;
 
 	/* transfer xmaxmin to fitness function parameter struct */
 	struct fitFuncParams *ffp = ffparam_alloc(nDim);
-    size_t lpc1;
-	for(lpc1 = 0; lpc1 < nDim; lpc1++){
-		gsl_vector_set(ffp->rmin,lpc1,gsl_matrix_get(xmaxmin,lpc1,1));
-		gsl_vector_set(ffp->rangeVec,lpc1,gsl_matrix_get(xmaxmin,lpc1,0)-gsl_matrix_get(xmaxmin,lpc1,1));
+	size_t lpc1;
+	for (lpc1 = 0; lpc1 < nDim; lpc1++)
+	{
+		gsl_vector_set(ffp->rmin, lpc1, gsl_matrix_get(xmaxmin, lpc1, 1));
+		gsl_vector_set(ffp->rangeVec, lpc1, gsl_matrix_get(xmaxmin, lpc1, 0) - gsl_matrix_get(xmaxmin, lpc1, 1));
 		//fprintf(stdout,"%f %f\n",gsl_vector_get(ffp->rmin,lpc1), gsl_vector_get(ffp->rangeVec,lpc1));
 	}
 	/* Close file */
 	status = H5Fclose(srchPar);
-	if(status < 0){
-		fprintf(stdout,"Error closing file %s \n", srchParamsFile);
+	if (status < 0)
+	{
+		fprintf(stdout, "Error closing file %s \n", srchParamsFile);
 	}
 
 	gsl_matrix_free(xmaxmin);
