@@ -15,7 +15,11 @@
 
 ## TODO
 •	Allow user specification of PSO parameters in perfeval_spmd and perfeval_omp.
+
 •	Allow change of number of PSO runs in perfeval_spmd and perfeval_omp.
+
 •	Change unsigned int to size_t for better portability.
+
 •	Remove double **s in LLR_Mp_Av.c since it can be replaced with splParams->s[i] (see Aug 28, 2019 entry in "PTA SuperN Lab Notebook.docx").
+
 •	Name of the search parameter file used should be stored in each output file.
