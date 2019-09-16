@@ -120,7 +120,8 @@ int main(int argc, char *argv[])
     fclose(fsrc);
 */
 		gsl_matrix *timResiduals = gsl_matrix_calloc(Np, N);
-		timResiduals = timingResiduals(srcp, llp);
+		gsl_matrix * estRes = gsl_matrix_calloc(Np, N);
+		estRes = timingResiduals(srcp, llp);
 		//printf("Dimension of timResiduals: %zu %zu\n", timResiduals->size1, timResiduals->size2);
 		/*
     FILE * fest;
@@ -134,7 +135,7 @@ int main(int argc, char *argv[])
 		{
 			for (j = 0; j < N; j++)
 			{
-				gsl_matrix_set(timResiduals, i, j, tres[i][j] - gsl_matrix_get(timResiduals, i, j));
+				gsl_matrix_set(timResiduals, i, j, tres[i][j] - gsl_matrix_get(estRes, i, j));
 			}
 		}
 
