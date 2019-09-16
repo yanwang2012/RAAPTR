@@ -1,12 +1,12 @@
 # Makefile for Multi_PSO
-# Yiqian-Qian 06/24/2019.
+# Yiqian-Qian 9/16/2019.
 
 OBJ = Multi_PSO.o perfeval_omp.o  LLR_Mp_Av.o  maxphaseutils.o ptapso.o gslhdf5_io.o subtract.o
 CC = gcc-9 -O3
-GSLFLAGS :=  /usr/local/Cellar/gsl/2.6/include
-GSLLIBS := /usr/local/Cellar/gsl/2.6/lib
-HDF5FLAGS := /usr/local/Cellar/hdf5/1.10.5_1/include
-HDF5LIBS := /usr/local/Cellar/hdf5/1.10.5_1/lib
+GSLFLAGS :=  $(TACC_GSL_INC)
+GSLLIBS := $(TACC_GSL_LIB)
+HDF5FLAGS := $(TACC_HDF5_INC)
+HDF5LIBS := $(TACC_HDF5_LIB)
 
 Multi_PSO.out: $(OBJ)
 	$(CC) -fopenmp $(OBJ)  -L$(HDF5LIBS) -lhdf5 -lhdf5_hl -lz -L$(GSLLIBS) -lm -lgsl -lgslcblas -o Multi_PSO.out
