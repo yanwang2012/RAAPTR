@@ -121,8 +121,9 @@ gsl_matrix *timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *sp
 
 		gsl_blas_ddot(skyLocSrc, skyLocPsr, &res);
 		theta = acos(res);
+		double PsrPhase = gsl_vector_get(psrPhase,j);
 		//printf("timing_theta is: %e\n",theta);
-		tmp = FullResiduals(srcp, alphaP[j], deltaP[j], gsl_vector_get(psrPhase, j), theta, yr, N);
+		tmp = FullResiduals(srcp, alphaP[j], deltaP[j], PsrPhase, theta, yr, N);
 		//printf("length of tmp: %zu %zu\n", tmp->size1, tmp->size2);
 		for (k = 0; k < N; k++)
 		{
