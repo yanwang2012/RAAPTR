@@ -1,15 +1,15 @@
 # Makefile for Multi_PSO
 # Yiqian-Qian 06/24/2019.
 
-OBJ = Multi_PSO.o perfeval_omp.o  LLR_Mp_Av.o  maxphaseutils.o ptapso.o gslhdf5_io.o
-CC = gcc-9 -O3 -fopenmp
-GSLFLAGS :=  /usr/local/Cellar/gsl/2.5/include
-GSLLIBS := /usr/local/Cellar/gsl/2.5/lib
+OBJ = Multi_PSO.o perfeval_omp.o  LLR_Mp_Av.o  maxphaseutils.o ptapso.o gslhdf5_io.o subtract.o
+CC = gcc-9 -O3
+GSLFLAGS :=  /usr/local/Cellar/gsl/2.6/include
+GSLLIBS := /usr/local/Cellar/gsl/2.6/lib
 HDF5FLAGS := /usr/local/Cellar/hdf5/1.10.5_1/include
 HDF5LIBS := /usr/local/Cellar/hdf5/1.10.5_1/lib
 
 Multi_PSO.out: $(OBJ)
-	$(CC) $(OBJ)  -L$(HDF5LIBS) -lhdf5 -lhdf5_hl -lz -L$(GSLLIBS) -lm -lgsl -lgslcblas -o Multi_PSO.out
+	$(CC) -fopenmp $(OBJ)  -L$(HDF5LIBS) -lhdf5 -lhdf5_hl -lz -L$(GSLLIBS) -lm -lgsl -lgslcblas -o Multi_PSO.out
 
 Multi_PSO.o: Multi_PSO.c
 	$(CC) -c  -I$(HDF5FLAGS) -I$(GSLFLAGS) Multi_PSO.c
@@ -18,7 +18,7 @@ gslhdf5_io.o: gslhdf5_io.c
 	$(CC) -c -I$(HDF5FLAGS) -I$(GSLFLAGS) gslhdf5_io.c
 
 perfeval_omp.o: perfeval_omp.c
-	$(CC) -c -I$(HDF5FLAGS) -I$(GSLFLAGS) perfeval_omp.c
+	$(CC) -c -fopenmp -I$(HDF5FLAGS) -I$(GSLFLAGS) perfeval_omp.c
 
 LLR_Mp_Av.o: LLR_Mp_Av.c
 	$(CC) -c LLR_Mp_Av.c -I$(GSLFLAGS)
@@ -28,6 +28,9 @@ maxphaseutils.o: maxphaseutils.c
 
 ptapso.o: ptapso.c
 	$(CC) -c ptapso.c -I$(GSLFLAGS)
+
+subtract.o: subtract.c
+	$(CC) -c -I$(HDF5FLAGS) -I$(GSLFLAGS) subtract.c
 
 .PHONY:clean
 clean:
