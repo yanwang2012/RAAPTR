@@ -121,9 +121,9 @@ gsl_matrix *timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *sp
 
 		gsl_blas_ddot(skyLocSrc, skyLocPsr, &res);
 		theta = acos(res);
-		double PsrPhase = gsl_vector_get(psrPhase,j);
+		double phiI = gsl_vector_get(psrPhase, j);
 		//printf("timing_theta is: %e\n",theta);
-		tmp = FullResiduals(srcp, alphaP[j], deltaP[j], PsrPhase, theta, yr, N);
+		tmp = FullResiduals(srcp, alphaP[j], deltaP[j], phiI, theta, yr, N);
 		//printf("length of tmp: %zu %zu\n", tmp->size1, tmp->size2);
 		for (k = 0; k < N; k++)
 		{
@@ -154,7 +154,7 @@ gsl_matrix *FullResiduals(struct estSrcParams *srcp, double alphaP, double delta
 	iota = srcp->iota;
 	thetaN = srcp->thetaN;
 
-	size_t i, j, k;
+	size_t i, j;
 	//printf("Full residuals N: %zu\n", N);
 	gsl_matrix *C = gsl_matrix_calloc(8, 1);
 	gsl_matrix *A = gsl_matrix_calloc(N, 8);
@@ -183,9 +183,9 @@ gsl_matrix *FullResiduals(struct estSrcParams *srcp, double alphaP, double delta
 	Fc = Pc / (1.0 - cos(theta));
 
 	CosIota = cos(iota);
-	TwoThetaN = 2 * thetaN;
-	tmp1 = Amp * (1 + pow(CosIota, 2.0));
-	tmp2 = Amp * 2 * CosIota;
+	TwoThetaN = 2.0 * thetaN;
+	tmp1 = Amp * (1.0 + pow(CosIota, 2.0));
+	tmp2 = Amp * 2.0 * CosIota;
 	tmpC = cos(TwoThetaN);
 	tmpS = sin(TwoThetaN);
 
@@ -210,12 +210,16 @@ gsl_matrix *FullResiduals(struct estSrcParams *srcp, double alphaP, double delta
 		omegaT[i] = omega * yr[i];
 	}
 
-	for (j = 0; j < 8; j++)
+	for (j = 0; j < N; j++)
 	{
-		for (k = 0; k < N; k++)
-		{
-			gsl_matrix_set(A, k, j, FpC * cos(omegaT[k]));
-		}
+		gsl_matrix_set(A, j, 0, FpC * cos(omegaT[j]));
+		gsl_matrix_set(A, j, 1, FpS * cos(omegaT[j]));
+		gsl_matrix_set(A, j, 2, FpS * sin(omegaT[j]));
+		gsl_matrix_set(A, j, 3, FpC * sin(omegaT[j]));
+		gsl_matrix_set(A, j, 4, FcC * cos(omegaT[j]));
+		gsl_matrix_set(A, j, 5, FcS * cos(omegaT[j]));
+		gsl_matrix_set(A, j, 6, FcS * sin(omegaT[j]));
+		gsl_matrix_set(A, j, 7, FcC * sin(omegaT[j]));
 	}
 
 	gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, A, C, 0, r);
@@ -256,13 +260,16 @@ struct estSrcParams *srcp_alloc(size_t nDim)
 	srcp->psrPhase = gsl_vector_calloc(nDim);
 	return srcp;
 }
-void printMatrix(FILE * f, gsl_matrix * m, size_t row, size_t col){
-	size_t i,j;
-	for(i = 0; i < row; i++){
-		for(j = 0; j < col; j++){
-			fprintf(f,"%e\t", gsl_matrix_get(m,i,j));
+void printMatrix(FILE *f, gsl_matrix *m, size_t row, size_t col)
+{
+	size_t i, j;
+	for (i = 0; i < row; i++)
+	{
+		for (j = 0; j < col; j++)
+		{
+			fprintf(f, "%e\t", gsl_matrix_get(m, i, j));
 		}
 
-		fprintf(f,"\n");
+		fprintf(f, "\n");
 	}
 }
