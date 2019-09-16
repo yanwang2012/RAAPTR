@@ -46,8 +46,8 @@ int main(int argc, char *argv[]){
 
     FILE * fsrc;
     fsrc = fopen("SrcRes.txt","w");
-    for(int m = 0; m < Np; m++){
-        for(int n = 0; n < Np; n++){
+    for(size_t m = 0; m < Np; m++){
+        for(size_t n = 0; n < N; n++){
             fprintf(fsrc,"%e\t", tres[m][n]);
         }
         fprintf(fsrc,"\n");
