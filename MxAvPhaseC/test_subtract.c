@@ -55,19 +55,20 @@ int main(int argc, char *argv[]){
     fclose(fsrc);
 
     gsl_matrix * timResiduals = gsl_matrix_calloc(Np,N);
-    timResiduals = timingResiduals(srcp,llp);
+    gsl_matrix * estRes = gsl_matrix_calloc(Np,N);
+    estRes = timingResiduals(srcp,llp);
     printf("Dimension of timResiduals: %zu %zu\n", timResiduals->size1, timResiduals->size2);
 
     FILE * fest;
     fest = fopen("estRes.txt","w");
-    printMatrix(fest,timResiduals,Np,N);
+    printMatrix(fest,estRes,Np,N);
     fclose(fest);
 
     /* Subtract estimated timing residual from source. */
     size_t i,j;
     for(i = 0; i < Np; i++){
         for(j = 0; j < N; j++){
-            gsl_matrix_set(timResiduals,i,j, tres[i][j] - gsl_matrix_get(timResiduals,i,j));
+            gsl_matrix_set(timResiduals,i,j, tres[i][j] - gsl_matrix_get(estRes,i,j));
         }
     }
 
