@@ -3,6 +3,6 @@
 *.out
 .vscode
 makefile_omp_local_QYQ
-makefile_MultiPSO_local
+makefile_multi_local
 *.exe
 *.txt
