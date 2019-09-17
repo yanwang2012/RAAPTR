@@ -55,14 +55,16 @@ int main(int argc, char *argv[])
 
 	/* Path to output file */
 	char *outputFileName = argv[3];
+	int length = strlen(outputFileName);
+	printf("Length of outputFileName is %d\n",length);
 
 	/* Which algorithm to use */
 	char *mp_av_select = argv[4];
 
 	/* Number of iterations */
 	int num_ite = atoi(argv[5]); // transfer char to integer
-								 // printf("Number of iteration is: %d\n", num_ite);
-	for (int ite = 1; ite < num_ite; ite++)
+	printf("Number of iteration is: %d\n", num_ite);
+	for (int ite = 0; ite < num_ite; ite++)
 	{
 		/* Multi PSO Process */
 
@@ -145,7 +147,10 @@ int main(int argc, char *argv[])
 */
 
 		/* Creat new output file. */
-		sprintf(outputFileName, "%s_%d", argv[3], ite);
+		char newName[length+3];
+		sprintf(newName, "%s_%d", argv[3], ite);
+		printf("New outputFileName = %s\n", newName);
+		outputFileName = newName;
 
 		/* ----------------------------
 	Deallocate storage
