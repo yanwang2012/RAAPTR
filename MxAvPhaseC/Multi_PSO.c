@@ -93,13 +93,6 @@ int main(int argc, char *argv[])
 			fprintf(stdout, "Error opening file\n");
 			abort();
 		}
-		char genHypothesis[10];
-		status = H5LTread_dataset_string(inFile, "genHypothesis", genHypothesis);
-		if (status < 0)
-		{
-			fprintf(stdout, "Error reading genHypothesis\n");
-			abort();
-		}
 
 		llp = loadfile2llrparam(inFile);
 
