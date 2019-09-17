@@ -140,9 +140,6 @@ int main(int argc, char *argv[])
 		}
 
 		/* Put subtracted timing residuals into input file as the new input file. */
-		herr_t status;
-		hid_t inFile;
-		inFile = H5Fopen(inputFileName, H5F_ACC_RDONLY, H5P_DEFAULT);
 		gslmatrix2hdf5(inFile, "timingResiduals", timResiduals);
 		H5Fclose(inFile);
 
