@@ -2,7 +2,7 @@
 # Yiqian-Qian 9/16/2019.
 
 OBJ = Multi_PSO.o perfeval_omp.o  LLR_Mp_Av.o  maxphaseutils.o ptapso.o gslhdf5_io.o subtract.o
-CC = gcc-9 -O3
+CC = gcc -O3
 GSLFLAGS :=  $(TACC_GSL_INC)
 GSLLIBS := $(TACC_GSL_LIB)
 HDF5FLAGS := $(TACC_HDF5_INC)
