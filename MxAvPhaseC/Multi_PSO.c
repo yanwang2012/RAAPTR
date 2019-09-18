@@ -64,6 +64,7 @@ int main(int argc, char *argv[])
 	/* Number of iterations */
 	int num_ite = atoi(argv[5]); // transfer char to integer
 	printf("Number of iteration is: %d\n", num_ite);
+
 	for (int ite = 0; ite < num_ite; ite++)
 	{
 		/* Multi PSO Process */
@@ -137,7 +138,10 @@ int main(int argc, char *argv[])
 
 		/* Put subtracted timing residuals into input file as the new input file. */
 		gslmatrix2hdf5(inFile, "timingResiduals", timResiduals);
-		H5Fclose(inFile);
+		status = H5Fclose(inFile);
+		if(status < 0){
+			printf("Error closing file: %s\n", inputFileName);
+		}
 
 		/*
     FILE * f;
