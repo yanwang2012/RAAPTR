@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
 			}
 
 			/* Put subtracted timing residuals into input file as the new input file. */
-			double buffer[Np][N];
+			double buffer[(int)Np][(int)N];
 			size_t i, j;
 			for (i = 0; i < Np; i++) {
 				for (j = 0; j < N; j++){
@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
 	         -----------------------------*/
 
 			srcpara_free(srcp);
-			llp_para_free(llp);
+			llrparam_free(llp);
 			gsl_matrix_free(timResiduals);
 		}
 		ffparam_free(ffp);
