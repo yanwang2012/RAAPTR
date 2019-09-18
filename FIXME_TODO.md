@@ -1,7 +1,7 @@
 ## FIXME
 •	[FIXED] There appear to be duplicate mpavinfile2hdf5.m, one in GENSIMDATA and one in MxAvPhase. The latter is the latest version. Investigate and remove the one in GENSIMDATA.
 
-•	There appear to be duplicate mpavoutfile2mat.m, one in GENSIMDATA and one in MxAvPhase. Investigate and remove the one in GENSIMDATA.
+•	[FIXED] There appear to be duplicate mpavoutfile2mat.m, one in GENSIMDATA and one in MxAvPhase. Investigate and remove the one in GENSIMDATA.
 
 •	Assign only as many gsl_rng * as the number of PSO runs (perfeval_omp.c). Right now, the number of gsl_rng * is hard coded to 8 (the number of hard coded seeds).
 
