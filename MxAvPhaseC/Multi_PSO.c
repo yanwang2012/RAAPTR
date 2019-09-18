@@ -138,6 +138,7 @@ int main(int argc, char *argv[])
 
 		/* Put subtracted timing residuals into input file as the new input file. */
 		gslmatrix2hdf5(inFile, "timingResiduals", timResiduals);
+		// close file.
 		status = H5Fclose(inFile);
 		if(status < 0){
 			printf("Error closing file: %s\n", inputFileName);
