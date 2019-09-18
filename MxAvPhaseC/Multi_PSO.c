@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 			srcp = file2Srcparam(outputFileName);
 			//Load data from specified .hdf5 input file
 			herr_t status;
-			hid_t inFile = H5Fopen(inputFileName, H5F_ACC_RDONLY, H5P_DEFAULT);
+			hid_t inFile = H5Fopen(inputFileName, H5F_ACC_RDWR, H5P_DEFAULT);
 			if (inFile < 0)
 			{
 				fprintf(stdout, "Error opening file\n");
