@@ -123,11 +123,11 @@ int main(int argc, char *argv[])
 			estRes = timingResiduals(srcp, llp);
 			//printf("Dimension of timResiduals: %zu %zu\n", timResiduals->size1, timResiduals->size2);
 			/*
-    FILE * fest;
-    fest = fopen("estRes.txt","w");
-    printMatrix(fest,timResiduals,Np,N);
-    fclose(fest);
-*/
+    			FILE * fest;
+    			fest = fopen("estRes.txt","w");
+    			printMatrix(fest,timResiduals,Np,N);
+    			fclose(fest);
+			 */
 
 			size_t i, j;
 			for (i = 0; i < Np; i++)
@@ -139,7 +139,17 @@ int main(int argc, char *argv[])
 			}
 
 			/* Put subtracted timing residuals into input file as the new input file. */
-			gslmatrix2hdf5(inFile, "timingResiduals", timResiduals);
+			double buffer[Np][N];
+			size_t i, j;
+			for (i = 0; i < Np; i++) {
+				for (j = 0; j < N; j++){
+					buffer[i][j] = gsl_matrix_get(timingResiduals,i,j);
+				}
+			}
+			hid_t dset_id = H5Dopen1(inFile,"timingResiduals"); // Open an existing dataset.
+			status = H5Dwrite(dset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, buffer);
+			// Close dataset.
+			H5Dclose(dset_id);
 			// close file.
 			status = H5Fclose(inFile);
 			if (status < 0)
@@ -148,11 +158,11 @@ int main(int argc, char *argv[])
 			}
 
 			/*
-    FILE * f;
-    f = fopen("timingResiduals.txt", "w");
-    printMatrix(f,timResiduals,Np,N);// print timing residual to file f. 
-    fclose(f);
-*/
+   			 FILE * f;
+   			 f = fopen("timingResiduals.txt", "w");
+   			 printMatrix(f,timResiduals,Np,N);// print timing residual to file f. 
+   			 fclose(f);
+             */
 
 			/* Creat new output file. */
 			char newName[length + 2];
@@ -165,7 +175,7 @@ int main(int argc, char *argv[])
 	         -----------------------------*/
 
 			srcpara_free(srcp);
-			srcpara_free(srcp);
+			llp_para_free(llp);
 			gsl_matrix_free(timResiduals);
 		}
 		ffparam_free(ffp);
