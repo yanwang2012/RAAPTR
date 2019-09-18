@@ -1,5 +1,5 @@
 ## FIXME
-•	There appear to be duplicate mpavinfile2hdf5.m, one in GENSIMDATA and one in MxAvPhase. The latter is the latest version. Investigate and remove the one in GENSIMDATA.
+•	[FIXED] There appear to be duplicate mpavinfile2hdf5.m, one in GENSIMDATA and one in MxAvPhase. The latter is the latest version. Investigate and remove the one in GENSIMDATA.
 
 •	There appear to be duplicate mpavoutfile2mat.m, one in GENSIMDATA and one in MxAvPhase. Investigate and remove the one in GENSIMDATA.
 
