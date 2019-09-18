@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 
 	/* Number of iterations */
 	int num_ite = atoi(argv[5]); // transfer char to integer
-	printf("Number of iteration is: %d\n", num_ite);
+	fprintf(stdout,"Number of iteration is: %d\n", num_ite);
 
 	for (int ite = 0; ite < num_ite; ite++)
 	{
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
 			status = H5Fclose(inFile);
 			if (status < 0)
 			{
-				printf("Error closing file: %s\n", inputFileName);
+				fprintf(stdout,"Error closing file: %s\n", inputFileName);
 			}
 
 			/*
@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
 			/* Creat new output file. */
 			char newName[length + 2];
 			sprintf(newName, "%d_%s", ite, argv[3]);
-			printf("New outputFileName = %s\n", newName);
+			fprintf(stdout,"New outputFileName = %s\n", newName);
 			outputFileName = newName;
 
 			/* ----------------------------
@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
 		ffparam_free(ffp);
 	}
 	/* Everything executed successfully */
-	printf("All Done!");
+	fprintf(stdout,"All Done!");
 	return 0;
 }
 
