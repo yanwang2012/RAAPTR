@@ -34,7 +34,7 @@ defining the search interval along a particular parameter for PSO.
 See the documentation for the simulation data generation code.
 */
 
-struct fitFuncParams * file2ffparam(char *); //decleration
+struct fitFuncParams *file2ffparam(char *); //decleration
 int main(int argc, char *argv[])
 {
 	/* General purpose variables */
@@ -83,87 +83,92 @@ int main(int argc, char *argv[])
 		/*Main function. Will be called several times according to user specified requirement.*/
 		perfeval_omp(ffp, inputFileName, outputFileName, mp_av_select);
 
-		/*------------------------------------------
-	Subtraction estimated timing residuals from source.
-	--------------------------------------------*/
-		struct estSrcParams *srcp;
-		struct llr_pso_params *llp;
-		srcp = file2Srcparam(outputFileName);
-		//Load data from specified .hdf5 input file
-		herr_t status;
-		hid_t inFile = H5Fopen(inputFileName, H5F_ACC_RDONLY, H5P_DEFAULT);
-		if (inFile < 0)
+		if (ite > 1)
 		{
-			fprintf(stdout, "Error opening file\n");
-			abort();
-		}
+			/*------------------------------------------
+	        Subtraction estimated timing residuals from source.
+	        --------------------------------------------*/
+			struct estSrcParams *srcp;
+			struct llr_pso_params *llp;
+			srcp = file2Srcparam(outputFileName);
+			//Load data from specified .hdf5 input file
+			herr_t status;
+			hid_t inFile = H5Fopen(inputFileName, H5F_ACC_RDONLY, H5P_DEFAULT);
+			if (inFile < 0)
+			{
+				fprintf(stdout, "Error opening file\n");
+				abort();
+			}
 
-		llp = loadfile2llrparam(inFile);
+			llp = loadfile2llrparam(inFile);
 
-		N = (size_t)llp->N;
-		//printf("N: %zu\n",N);
-		Np = (size_t)llp->Np;
-		//printf("Np: %zu\n",Np);
-		tres = llp->s;
-		/*
-    FILE * fsrc;
-    fsrc = fopen("SrcRes.txt","w");
-    for(int m = 0; m < Np; m++){
-        for(int n = 0; n < Np; n++){
-            fprintf(fsrc,"%e\t", tres[m][n]);
-        }
-        fprintf(fsrc,"\n");
-    }
-    fclose(fsrc);
-*/
-		gsl_matrix *timResiduals = gsl_matrix_calloc(Np, N);
-		gsl_matrix * estRes = gsl_matrix_calloc(Np, N);
-		estRes = timingResiduals(srcp, llp);
-		//printf("Dimension of timResiduals: %zu %zu\n", timResiduals->size1, timResiduals->size2);
-		/*
+			N = (size_t)llp->N;
+			//printf("N: %zu\n",N);
+			Np = (size_t)llp->Np;
+			//printf("Np: %zu\n",Np);
+			tres = llp->s;
+			/*
+            	FILE * fsrc;
+            	fsrc = fopen("SrcRes.txt","w");
+              for(int m = 0; m < Np; m++){
+              	for(int n = 0; n < Np; n++){
+              		fprintf(fsrc,"%e\t", tres[m][n]);
+                 }
+        		fprintf(fsrc,"\n");
+               }
+    			fclose(fsrc);
+             */
+			gsl_matrix *timResiduals = gsl_matrix_calloc(Np, N);
+			gsl_matrix *estRes = gsl_matrix_calloc(Np, N);
+			estRes = timingResiduals(srcp, llp);
+			//printf("Dimension of timResiduals: %zu %zu\n", timResiduals->size1, timResiduals->size2);
+			/*
     FILE * fest;
     fest = fopen("estRes.txt","w");
     printMatrix(fest,timResiduals,Np,N);
     fclose(fest);
 */
 
-		size_t i, j;
-		for (i = 0; i < Np; i++)
-		{
-			for (j = 0; j < N; j++)
+			size_t i, j;
+			for (i = 0; i < Np; i++)
 			{
-				gsl_matrix_set(timResiduals, i, j, tres[i][j] - gsl_matrix_get(estRes, i, j));
+				for (j = 0; j < N; j++)
+				{
+					gsl_matrix_set(timResiduals, i, j, tres[i][j] - gsl_matrix_get(estRes, i, j));
+				}
 			}
-		}
 
-		/* Put subtracted timing residuals into input file as the new input file. */
-		gslmatrix2hdf5(inFile, "timingResiduals", timResiduals);
-		// close file.
-		status = H5Fclose(inFile);
-		if(status < 0){
-			printf("Error closing file: %s\n", inputFileName);
-		}
+			/* Put subtracted timing residuals into input file as the new input file. */
+			gslmatrix2hdf5(inFile, "timingResiduals", timResiduals);
+			// close file.
+			status = H5Fclose(inFile);
+			if (status < 0)
+			{
+				printf("Error closing file: %s\n", inputFileName);
+			}
 
-		/*
+			/*
     FILE * f;
     f = fopen("timingResiduals.txt", "w");
     printMatrix(f,timResiduals,Np,N);// print timing residual to file f. 
     fclose(f);
 */
 
-		/* Creat new output file. */
-		char newName[length+2];
-		sprintf(newName, "%d_%s", ite, argv[3]);
-		printf("New outputFileName = %s\n", newName);
-		outputFileName = newName;
+			/* Creat new output file. */
+			char newName[length + 2];
+			sprintf(newName, "%d_%s", ite, argv[3]);
+			printf("New outputFileName = %s\n", newName);
+			outputFileName = newName;
 
-		/* ----------------------------
-	Deallocate storage
-	-----------------------------*/
+			/* ----------------------------
+	        	Deallocate storage
+	         -----------------------------*/
+
+			srcpara_free(srcp);
+			srcpara_free(srcp);
+			gsl_matrix_free(timResiduals);
+		}
 		ffparam_free(ffp);
-		srcpara_free(srcp);
-		srcpara_free(srcp);
-		gsl_matrix_free(timResiduals);
 	}
 	/* Everything executed successfully */
 	printf("All Done!");
