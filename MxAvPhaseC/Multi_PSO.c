@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 	/* Path to output file */
 	char *outputFileName = argv[3];
 	int length = strlen(outputFileName);
-	printf("Length of outputFileName is %d\n",length);
+	//printf("Length of outputFileName is %d\n",length);
 
 	/* Which algorithm to use */
 	char *mp_av_select = argv[4];
@@ -147,8 +147,8 @@ int main(int argc, char *argv[])
 */
 
 		/* Creat new output file. */
-		char newName[length+3];
-		sprintf(newName, "%s_%d", argv[3], ite);
+		char newName[length+2];
+		sprintf(newName, "%d_%s", ite, argv[3]);
 		printf("New outputFileName = %s\n", newName);
 		outputFileName = newName;
 
