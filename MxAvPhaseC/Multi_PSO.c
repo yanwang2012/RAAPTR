@@ -107,6 +107,7 @@ int main(int argc, char *argv[])
 			Np = (size_t)llp->Np;
 			//printf("Np: %zu\n",Np);
 			tres = llp->s;
+
 			/*
             	FILE * fsrc;
             	fsrc = fopen("SrcRes.txt","w");
@@ -118,6 +119,7 @@ int main(int argc, char *argv[])
                }
     			fclose(fsrc);
              */
+			
 			gsl_matrix *timResiduals = gsl_matrix_calloc(Np, N);
 			gsl_matrix *estRes = gsl_matrix_calloc(Np, N);
 			estRes = timingResiduals(srcp, llp);
@@ -140,7 +142,7 @@ int main(int argc, char *argv[])
 
 			/* Put subtracted timing residuals into input file as the new input file. */
 			double buffer[(int)Np][(int)N];
-			
+
 			size_t m, n;
 			for (m = 0; m < Np; m++) {
 				for (n = 0; n < N; n++){
