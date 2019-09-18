@@ -140,10 +140,11 @@ int main(int argc, char *argv[])
 
 			/* Put subtracted timing residuals into input file as the new input file. */
 			double buffer[(int)Np][(int)N];
-			size_t i, j;
-			for (i = 0; i < Np; i++) {
-				for (j = 0; j < N; j++){
-					buffer[i][j] = gsl_matrix_get(timingResiduals,i,j);
+			
+			size_t m, n;
+			for (m = 0; m < Np; m++) {
+				for (n = 0; n < N; n++){
+					buffer[m][n] = gsl_matrix_get(timResiduals,m,n);
 				}
 			}
 			hid_t dset_id = H5Dopen1(inFile,"timingResiduals"); // Open an existing dataset.
