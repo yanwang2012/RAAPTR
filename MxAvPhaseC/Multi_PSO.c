@@ -52,10 +52,9 @@ int main(int argc, char *argv[])
 	// printf("First argument is:%s\n",srchParamsFile);
 
 	char *inputFileName = argv[2];
-
 	/* Path to output file */
 	char *outputFileName = argv[3];
-	int length = strlen(outputFileName);
+	//size_t length = strlen(outputFileName);
 	//printf("Length of outputFileName is %d\n",length);
 
 	/* Which algorithm to use */
@@ -141,7 +140,7 @@ int main(int argc, char *argv[])
 			}
 
 			/* Put subtracted timing residuals into input file as the new input file. */
-			double buffer[(int)Np][(int)N];
+			double buffer[Np][N];
 
 			size_t m, n;
 			for (m = 0; m < Np; m++) {
@@ -160,6 +159,23 @@ int main(int argc, char *argv[])
 				fprintf(stdout,"Error closing file: %s\n", inputFileName);
 			}
 
+			/* Create a new file to store intermediate timing residuals. */
+			char purefilename[strlen(inputFileName)];
+			char newinputfile[strlen(purefilename) + strlen("_sub1.hdf5")];
+			strncpy(purefilename,inputFileName,strlen(inputFileName) - strlen(".hdf5"));
+			purefilename[strlen(inputFileName) - strlen(".hdf5")] = '\0'; //null character manually added
+			sprintf(newinputfile, "%s_sub%d.hdf5",purefilename,ite);
+
+			hid_t ninFile = H5Fcreate(newinputfile, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+			if(ninFile < 0){
+				printf("Error creating new input file %s \n", newinputfile);
+			}
+			gslmatrix2hdf5(ninFile,"timingResiduals", timResiduals);
+			status = H5Fclose(ninFile);
+			if (status < 0){
+				printf("Error closing input file %s \n", newinputfile);
+			}
+
 			/*
    			 FILE * f;
    			 f = fopen("timingResiduals.txt", "w");
@@ -168,8 +184,13 @@ int main(int argc, char *argv[])
              */
 
 			/* Creat new output file. */
-			char newName[length + 2];
-			sprintf(newName, "%d_%s", ite, argv[3]);
+			char purename[strlen(outputFileName)];
+			strncpy(purename,outputFileName, strlen(outputFileName) - strlen(".hdf5")); // get the pure file name without extension.
+			purename[strlen(outputFileName) - strlen(".hdf5")] = '\0'; //null character manually added
+
+			char newName[strlen(purename) + strlen("_0.hdf5")];
+
+			sprintf(newName, "%s_%d.hdf5", purename, ite);
 			fprintf(stdout,"New outputFileName = %s\n", newName);
 			outputFileName = newName;
 
