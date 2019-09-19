@@ -33,7 +33,7 @@ struct estSrcParams *file2Srcparam(char *outputFileName)
 	fclose(fPtr);
 	*/
 	size_t nDim = bestRealLoc->size;
-	printf("nDim is: %zu \n", nDim);
+	//printf("nDim is: %zu \n", nDim);
 
 	struct estSrcParams *srcp = srcp_alloc(nDim - 7);
 
