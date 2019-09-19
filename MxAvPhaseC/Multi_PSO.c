@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 		/*Main function. Will be called several times according to user specified requirement.*/
 		perfeval_omp(ffp, inputFileName, outputFileName, mp_av_select);
 
-		if (ite > 1)
+		if (ite > 0)
 		{
 			/*------------------------------------------
 	        Subtraction estimated timing residuals from source.

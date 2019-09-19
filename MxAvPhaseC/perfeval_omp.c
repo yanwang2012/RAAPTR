@@ -161,8 +161,8 @@ void perfeval_omp(struct fitFuncParams *ffp, /*!< Parameters for the fitness fun
 		/* Initialize random number generator separately for each worker*/
 		gsl_rng_set(rngGen[lpc1],rngSeeds[lpc1]);
 	    /* Configure PSO parameters*/
-		psoParams.popsize= 40;
-		psoParams.maxSteps= 2000;
+		psoParams.popsize= 4;//40;
+		psoParams.maxSteps= 20;//2000;
 		psoParams.c1=2;
 		psoParams.c2=2;
 		psoParams.max_velocity = 0.2;
