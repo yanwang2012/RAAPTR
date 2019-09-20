@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
 
 			char newName[strlen(purename) + strlen("_0.hdf5")];
 
-			sprintf(newName, "%s_%d.hdf5", purename, ite);
+			sprintf(newName, "%s_%d.hdf5", purename, ite+1);
 			fprintf(stdout,"New outputFileName = %s\n", newName);
 			outputFileName = newName;
 
