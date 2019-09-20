@@ -185,9 +185,9 @@ int main(int argc, char *argv[])
              */
 
 			/* Creat new output file. */
-			char purename[strlen(outputFileName)];
-			strncpy(purename,outputFileName, strlen(outputFileName) - strlen(".hdf5")); // get the pure file name without extension.
-			purename[strlen(outputFileName) - strlen(".hdf5")] = '\0'; //null character manually added
+			char purename[strlen(argv[3])];
+			strncpy(purename,argv[3], strlen(argv[3]) - strlen(".hdf5")); // get the pure file name without extension.
+			purename[strlen(argv[3]) - strlen(".hdf5")] = '\0'; //null character manually added
 
 			char newName[strlen(purename) + strlen("_0.hdf5")];
 
