@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
 			char newinputfile[strlen(purefilename) + strlen("_sub1.hdf5")];
 			strncpy(purefilename,inputFileName,strlen(inputFileName) - strlen(".hdf5"));
 			purefilename[strlen(inputFileName) - strlen(".hdf5")] = '\0'; //null character manually added
-			sprintf(newinputfile, "%s_sub%d.hdf5",purefilename,ite);
+			sprintf(newinputfile, "%s_sub%d.hdf5",purefilename,ite+1);
 			fprintf(stdout, "Timing residuals stored in %s\n", newinputfile);
 
 			hid_t ninFile = H5Fcreate(newinputfile, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
