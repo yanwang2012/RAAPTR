@@ -23,3 +23,6 @@
 •	Remove double **s in LLR_Mp_Av.c since it can be replaced with splParams->s[i] (see Aug 28, 2019 entry in "PTA SuperN Lab Notebook.docx").
 
 •	Name of the search parameter file used should be stored in each output file.
+
+•	Create a pathway through the codes to better support multi-source resolution studies.
+
