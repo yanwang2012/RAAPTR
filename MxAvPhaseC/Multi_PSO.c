@@ -90,8 +90,10 @@ int main(int argc, char *argv[])
 	        --------------------------------------------*/
 			struct estSrcParams *srcp;
 			struct llr_pso_params *llp;
-			srcp = file2Srcparam(outputFileName);
 			//Load data from specified .hdf5 input file
+			srcp = file2Srcparam(outputFileName);
+			fprintf(stdout, "Loading output file %s\n",outputFileName);
+
 			herr_t status;
 			hid_t inFile = H5Fopen(inputFileName, H5F_ACC_RDWR, H5P_DEFAULT);
 			if (inFile < 0)
@@ -101,6 +103,7 @@ int main(int argc, char *argv[])
 			}
 
 			llp = loadfile2llrparam(inFile);
+			fprintf(stdout, "Loading input file %s\n", inputFileName);
 
 			N = (size_t)llp->N;
 			//printf("N: %zu\n",N);
@@ -203,11 +206,12 @@ int main(int argc, char *argv[])
 			srcpara_free(srcp);
 			llrparam_free(llp);
 			gsl_matrix_free(timResiduals);
+			gsl_matrix_free(estRes);
 		}
 		ffparam_free(ffp);
 	}
 	/* Everything executed successfully */
-	fprintf(stdout,"All Done!");
+	fprintf(stdout,"All Done!\n");
 	return 0;
 }
 
