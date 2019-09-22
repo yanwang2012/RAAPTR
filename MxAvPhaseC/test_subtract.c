@@ -91,7 +91,7 @@ int main(int argc, char *argv[]){
     gsl_matrix_free(timResiduals);
 
     /* success message */
-    printf("All Done!");
+    printf("All Done!\n");
 
     return 0;
 }
