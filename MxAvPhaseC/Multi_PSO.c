@@ -23,6 +23,7 @@ Multi_PSO.exe search_param_file input_data_dir output_file mp_av_select number_o
 - output_file: Full path to the output file that will be created.
 - mp_av_select: 'maxPhase' or 'avPhase' algorithm
 - number_of_iteration: An integer number describes how many times you want pso to run.
+(default is 0 for no subtraction.)
 - threshold: lowest snr can approach.
 
 ## Format of search_param_file
