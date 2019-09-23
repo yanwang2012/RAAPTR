@@ -23,7 +23,6 @@ Multi_PSO.exe search_param_file input_data_dir output_file mp_av_select number_o
 - output_file: Full path to the output file that will be created.
 - mp_av_select: 'maxPhase' or 'avPhase' algorithm
 - number_of_iteration: An integer number describes how many times you want pso to run.
-(default is 0 for no subtraction.)
 - threshold: lowest snr can approach.
 
 ## Format of search_param_file
@@ -63,7 +62,7 @@ int main(int argc, char *argv[])
 
 	/* Number of iterations */
 	int num_ite = atoi(argv[5]); // transfer char to integer
-	fprintf(stdout,"Number of iteration is: %d\n", num_ite);
+	fprintf(stdout, "Number of iteration is: %d\n", num_ite);
 
 	for (int ite = 0; ite < num_ite; ite++)
 	{
@@ -83,35 +82,33 @@ int main(int argc, char *argv[])
 		/*Main function. Will be called several times according to user specified requirement.*/
 		perfeval_omp(ffp, inputFileName, outputFileName, mp_av_select);
 
-		if (num_ite > 0)
-		{
-			/*------------------------------------------
+		/*------------------------------------------
 	        Subtraction estimated timing residuals from source.
 	        --------------------------------------------*/
-			struct estSrcParams *srcp;
-			struct llr_pso_params *llp;
-			//Load data from specified .hdf5 input file
-			srcp = file2Srcparam(outputFileName);
-			fprintf(stdout, "Loading output file %s\n",outputFileName);
+		struct estSrcParams *srcp;
+		struct llr_pso_params *llp;
+		//Load data from specified .hdf5 input file
+		srcp = file2Srcparam(outputFileName);
+		fprintf(stdout, "Loading output file %s\n", outputFileName);
 
-			herr_t status;
-			hid_t inFile = H5Fopen(inputFileName, H5F_ACC_RDWR, H5P_DEFAULT);
-			if (inFile < 0)
-			{
-				fprintf(stdout, "Error opening file\n");
-				abort();
-			}
+		herr_t status;
+		hid_t inFile = H5Fopen(inputFileName, H5F_ACC_RDWR, H5P_DEFAULT);
+		if (inFile < 0)
+		{
+			fprintf(stdout, "Error opening file\n");
+			abort();
+		}
 
-			llp = loadfile2llrparam(inFile);
-			fprintf(stdout, "Loading input file %s\n", inputFileName);
+		llp = loadfile2llrparam(inFile);
+		fprintf(stdout, "Loading input file %s\n", inputFileName);
 
-			N = (size_t)llp->N;
-			//printf("N: %zu\n",N);
-			Np = (size_t)llp->Np;
-			//printf("Np: %zu\n",Np);
-			tres = llp->s;
+		N = (size_t)llp->N;
+		//printf("N: %zu\n",N);
+		Np = (size_t)llp->Np;
+		//printf("Np: %zu\n",Np);
+		tres = llp->s;
 
-			/*
+		/*
             	FILE * fsrc;
             	fsrc = fopen("SrcRes.txt","w");
               for(int m = 0; m < Np; m++){
@@ -122,96 +119,99 @@ int main(int argc, char *argv[])
                }
     			fclose(fsrc);
              */
-			
-			gsl_matrix *timResiduals = gsl_matrix_calloc(Np, N);
-			gsl_matrix *estRes = gsl_matrix_calloc(Np, N);
-			estRes = timingResiduals(srcp, llp);
-			//printf("Dimension of timResiduals: %zu %zu\n", timResiduals->size1, timResiduals->size2);
-			/*
+
+		gsl_matrix *timResiduals = gsl_matrix_calloc(Np, N);
+		gsl_matrix *estRes = gsl_matrix_calloc(Np, N);
+		estRes = timingResiduals(srcp, llp);
+		//printf("Dimension of timResiduals: %zu %zu\n", timResiduals->size1, timResiduals->size2);
+		/*
     			FILE * fest;
     			fest = fopen("estRes.txt","w");
     			printMatrix(fest,timResiduals,Np,N);
     			fclose(fest);
 			 */
 
-			size_t i, j;
-			for (i = 0; i < Np; i++)
+		size_t i, j;
+		for (i = 0; i < Np; i++)
+		{
+			for (j = 0; j < N; j++)
 			{
-				for (j = 0; j < N; j++)
-				{
-					gsl_matrix_set(timResiduals, i, j, tres[i][j] - gsl_matrix_get(estRes, i, j));
-				}
+				gsl_matrix_set(timResiduals, i, j, tres[i][j] - gsl_matrix_get(estRes, i, j));
 			}
+		}
 
-			/* Put subtracted timing residuals into input file as the new input file. */
-			double buffer[Np][N];
+		/* Put subtracted timing residuals into input file as the new input file. */
+		double buffer[Np][N];
 
-			size_t m, n;
-			for (m = 0; m < Np; m++) {
-				for (n = 0; n < N; n++){
-					buffer[m][n] = gsl_matrix_get(timResiduals,m,n);
-				}
-			}
-			hid_t dset_id = H5Dopen1(inFile,"timingResiduals"); // Open an existing dataset.
-			status = H5Dwrite(dset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, buffer);
-			// Close dataset.
-			H5Dclose(dset_id);
-			// close file.
-			status = H5Fclose(inFile);
-			if (status < 0)
+		size_t m, n;
+		for (m = 0; m < Np; m++)
+		{
+			for (n = 0; n < N; n++)
 			{
-				fprintf(stdout,"Error closing file: %s\n", inputFileName);
+				buffer[m][n] = gsl_matrix_get(timResiduals, m, n);
 			}
+		}
+		hid_t dset_id = H5Dopen1(inFile, "timingResiduals"); // Open an existing dataset.
+		status = H5Dwrite(dset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, buffer);
+		// Close dataset.
+		H5Dclose(dset_id);
+		// close file.
+		status = H5Fclose(inFile);
+		if (status < 0)
+		{
+			fprintf(stdout, "Error closing file: %s\n", inputFileName);
+		}
 
-			/* Create a new file to store intermediate timing residuals. */
-			char purefilename[strlen(inputFileName)];
-			char newinputfile[strlen(purefilename) + strlen("_sub1.hdf5")];
-			strncpy(purefilename,inputFileName,strlen(inputFileName) - strlen(".hdf5"));
-			purefilename[strlen(inputFileName) - strlen(".hdf5")] = '\0'; //null character manually added
-			sprintf(newinputfile, "%s_sub%d.hdf5",purefilename,ite+1);
-			fprintf(stdout, "Post timing residuals stored in %s\n", newinputfile);
+		/* Create a new file to store intermediate timing residuals. */
+		char purefilename[strlen(inputFileName)];
+		char newinputfile[strlen(purefilename) + strlen("_sub1.hdf5")];
+		strncpy(purefilename, inputFileName, strlen(inputFileName) - strlen(".hdf5"));
+		purefilename[strlen(inputFileName) - strlen(".hdf5")] = '\0'; //null character manually added
+		sprintf(newinputfile, "%s_sub%d.hdf5", purefilename, ite+1);
+		fprintf(stdout, "Post timing residuals stored in %s\n", newinputfile);
 
-			hid_t ninFile = H5Fcreate(newinputfile, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-			if(ninFile < 0){
-				printf("Error creating new input file %s \n", newinputfile);
-			}
-			gslmatrix2hdf5(ninFile,"timingResiduals", timResiduals);
-			status = H5Fclose(ninFile);
-			if (status < 0){
-				printf("Error closing input file %s \n", newinputfile);
-			}
+		hid_t ninFile = H5Fcreate(newinputfile, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+		if (ninFile < 0)
+		{
+			printf("Error creating new input file %s \n", newinputfile);
+		}
+		gslmatrix2hdf5(ninFile, "timingResiduals", timResiduals);
+		status = H5Fclose(ninFile);
+		if (status < 0)
+		{
+			printf("Error closing input file %s \n", newinputfile);
+		}
 
-			/*
+		/*
    			 FILE * f;
    			 f = fopen("timingResiduals.txt", "w");
    			 printMatrix(f,timResiduals,Np,N);// print timing residual to file f. 
    			 fclose(f);
              */
 
-			/* Creat new output file. */
-			char purename[strlen(argv[3])];
-			strncpy(purename,argv[3], strlen(argv[3]) - strlen(".hdf5")); // get the pure file name without extension.
-			purename[strlen(argv[3]) - strlen(".hdf5")] = '\0'; //null character manually added
+		/* Creat new output file. */
+		char purename[strlen(argv[3])];
+		strncpy(purename, argv[3], strlen(argv[3]) - strlen(".hdf5")); // get the pure file name without extension.
+		purename[strlen(argv[3]) - strlen(".hdf5")] = '\0';			   //null character manually added
 
-			char newName[strlen(purename) + strlen("_0.hdf5")];
+		char newName[strlen(purename) + strlen("_0.hdf5")];
 
-			sprintf(newName, "%s_%d.hdf5", purename, ite+1);
-			fprintf(stdout,"New outputFileName = %s\n", newName);
-			outputFileName = newName;
+		sprintf(newName, "%s_%d.hdf5", purename, ite+1);
+		fprintf(stdout, "New outputFileName = %s\n", newName);
+		outputFileName = newName;
 
-			/* ----------------------------
+		/* ----------------------------
 	        	Deallocate storage
 	         -----------------------------*/
 
-			srcpara_free(srcp);
-			llrparam_free(llp);
-			gsl_matrix_free(timResiduals);
-			gsl_matrix_free(estRes);
-		}
+		srcpara_free(srcp);
+		llrparam_free(llp);
+		gsl_matrix_free(timResiduals);
+		gsl_matrix_free(estRes);
 		ffparam_free(ffp);
 	}
 	/* Everything executed successfully */
-	fprintf(stdout,"All Done!\n");
+	fprintf(stdout, "All Done!\n");
 	return 0;
 }
 
