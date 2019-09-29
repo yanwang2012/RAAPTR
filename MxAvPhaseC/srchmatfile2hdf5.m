@@ -1,4 +1,4 @@
-function [] = matfile2hdf5(inFileName, outFileName)
+function [] = srchmatfile2hdf5(inFileName, outFileName)
 % Convert input data file to HDF5 format (C convention for matrices)
 %MATFILE2HDF5(I,O)
 %I is the name of the input .mat file. O is the name of the .h5 file. Only
