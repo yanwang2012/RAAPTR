@@ -1,9 +1,10 @@
-function [] = srchmatfile2hdf5(inFileName, outFileName)
-% Convert input data file to HDF5 format (C convention for matrices)
+function [] = matfile2hdf5(inFileName, outFileName)
+% Convert  MAT file to HDF5 format (C convention for matrices)
 %MATFILE2HDF5(I,O)
-%I is the name of the input .mat file. O is the name of the .h5 file. Only
+%I is the name of the .mat file. O is the name of the .h5 file. Only
 %scalars, vectors, arrays and strings are transported. Cell and struct
 %arrays are ignored. 
+
 
 %Soumya D. Mohanty, Jan 2016
 %Adapted from extinct code MATFILE2HDF5; Now handles strings properly
