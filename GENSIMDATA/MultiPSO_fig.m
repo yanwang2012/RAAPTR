@@ -2,11 +2,9 @@ clear;
 tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
-num_ite = length(dir("~/Research/PulsarTiming/SimDATA/MultiPSO/LS5/Task2/band2/Results/*.mat"));
-
 simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test3/searchParams_Nyquist';
-simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test5/band2';
-estDataDir = '~/Research/PulsarTiming/SimDATA/MultiPSO/LS5/Task2/band2/Results';
+simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test6/Combo3';
+estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test6/Combo3/Combo3/Results';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3.mat';
 % Load the source parameters across the entire frequency range
 load([simDataDir,filesep,inputFileName],'omega',...
@@ -24,6 +22,8 @@ sx = [];
 %% reading the files
 inParamsList = dir([simParamsDir,filesep,'*.mat']);
 inDataList = dir([estDataDir,filesep,'*Nrlz3*.mat']);
+nFile = dir([estDataDir,filesep,'3_*.hdf5']); % count how many iterations are used.
+num_ite = length(nFile);
 inParamNames = {};
 inDataNames = {};
 N = length(inParamsList);% number of files
@@ -32,9 +32,9 @@ for n = 1:N
     inParamNames = [inParamNames inParamsList(n).name];
 end
 
-
-for m = 1:num_ite
-    inDataNames = [inDataNames inDataList(m).name]; %needs to be put into the iteration of n.
+% need to be improved, temporary use.
+for m = 1:2*num_ite % 2* means 2 bands are used.
+    inDataNames = [inDataNames inDataList(m).name]; 
 end
 
 inParamNames = sort_nat(inParamNames);
@@ -46,7 +46,7 @@ for i = 1:N
     load([simParamsDir,filesep,char(inParamNames(i))]);
     ybin_up = [ybin_up searchParams.angular_velocity(1)];% saving the band boundary
     ybin_low = [ybin_low searchParams.angular_velocity(2)];
-    for j = 1:num_ite
+    for j = 1:2*num_ite % need to be imporved.
         load([estDataDir,filesep,char(inDataNames(j))],'bestRealLoc');
         path_to_estimatedData = [estDataDir,filesep,char(inDataNames(j))];
         
@@ -57,6 +57,7 @@ for i = 1:N
         
         if isempty(binsrcOmgIndx)
             disp(["There's no signal injected in band",num2str(i)]);
+            continue
         end
         % Get their frequencies in Hz
         binsrcOmega = omega(binsrcOmgIndx);
@@ -133,9 +134,9 @@ hold off
 xlabel('SNR');
 ylabel('Frequency');
 legend('True','Estimated','Location','northeast');
-title("Band 2");
-saveas(gcf,"Band 2",'png');
-savefig("Band 2.fig");
+title("b3b4 combo");
+saveas(gcf,"b3b4",'png');
+savefig("b3b4.fig");
 %save('estTimRes01.mat','estTimRes');
 
 toc
