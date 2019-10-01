@@ -3,8 +3,8 @@ tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
 simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test3/searchParams_Nyquist';
-simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test6/Combo3';
-estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test6/Combo3/Combo3/Results';
+simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test6/Combo2';
+estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test6/Combo2/Combo2/Results';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3.mat';
 % Load the source parameters across the entire frequency range
 load([simDataDir,filesep,inputFileName],'omega',...
@@ -113,10 +113,11 @@ ybin_up = ybin_up/(2*pi*365*24*3600);
 ybin_up = repmat(ybin_up,length(binSNR),1);% stack itself vertically to broadcast to the dimension of x
 ybin_low = ybin_low/(2*pi*365*24*3600);
 ybin_low = repmat(ybin_low,length(binSNR),1);
-
+stage = 1:1:num_ite; % number of subtractions.
 
 %% plot the entire map
-figure(2)
+figname = 'b2b3';
+figure(1)
 %yyaxis right
 %loglog(x,y,'o',sx,sy,'kd','MarkerSize',10);
 plot(x,y,'o',sx,sy,'s')
@@ -134,9 +135,18 @@ hold off
 xlabel('SNR');
 ylabel('Frequency');
 legend('True','Estimated','Location','northeast');
-title("b3b4 combo");
-saveas(gcf,"b3b4",'png');
-savefig("b3b4.fig");
+title([figname,' combo']);
+saveas(gcf,figname,'png');
+savefig(figname);
 %save('estTimRes01.mat','estTimRes');
+
+figure(2)
+plot(stage,sx(1:10),'b',stage,sx(11:20),'r');
+title([figname,' SNR vs. Stage']);
+xlabel('Stage');
+ylabel('SNR');
+legend('band 2','band 3');
+saveas(gcf,[figname,'_stage'],'png');
+savefig([figname,'_stage']);
 
 toc
