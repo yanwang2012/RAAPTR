@@ -198,6 +198,7 @@ int main(int argc, char *argv[])
 
 		sprintf(newName, "%s_%d.hdf5", purename, ite+1);
 		fprintf(stdout, "New outputFileName = %s\n", newName);
+		fprintf(stdout,"******************************************\n");
 		outputFileName = newName;
 
 		/* ----------------------------
