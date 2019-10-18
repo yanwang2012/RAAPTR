@@ -199,8 +199,8 @@ int main(int argc, char *argv[])
 		H5Ocopy(inFile, "/snr_id", ninFile, "/snr_id", H5P_DEFAULT, H5P_DEFAULT);
 		H5Ocopy(inFile, "/thetaN", ninFile, "/thetaN", H5P_DEFAULT, H5P_DEFAULT);
 		//H5Ocopy(inFile, '/timingResiduals', ninFile, '/timingResiduals', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/timingResiduals_tmp', ninFile, '/timingResiduals_tmp', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/yr', ninFile, '/yr', H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/timingResiduals_tmp", ninFile, "/timingResiduals_tmp", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/yr", ninFile, "/yr", H5P_DEFAULT, H5P_DEFAULT);
 		/*-------------Hard coded------------------------------*/
 		gslmatrix2hdf5(ninFile, "timingResiduals", timResiduals);
 		status = H5Fclose(ninFile);
