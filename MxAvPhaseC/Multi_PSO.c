@@ -176,28 +176,28 @@ int main(int argc, char *argv[])
 			printf("Error creating new input file %s \n", newinputfile);
 		}
 		/* ----Copy all the other parameters to new file.-------------*/
-		H5Ocopy(inFile, '/Amp', ninFile, '/Amp', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/N', ninFile, '/N', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/Np', ninFile, '/Np', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/alpha', ninFile, '/alpha', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/alphaP', ninFile, '/alphaP', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/delta', ninFile, '/delta', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/deltaP', ninFile, '/deltaP', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/genHypothesis', ninFile, '/genHypothesis', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/iota', ninFile, '/iota', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/kp', ninFile, '/kp', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/loc_id', ninFile, '/loc_id', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/noise', ninFile, '/noise', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/omega', ninFile, '/omega', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/omg_id', ninFile, '/omg_id', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/perfect_fitness', ninFile, '/perfect_fitness', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/phi0', ninFile, '/phi0', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/rlz_id', ninFile, '/rlz_id', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/sd', ninFile, '/sd', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/snr', ninFile, '/snr', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/snr_chr', ninFile, '/snr_chr', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/snr_id', ninFile, '/snr_id', H5P_DEFAULT, H5P_DEFAULT);
-		H5Ocopy(inFile, '/thetaN', ninFile, '/thetaN', H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/Amp", ninFile, "/Amp", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/N", ninFile, "/N", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/Np", ninFile, "/Np", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/alpha", ninFile, "/alpha", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/alphaP", ninFile, "/alphaP", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/delta", ninFile, "/delta", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/deltaP", ninFile, "/deltaP", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/genHypothesis", ninFile, "/genHypothesis", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/iota", ninFile, "/iota", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/kp", ninFile, "/kp", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/loc_id", ninFile, "/loc_id", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/noise", ninFile, "/noise", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/omega", ninFile, "/omega", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/omg_id", ninFile, "/omg_id", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/perfect_fitness", ninFile, "/perfect_fitness", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/phi0", ninFile, "/phi0", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/rlz_id", ninFile, "/rlz_id", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/sd", ninFile, "/sd", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/snr", ninFile, "/snr", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/snr_chr", ninFile, "/snr_chr", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/snr_id", ninFile, "/snr_id", H5P_DEFAULT, H5P_DEFAULT);
+		H5Ocopy(inFile, "/thetaN", ninFile, "/thetaN", H5P_DEFAULT, H5P_DEFAULT);
 		//H5Ocopy(inFile, '/timingResiduals', ninFile, '/timingResiduals', H5P_DEFAULT, H5P_DEFAULT);
 		H5Ocopy(inFile, '/timingResiduals_tmp', ninFile, '/timingResiduals_tmp', H5P_DEFAULT, H5P_DEFAULT);
 		H5Ocopy(inFile, '/yr', ninFile, '/yr', H5P_DEFAULT, H5P_DEFAULT);
@@ -212,7 +212,7 @@ int main(int argc, char *argv[])
 		if (status < 0){
 			printf("Error closing input file %s \n", inputFileName);
 		}
-		
+
 		inputFileName = newinputfile;
 		/*
    			 FILE * f;
