@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 		fprintf(stdout, "Loading output file %s\n", outputFileName);
 
 		herr_t status;
-		hid_t inFile = H5Fopen(inputFileName, H5F_ACC_RDWR, H5P_DEFAULT);
+		hid_t inFile = H5Fopen(inputFileName, H5F_ACC_RDONLY, H5P_DEFAULT);
 		if (inFile < 0)
 		{
 			fprintf(stdout, "Error opening file\n");
