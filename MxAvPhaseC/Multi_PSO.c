@@ -76,6 +76,8 @@ int main(int argc, char *argv[])
 		ffp = file2ffparam(srchParamsFile);
 
 		/* Analyze input file*/
+		fprintf(stdout,"inputFileNameis: %s \n", inputFileName);
+		fprintf(stdout,"outputFileName is: %s \n", outputFileName);
 		fprintf(stdout, "Analyzing file %s \n", inputFileName);
 		fprintf(stdout, "Output will be stored in %s\n", outputFileName);
 		fprintf(stdout, "******************************************\n");
@@ -230,7 +232,7 @@ int main(int argc, char *argv[])
 		char newName[strlen(purename) + strlen("_0.hdf5")];
 
 		sprintf(newName, "%s_%d.hdf5", purename, ite + 1);
-		fprintf(stdout, "New outputFileName = %s\n", newName);
+		fprintf(stdout, "New outputFileName is: %s\n", newName);
 		fprintf(stdout, "******************************************\n");
 		outputFileName = newName;
 		fprintf(stdout,"Now outputFileName is: %s\n", outputFileName);
