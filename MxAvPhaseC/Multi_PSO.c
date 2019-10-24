@@ -76,8 +76,8 @@ int main(int argc, char *argv[])
 		ffp = file2ffparam(srchParamsFile);
 
 		/* Analyze input file*/
-		fprintf(stdout,"inputFileNameis: %s \n", inputFileName);
-		fprintf(stdout,"outputFileName is: %s \n", outputFileName);
+		//fprintf(stdout,"inputFileNameis: %s \n", inputFileName);
+		//fprintf(stdout,"outputFileName is: %s \n", outputFileName);
 		fprintf(stdout, "Analyzing file %s \n", inputFileName);
 		fprintf(stdout, "Output will be stored in %s\n", outputFileName);
 		fprintf(stdout, "******************************************\n");
@@ -216,7 +216,7 @@ int main(int argc, char *argv[])
 		}
 
 		inputFileName = newinputfile;
-		fprintf(stdout,"Now inputFileName is: %s\n", inputFileName);
+		//fprintf(stdout,"Now inputFileName is: %s\n", inputFileName);
 		/*
    			 FILE * f;
    			 f = fopen("timingResiduals.txt", "w");
@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
 		fprintf(stdout, "New outputFileName is: %s\n", newName);
 		fprintf(stdout, "******************************************\n");
 		outputFileName = newName;
-		fprintf(stdout,"Now outputFileName is: %s\n", outputFileName);
+		//fprintf(stdout,"Now outputFileName is: %s\n", outputFileName);
 		/* ----------------------------
 	        	Deallocate storage
 	         -----------------------------*/
