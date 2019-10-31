@@ -144,7 +144,7 @@ perfect_fitness=zeros(NNs,1);  % fitness value for the true parameters
 stdTrueCoord = zeros(NNs,7); % 7 parameters other than pulsar phases
 
 % calculate SNR
-snr_chr2_tmp=zeros(Np,NNs);  % squared characteristic srn for each pulsar and source
+snr_chr2_tmp=zeros(Np,NNs);  % squared characteristic snr for each pulsar and source
 %snr_chr=zeros(Np,1);  % characteristic srn = <\rho> = sqrt[(h,h)] srn of signal -- the strenghth of signal
 %snr_mf=0;  % snr of matched filter = \rho = x/\sigma, normalized matched filter
 

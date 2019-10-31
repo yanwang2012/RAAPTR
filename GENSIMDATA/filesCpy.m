@@ -1,5 +1,5 @@
 %% Copy input files for different band use
-simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/noise/HDF5';
+simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/2-5/HDF5';
 inFiles = dir([simDataDir,filesep,'*.hdf5']);
 NumBand = 5;
 N = length(inFiles);

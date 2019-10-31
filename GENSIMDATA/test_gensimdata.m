@@ -10,15 +10,15 @@ tic;
 clear;
 Ns = 100;
 Np = 1000; % for the specific pulsar catalog
-Nrlz = 5;
-Nnis = 3;
-frqRng = [2*10^-8,10^-7];
+Nrlz = 5; % number of H1 realization
+Nnis = 50; % number of H0 realization
+frqRng = [8.26e-8,4.130e-7];% Angular velocity is converted to Hz by divided by 2*pi*365*24*3600
 parameters(Ns,Np,Nrlz,Nnis);
-outDir = 'GWBsimDataSKASpecRng';
+outDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/2-5';
 mkdir(outDir);
 
 gensimdata('GWBsimDataSKAParams.mat',...
            'survey_ska.mat',...
-             outDir,...
-             frqRng); %% frequency range
+            outDir,...
+            frqRng); % frequency range
 toc;
