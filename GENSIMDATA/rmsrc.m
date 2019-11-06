@@ -34,7 +34,7 @@ for i=1:1:Np  % number of pulsar
 
 end
 
-snr_chr=sqrt(sum(snr_chr2_tmp,1));  % sum of elements in each column
+snr_chr_tmp=sqrt(sum(snr_chr2_tmp,1));  % sum of elements in each column
 
 %% substitute timing residual
 timingResiduals = timingResiduals - timingResiduals_tmp;
@@ -42,6 +42,7 @@ newFile = strcat(dataFile,'_rm','.mat');
 copyfile([dataDir,filesep,dataFile,'.mat'],[dataDir,filesep,newFile]);
 m = matfile([dataDir,filesep,newFile],'Writable',true);
 m.timingResiduals = timingResiduals;
+m.snr_chr(1,I) = snr_chr(I) - snr_chr_tmp;
 
 toc
 % EOF
