@@ -26,19 +26,26 @@ simDataDir = path_to_output;
 rng(1) % for repeatable works
 %% ==== Generate random GW sources ====
 [AmpOut,alphaOut,deltaOut,fgwOut,iotaOut,thetaNOut,phi0Out,r]=GenerateRandomGWSource(Ns);
+% put check for frequency above Nyquist freq
+Nyquist_freq = 81.8345/(2*pi*24*365*3600); % Nyquist frequency
 
 % setting up the freq filter
 if nargin == 3
-    disp("using default value.");
-    Amp_tmp = AmpOut;
-    alpha_tmp = alphaOut;
-    delta_tmp = deltaOut;
-    iota_tmp = iotaOut;
-    thetaN_tmp = thetaNOut;
-    phi0_tmp = phi0Out;
-    omega_tmp = 2*pi * fgwOut * 3.156*10^7;  % convert sec^-1 (Hz) to yr^-1
-    NNs = Ns;
-    disp("NNs = :" + NNs)
+    disp("Searching whole band.");
+    if max(fgwOut) > Nyquist_freq
+        disp("Warning: Frequency above Nyquist frequency:" +Nyquist_freq)
+        disp("Will exclude all sources above Nyquist frequency")
+    end
+    Index = (fgwOut <= Nyquist_freq);
+    Amp_tmp = AmpOut(Index);
+    alpha_tmp = alphaOut(Index);
+    delta_tmp = deltaOut(Index);
+    iota_tmp = iotaOut(Index);
+    thetaN_tmp = thetaNOut(Index);
+    phi0_tmp = phi0Out(Index);
+    omega_tmp = fgwOut(Index)*2*pi*24*365*3600; % convert sec^-1 (Hz) to yr^-1
+    NNs = sum(Index);
+%     disp("The number of sources is:" + NNs)
     
 elseif nargin == 4
     fgwl = frqRng(1);
