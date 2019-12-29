@@ -37,7 +37,7 @@ xmaxmin(1,1)=2*pi;  % alpha
 xmaxmin(1,2)=0.0;
 xmaxmin(2,1)=pi/2;  % delta 
 xmaxmin(2,2)=-pi/2;
-xmaxmin(3,1)=200.0;  % angular velocity -- omega for GW
+xmaxmin(3,1)=81.8345;% Nyquist frequency %200.0;  % angular velocity -- omega for GW
 xmaxmin(3,2)=1.0;
 xmaxmin(4,1)=pi;  % initial phase
 xmaxmin(4,2)=0;
@@ -50,7 +50,7 @@ xmaxmin(7,2)=0;
 %%
 searchParamsFile = 'searchParams_GWBsimDataSKA';
 simParamsFile = 'GWBsimDataSKAParams';
-save(searchParamsFile,'xmaxmin'); % save the range of parameters
+save(searchParamsFile,'xmaxmin'); % save the searching range of parameters
 save(simParamsFile,'xmaxmin','start','deltaT','N','Ns','Np',...
       'Nrlz','Nnis');
 % end of function

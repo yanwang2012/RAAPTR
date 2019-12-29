@@ -1,24 +1,27 @@
-function []=rmsrc(dataDir,srchParamDir,FileName,searchParamName,ext,bandNum,numSrc)
+%function []=rmsrc(dataDir,outDir,srchParamDir,FileName,searchParamName,ext,bandNum,numSrc)
 %[]=rmsrc(dataDir,FileName,searchParamName,ext,bandNum,numSrc)
 % Subtract sources according to SNR recusively and output a new file.
-% dataDir: data dirctory.
+% dataDir: Input data dirctory.
+% outDir: Output directory.
 % srchParamDir: search parameter file directory.
 % fileName: file wants to be subtracted without extension.
 % searchParamName: search parameter file name.
 % ext: File type.
-% bandNum: Band number.
+% bandNum: Where the sources are going to be removed.
 % numSrc: number of sources want to be subtracted.
 
 %2019.11.05 QYQ
+clear
 tic
 %% Test
-% dataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/FullBand';
-% srchParamDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/searchParams';
-% FileName = 'GWBsimDataSKASrlz1Nrlz3';
-% searchParamName = 'searchParams_Nyquist';
-% ext = '.mat';
-% bandNum = 1;
-% numSrc = 5;
+dataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/FullBand/';
+outDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/FullBand/WLSRC-band1/6-10';
+srchParamDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/searchParams';
+FileName = 'GWBsimDataSKASrlz1Nrlz3';
+searchParamName = 'searchParams_Nyquist';
+ext = '.mat';
+bandNum = 1;
+numSrc = 10;
 
 inputFile = strcat(dataDir,filesep,FileName,ext);
 for j = 1:numSrc
@@ -59,7 +62,7 @@ for j = 1:numSrc
     
     %% substitute timing residual
     timingResiduals_tmp1 = timingResiduals - timingResiduals_tmp;
-    newFile = strcat(dataDir,filesep,FileName,'_rm',num2str(j),ext);
+    newFile = strcat(outDataDir,filesep,FileName,'_rm',num2str(j),ext);
     copyfile(inputFile,newFile);
     m = matfile(newFile,'Writable',true);
     m.timingResiduals = timingResiduals_tmp1;

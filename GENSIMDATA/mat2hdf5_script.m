@@ -1,8 +1,8 @@
 % convert .mat file to .hdf5 file
 clear;
-DataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/FullBand/WLSRC-band1';
+DataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/FullBand/test/MBLT2';
 outDir = [DataDir,filesep,'HDF5'];
-inFileList = dir([DataDir,filesep,'*.mat']); % input file directory
+inFileList = dir([DataDir,filesep,'*band*.mat']); % input file directory
 mkdir(outDir); % output directory
 for lpc = 1:length(inFileList) 
 

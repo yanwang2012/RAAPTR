@@ -1,11 +1,13 @@
 % A script convert searchParams file from .mat to hdf5
 clear;
-inFileList = dir('~/Research/PulsarTiming/SimDATA/Mauritius/uniform search params/*.mat');
-mkdir('~/Research/PulsarTiming/SimDATA/Mauritius/uniform search params HDF5');
+FileDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/searchParams/MBLT';
+OutDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/searchParams/MBLT/HDF5';
+inFileList = dir([FileDir,filesep,'*.mat']);
+mkdir(OutDir);
 for lpc = 1:length(inFileList)
-    inFile = ['~/Research/PulsarTiming/SimDATA/Mauritius/uniform search params',filesep,inFileList(lpc).name];
+    inFile = [FileDir,filesep,inFileList(lpc).name];
     [~,inFileName,~] = fileparts(inFile);
-    outFileName = ['~/Research/PulsarTiming/SimDATA/Mauritius/uniform search params HDF5',filesep,inFileName,'.hdf5'];
+    outFileName = [OutDir,filesep,inFileName,'.hdf5'];
     inFileInfo = load(inFile);
     struName = 'searchParams';
     fldName = 'xmaxmin';
@@ -16,16 +18,16 @@ for lpc = 1:length(inFileList)
     nDim = length(size((inFileInfo.(struName).alpha)'));
     baseSz = ones(1, nDim);
     
-    h5create(outFileName,['/',bandsIn],2);
-    h5write(outFileName,['/',bandsIn],inFileInfo.(struName).band_num,1,1);
+    h5create(outFileName,['/',bandsIn],[2,1]); %[col, row]
+    h5write(outFileName,['/',bandsIn],inFileInfo.(struName).band_num,[1,1],[1,1])%[start point],[size of data].
     h5writeatt(outFileName,['/',bandsIn],'bandNumber',inFileInfo.(struName).band_num);
-    h5write(outFileName,['/',bandsIn],inFileInfo.NumBands,2,1);
+    h5write(outFileName,['/',bandsIn],inFileInfo.NumBands,[2,1],[1,1]);
     h5writeatt(outFileName,['/',bandsIn],'NumBands',inFileInfo.NumBands);
     
 %     h5create(outFileName,['/',fldName],...
 %         max([size((inFileInfo.(struName).alpha)'); baseSz]));
-    h5create(outFileName,['/',fldName],[2,7])% fuck it hdf5 [colum row] but wright horizentally
-    h5write(outFileName,['/',fldName],(inFileInfo.(struName).alpha),[1,1],[2,1]);
+    h5create(outFileName,['/',fldName],[2,7])% [2,7] 2 colums 7 rows
+    h5write(outFileName,['/',fldName],(inFileInfo.(struName).alpha),[1,1],[2,1]); % [2,1] 2 rows 1 colum but writing horizontally into that dataset.
     h5writeatt(outFileName,['/',fldName],'alpha',(inFileInfo.(struName).alpha)');
     
     h5write(outFileName,['/',fldName],(inFileInfo.(struName).delta),[1,2],[2,1]);

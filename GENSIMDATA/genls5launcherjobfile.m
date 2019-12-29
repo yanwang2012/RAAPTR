@@ -1,14 +1,14 @@
 clear;
-simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/FullBand/WLSRC-band1/HDF5'; % local
+simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/FullBand/MBLT'; % local
 %simDataDir = '/work/05884/qyqstc/lonestar/GWBsimDataSKA_HDF5'; % on ls5
 search_paramDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/searchParams/HDF5';
-inFileList = dir([simDataDir,filesep,'GWB*rm*.hdf5']);% original file
-cpyFileList = dir([simDataDir,filesep,'*_GWB*_rm*.hdf5']);% file copies
+inFileList = dir([simDataDir,filesep,'GWB*.hdf5']);% original file
+cpyFileList = dir([simDataDir,filesep,'*GWB*_rm*.hdf5']);% file copies
 inFileList_param = dir([search_paramDataDir,filesep,'*.hdf5']);
 nParamFiles = length(inFileList_param);
 cpyFiles = length(cpyFileList); % including bands
 nFiles = length(inFileList);
-fid = fopen('~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/JOBFILERMBAND1.txt','w');
+fid = fopen('~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/MBLTJOBFILE.txt','w');
 
 %% single source
 % for lpc = 1:nFiles
@@ -29,8 +29,8 @@ fid = fopen('~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/JO
 inFileName = {};
 excut = '/work/05884/qyqstc/lonestar/RAAPTR/MxAvPhaseC/Multi_PSO.out ';
 searchParamDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task7/searchParams/';
-dataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task7/FullBand/WLSRC-band1/';
-resultsDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task7/FullBand/WLSRC-band1/Results/';
+dataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task7/FullBand/MBLT/';
+resultsDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task7/FullBand/MBLT/Results/';
 for k = 1:cpyFiles
     inFileName = [inFileName cpyFileList(k).name];
 end

@@ -1,6 +1,6 @@
 function [OutList,TotRot]=coco(InList,InCooType,OutCooType,InUnits,OutUnits)
 %--------------------------------------------------------
-% coco function      General coordinate convertor.
+% coco function    General coordinate convertor.
 %                  Convert/precess coordinate from/to
 %                  Equatorial/galactic/Ecliptic.
 % Input  : - Matrix of input coordinates.

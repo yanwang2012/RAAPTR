@@ -1,4 +1,4 @@
-function [snr_chr,timingResiduals]=Amp2Snr(srcParams,psrParams,phiI,yr)
+function [snr_chr,timingResiduals]=Amp2Snr(srcParams,psrParams,yr)
 % A function to convert amplitude to SNR
 % [SNR,timingResiduals]=Amp2Snr(sourceParams,pulsarParams)
 
@@ -6,8 +6,8 @@ function [snr_chr,timingResiduals]=Amp2Snr(srcParams,psrParams,phiI,yr)
 %% calculate SNR
 %phiI = psrParams.phiI;
 Np = psrParams.Np;% number of pulsars
-N = psrParams.N;
-snr_chr2_tmp=zeros(Np,1);  % squared characteristic srn for each pulsar and source
+N = psrParams.N;% observation period 5 yr biweekly
+snr_chr2_tmp=zeros(Np,1);  % squared characteristic snr for each pulsar and source
 tmp=zeros(1,N); % noiseless timing residuals from a source
 timingResiduals = zeros(Np,N);
 for i=1:1:Np  % number of pulsar
@@ -20,7 +20,7 @@ for i=1:1:Np  % number of pulsar
         %phiI(j)=mod(srcParams.phi0-0.5*srcParams.omega*psrParams.distP(j)*(1-cos(theta)), pi);  % modulus after division, YW 04/30/14 check original def. of phiI
         
         
-        tmp = FullResiduals(srcParams.alpha,srcParams.delta,srcParams.omega,srcParams.phi0,phiI(i),psrParams.alphaP(i),...
+        tmp = FullResiduals(srcParams.alpha,srcParams.delta,srcParams.omega,srcParams.phi0,srcParams.phiI(i),psrParams.alphaP(i),...
             psrParams.deltaP(i),srcParams.Amp,srcParams.iota,srcParams.thetaN,theta,yr);
 
         timingResiduals(i,:) = tmp';
@@ -29,3 +29,4 @@ for i=1:1:Np  % number of pulsar
 end
 
 snr_chr=sqrt(sum(snr_chr2_tmp,1));  % sum of elements in each column
+% END of function

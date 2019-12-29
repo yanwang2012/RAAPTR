@@ -2,12 +2,12 @@ clear;
 tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
-simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/searchParams';
-simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/2-5';
-estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/2-5/Results';
-inputFileName = 'GWBsimDataSKASrlz1Nrlz3.mat';
-% Load the source parameters across the entire frequency range
-load([simDataDir,filesep,inputFileName],'omega','alpha','delta',...
+simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/searchParams/';
+simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/FullBand/test/';
+estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/FullBand/test/MBLT2/Results';
+inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
+% Load the simulated source parameters.
+load([simDataDir,filesep,inputFileName,'.mat'],'omega','alpha','delta',...
     'timingResiduals_tmp', 'yr','snr_chr','simParams');
 
 %% setting fig axis
@@ -27,9 +27,9 @@ sra = [];
 sdec = [];
 
 %% reading the files
-inParamsList = dir([simParamsDir,filesep,'searchParams*.mat']);
-inDataList = dir([estDataDir,filesep,'*GWBsimDataSKASrlz1Nrlz3*.mat']);
-nFile = dir([estDataDir,filesep,'4_*GWBsimDataSKASrlz1Nrlz3*.hdf5']); % count how many iterations are used.
+inParamsList = dir([simParamsDir,filesep,'searchParams','*.mat']);
+inDataList = dir([estDataDir,filesep,'*',inputFileName,'*.mat']);
+nFile = dir([estDataDir,filesep,inputFileName,'band1','*.mat']); % count how many iterations are used.
 num_ite = length(nFile);
 inParamNames = {};
 inDataNames = {};
@@ -157,7 +157,7 @@ disp('Processing noise-only data');
 % avgnx = sum(reshape(nx,5,10),1)/N;
 
 %% plot the entire map
-figname = ' band 2-5 search';
+figname = 'MBLT Reassign';
 figure(1)
 % yyaxis right
 % loglog(x,y,'o',sx,sy,'kd','MarkerSize',10);
@@ -210,8 +210,58 @@ title(['Sky location for ',figname]);
 legend('Simulated source','Estimated source');
 xlabel('RA');
 ylabel('Dec');
-% saveas(gcf,[figname,'-skyloc'],'png')
-% savefig([figname,'-skyloc']);
+saveas(gcf,[figname,' skyloc'],'png')
+savefig([figname,' skyloc']);
+
+figure(4)
+plot(sra,y,'ob',ra,sy,'sr');
+title(['RA vs. Freq for ',figname]);
+xlabel('RA');
+ylabel('Freq.');
+legend('True','Estimated')
+saveas(gcf,[figname,' RA'],'png')
+savefig([figname,' RA']);
+
+
+figure(5)
+plot(sdec,y,'ob',dec,sy,'sr');
+title(['DEC vs. Freq for ',figname]);
+xlabel('DEC');
+ylabel('Freq.');
+legend('True','Estimated')
+saveas(gcf,[figname,' DEC'],'png')
+savefig([figname,' DEC']);
+
+SNRcut = 15;
+Idx = find(x >= SNRcut); % set SNR cutoff for simulated sources
+y = y(Idx);
+sra = sra(Idx);
+sdec = sdec(Idx);
+
+Sidx = find(sx >= SNRcut);% SNR cutoff for est. sources
+sy = sy(Sidx);
+ra = ra(Sidx);
+dec = dec(Sidx);
+
+figure(6)
+plot(sra,y,'ob',ra,sy,'sr');
+title(['RA vs. Freq for ',figname]);
+xlabel('RA');
+ylabel('Freq.');
+legend('True','Estimated')
+saveas(gcf,[figname,' RA-SNRcutoff ',num2str(SNRcut)],'png')
+savefig([figname,' RA-SNRcutoff ',num2str(SNRcut)]);
+
+
+figure(7)
+plot(sdec,y,'ob',dec,sy,'sr');
+title(['DEC vs. Freq for ',figname]);
+xlabel('DEC');
+ylabel('Freq.');
+legend('True','Estimated')
+saveas(gcf,[figname,' DEC-SNRcutoff ',num2str(SNRcut)],'png')
+savefig([figname,' DEC-SNRcutoff ',num2str(SNRcut)]);
+
 toc
 
 %END

@@ -16,6 +16,8 @@ phi0 = source.bestRealLoc(4);
 Amp = source.bestRealLoc(5);
 iota = source.bestRealLoc(6);
 thetaN = source.bestRealLoc(7);
+phiI = source.bestRealLoc(8:1007);
 
 sourceParams = struct('alpha',alpha,'delta',delta,'omega',omega,'phi0',phi0,'Amp',Amp,...
-                        'iota',iota,'thetaN',thetaN);
+                        'iota',iota,'thetaN',thetaN,'phiI',phiI);
+% END of function
