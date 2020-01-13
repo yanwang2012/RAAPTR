@@ -39,14 +39,16 @@ for j = 1:N
     SrcP(j,2) = SNR(j,1);
 end
 
+Index = [];
+filename = [];
 for k = 1:N
     for m = 1:N
         if abs(SrcP(k,2)-SrcP(m,2)) < 3 && k ~= m % threshold for SNR
             if abs(SrcP(k,1)-SrcP(m,1)) < 5e-10 && k ~= m % threshold for Freq
                 if SrcP(k,2) > SrcP(m,2)
                     disp(["File needs to be skipped is : ",outputfiles(m).name,'Index is: ',num2str(m)])
-                    filename = outputfiles(m).name;
-                    Index = m;
+                    filename = [filename outputfiles(m).name];
+                    Index = [Index m];
                 else
                     disp(["File needs to be skipped is : ",outputfiles(k).name,'Index is: ',num2str(k)])
                 end
@@ -56,7 +58,10 @@ for k = 1:N
 end
 
 
-
+if isempty(filename) == 1
+    filename = [];
+    disp("No file needs to be skipped.")
+end
 
 %toc
 % EOF
