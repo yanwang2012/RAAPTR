@@ -2,9 +2,9 @@ clear;
 tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
-simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/searchParams/';
-simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/FullBand/test/';
-estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/FullBand/test/MBLT2/Results';
+simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/searchParams';
+simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/Sources';
+estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/Sources/Results20';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 % Load the simulated source parameters.
 load([simDataDir,filesep,inputFileName,'.mat'],'omega','alpha','delta',...
@@ -29,7 +29,7 @@ sdec = [];
 %% reading the files
 inParamsList = dir([simParamsDir,filesep,'searchParams','*.mat']);
 inDataList = dir([estDataDir,filesep,'*',inputFileName,'*.mat']);
-nFile = dir([estDataDir,filesep,inputFileName,'band1','*.mat']); % count how many iterations are used.
+nFile = dir([estDataDir,filesep,'1_',inputFileName,'*.mat']); % count how many iterations are used.
 num_ite = length(nFile);
 inParamNames = {};
 inDataNames = {};
@@ -78,9 +78,9 @@ for i = 1:N
     sra = [sra alpha(Indx)];
     sdec = [sdec delta(Indx)];
     for j = 1:num_ite
-        load([estDataDir,filesep,char(inDataNames(j+10*(i-1)))],'bestRealLoc');
-        disp(['File: ',char(inDataNames(j+10*(i-1))),' loaded']);
-        path_to_estimatedData = [estDataDir,filesep,char(inDataNames(j+10*(i-1)))];
+        load([estDataDir,filesep,char(inDataNames(j + num_ite * (i-1)))],'bestRealLoc');
+        disp(['File: ',char(inDataNames(j + num_ite * (i-1))),' loaded']);
+        path_to_estimatedData = [estDataDir,filesep,char(inDataNames(j + num_ite * (i-1)))];
         
         %% Estimated source
         %path_to_simulationData = '~/Research/PulsarTiming/SimDATA/Mauritius/GWBsimDataSKA/GWBsimDataSKASrlz1Nrlz9.mat';
@@ -123,7 +123,8 @@ for i = 1:N
 end
 
 y = y/(2*pi*365*24*3600);
-binSNR = 0:1:450;
+uplim = max(max(x),max(sx))+50;
+binSNR = 0:1:uplim;
 binSNR_log = logspace(-5,3,length(binSNR));
 ybin_up = ybin_up/(2*pi*365*24*3600);
 ybin_up = repmat(ybin_up,length(binSNR),1);% stack itself vertically to broadcast to the dimension of x
@@ -132,10 +133,10 @@ ybin_low = repmat(ybin_low,length(binSNR),1);
 stage = 1:1:num_ite;
 
 %% Noise processing
-noisedir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/noise/Results/';
-simNoiseDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/noise';
-disp('Processing noise-only data');
-[avgnoise] = noiseprocess(noisedir,simNoiseDir);
+% noisedir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/noise/Results/';
+% simNoiseDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/noise';
+% disp('Processing noise-only data');
+% [avgnoise] = noiseprocess(noisedir,simNoiseDir,10,5);
 % noisefile = dir([noisedir,filesep,'*.mat']);
 % numNoise = length(noisefile); % number of noise files.
 % simNoiseFileName = 'noise1.mat';
@@ -157,7 +158,7 @@ disp('Processing noise-only data');
 % avgnx = sum(reshape(nx,5,10),1)/N;
 
 %% plot the entire map
-figname = 'MBLT Reassign';
+figname = '5 bands 200 SRC 20 ITE';
 figure(1)
 % yyaxis right
 % loglog(x,y,'o',sx,sy,'kd','MarkerSize',10);
@@ -176,6 +177,7 @@ end
 hold off
 
 xlabel('SNR');
+xlim([0 uplim]);
 ylabel('Frequency');
 legend('True','Estimated','Location','northeast');
 title(figname);
@@ -183,26 +185,26 @@ saveas(gcf,figname,'png');
 savefig(figname);
 % save('estTimRes01.mat','estTimRes');
 
-figure(2)
-Legend = {N,1};
-hold on
-for i = 1:N - etyband
-    %plot(stage,sx(10*(i-1)+1:10*i));
-    semilogy(stage,sx(10*(i-1)+1:10*i));
-    Legend{i} = ['Band ', num2str(i)+etyband];
-    if i == (N - etyband)
-        %plot(stage, avgnx,'--k');
-        semilogy(stage,avgnoise,'--k');
-        Legend{i+1} = 'Noise';
-    end
-end
-hold off
-legend(Legend);
-title([figname,' SNR vs. Stage']);
-xlabel('Stage');
-ylabel('SNR');
-saveas(gcf,[figname,' SNR-Stage'],'png');
-savefig([figname,' SNR-Stage']);
+% figure(2)
+% Legend = {N,1};
+% hold on
+% for i = 1:N - etyband
+%     %plot(stage,sx(10*(i-1)+1:10*i));
+%     semilogy(stage,sx(num_ite*(i-1)+1:num_ite*i));
+%     Legend{i} = ['Band ', num2str(i)+etyband];
+%     if i == (N - etyband)
+%         %plot(stage, avgnx,'--k');
+%         semilogy(stage,avgnoise,'--k');
+%         Legend{i+1} = 'Noise';
+%     end
+% end
+% hold off
+% legend(Legend);
+% title([figname,' SNR vs. Stage']);
+% xlabel('Stage');
+% ylabel('SNR');
+% saveas(gcf,[figname,' SNR-Stage'],'png');
+% savefig([figname,' SNR-Stage']);
 
 figure(3)
 plot(sra,sdec,'ob',ra,dec,'sr');
