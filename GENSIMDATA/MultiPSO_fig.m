@@ -2,9 +2,9 @@ clear;
 tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
-simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/searchParams';
-simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/Sources';
-estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/Sources/Results20';
+simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands';
+simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
+estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/MBLT/Results20';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 % Load the simulated source parameters.
 load([simDataDir,filesep,inputFileName,'.mat'],'omega','alpha','delta',...
@@ -29,22 +29,22 @@ sdec = [];
 %% reading the files
 inParamsList = dir([simParamsDir,filesep,'searchParams','*.mat']);
 inDataList = dir([estDataDir,filesep,'*',inputFileName,'*.mat']);
-nFile = dir([estDataDir,filesep,'1_',inputFileName,'*.mat']); % count how many iterations are used.
+nFile = dir([estDataDir,filesep,inputFileName,'band1','*.mat']); % count how many iterations are used.
 num_ite = length(nFile);
-inParamNames = {};
-inDataNames = {};
+% inParamNames = {};
+% inDataNames = {};
 N = length(inParamsList);% number of bands
-% get the name and sort it
-for n = 1:N
-    inParamNames = [inParamNames inParamsList(n).name];
-end
+% % get the name and sort it
+% for n = 1:N
+%     inParamNames = [inParamNames inParamsList(n).name];
+% end
+% 
+% for m = 1:N*num_ite
+%     inDataNames = [inDataNames inDataList(m).name];
+% end
 
-for m = 1:N*num_ite
-    inDataNames = [inDataNames inDataList(m).name];
-end
-
-inParamNames = sort_nat(inParamNames);
-inDataNames = sort_nat(inDataNames);
+inParamNames = sort_nat({inParamsList.name});
+inDataNames = sort_nat({inDataList.name});
 
 %% data pre-processing
 bx = zeros(N,50);
@@ -158,7 +158,7 @@ stage = 1:1:num_ite;
 % avgnx = sum(reshape(nx,5,10),1)/N;
 
 %% plot the entire map
-figname = '5 bands 200 SRC 20 ITE';
+figname = '2 bands 200 SRC 20 ITE 1 MBLT';
 figure(1)
 % yyaxis right
 % loglog(x,y,'o',sx,sy,'kd','MarkerSize',10);
