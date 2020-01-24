@@ -234,19 +234,21 @@ legend('True','Estimated')
 saveas(gcf,[figname,' DEC'],'png')
 savefig([figname,' DEC']);
 
-SNRcut = 15;
+%% set up cutoff
+SNRcut = 50;
 Idx = find(x >= SNRcut); % set SNR cutoff for simulated sources
-y = y(Idx);
+Sy = y(Idx);
 sra = sra(Idx);
 sdec = sdec(Idx);
 
 Sidx = find(sx >= SNRcut);% SNR cutoff for est. sources
+sx = sx(Sidx);
 sy = sy(Sidx);
 ra = ra(Sidx);
 dec = dec(Sidx);
 
 figure(6)
-plot(sra,y,'ob',ra,sy,'sr');
+plot(sra,Sy,'ob',ra,sy,'sr');
 title(['RA vs. Freq for ',figname]);
 xlabel('RA');
 ylabel('Freq.');
@@ -256,13 +258,53 @@ savefig([figname,' RA-SNRcutoff ',num2str(SNRcut)]);
 
 
 figure(7)
-plot(sdec,y,'ob',dec,sy,'sr');
+plot(sdec,Sy,'ob',dec,sy,'sr');
 title(['DEC vs. Freq for ',figname]);
 xlabel('DEC');
 ylabel('Freq.');
 legend('True','Estimated')
 saveas(gcf,[figname,' DEC-SNRcutoff ',num2str(SNRcut)],'png')
 savefig([figname,' DEC-SNRcutoff ',num2str(SNRcut)]);
+
+figure(8)
+% yyaxis right
+% loglog(x,y,'o',sx,sy,'kd','MarkerSize',10);
+plot(x,y,'o',sx,sy,'s')
+% semilogx(x,y,'o',sx,sy,'s');
+% disp(sy)
+
+hold on
+% plot grid
+for k=1:N
+%         semilogx(binSNR_log,ybin_up(:,k),'b-');
+    plot(binSNR,ybin_up(:,k),'b-');
+%         semilogx(binSNR_log,ybin_low(:,k),'b--');
+    plot(binSNR,ybin_low(:,k),'b--');
+end
+hold off
+
+xlabel('SNR');
+xlim([0 uplim]);
+ylabel('Frequency');
+legend('True','Estimated','Location','northeast');
+title([figname,' SNRcutoff ',num2str(SNRcut)]);
+saveas(gcf,[figname,' SNRcutoff ',num2str(SNRcut)],'png');
+savefig([figname,' SNRcutoff ',num2str(SNRcut)]);
+
+%% freq. only plot
+szy = length(y); % size of simulated freq.
+szsy = length(sy); % size of est. freq.
+cst = zeros(szy,1);
+csts = zeros(szsy,1);
+
+figure(9)
+plot(y,cst,'ob',sy,csts,'sr');
+xlabel('Frequency');
+ylabel('Constant');
+title([figname,' Freq-only SNRcutoff ',num2str(SNRcut)]);
+legend('Ture','Estimated');
+saveas(gcf,[figname,' Freq-only SNRcutoff ',num2str(SNRcut)],'png')
+savefig([figname,' Freq-only SNRcutoff ',num2str(SNRcut)]);
 
 toc
 
