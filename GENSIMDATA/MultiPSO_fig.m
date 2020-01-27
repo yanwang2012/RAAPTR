@@ -4,7 +4,7 @@ tic
 % Load the frequency bin edges from the search parameter file for bin X.
 simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands';
 simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
-estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/MBLT/Results20';
+estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/MBLT/GWBsimDataSKASrlz1Nrlz3_MBLT1/Results20';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 % Load the simulated source parameters.
 load([simDataDir,filesep,inputFileName,'.mat'],'omega','alpha','delta',...
@@ -29,7 +29,11 @@ sdec = [];
 %% reading the files
 inParamsList = dir([simParamsDir,filesep,'searchParams','*.mat']);
 inDataList = dir([estDataDir,filesep,'*',inputFileName,'*.mat']);
+
+%%%%%%%%%%%%%%%%%%% DON'T FORGET %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 nFile = dir([estDataDir,filesep,inputFileName,'band1','*.mat']); % count how many iterations are used.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 num_ite = length(nFile);
 % inParamNames = {};
 % inDataNames = {};
@@ -38,7 +42,7 @@ N = length(inParamsList);% number of bands
 % for n = 1:N
 %     inParamNames = [inParamNames inParamsList(n).name];
 % end
-% 
+%
 % for m = 1:N*num_ite
 %     inDataNames = [inDataNames inDataList(m).name];
 % end
@@ -94,10 +98,10 @@ for i = 1:N
         dec = [dec bestRealLoc(2)];
         %%
         % Plot the FFT of the timing residuals of the sources in bin 4
-%         timingResFFt = fft(timingResiduals_tmp');
-%         timingResPdg = timingResFFt(1:(floor(130/2)+1),:);
-%         timingResPdg = abs(timingResPdg);
-%         freqVec = (0:(floor(130/2)))*(1/((yr(end)-yr(1))*365*24*3600));
+        %         timingResFFt = fft(timingResiduals_tmp');
+        %         timingResPdg = timingResFFt(1:(floor(130/2)+1),:);
+        %         timingResPdg = abs(timingResPdg);
+        %         freqVec = (0:(floor(130/2)))*(1/((yr(end)-yr(1))*365*24*3600));
         % figure(1)
         % plot(freqVec,timingResPdg);
         % hold on
@@ -147,17 +151,18 @@ stage = 1:1:num_ite;
 % for i = 1:numNoise
 %     noiseFileName = [noiseFileName noisefile(i).name];
 % end
-% 
+%
 % for i = 1:numNoise
 %     path_noise_file = [noisedir,filesep,char(noiseFileName(i))];
 %     noiseParams = ColSrcParams(path_noise_file);
 %     [noiseSNR,~] = Amp2Snr(noiseParams,noise.simParams,yr);
 %     nx = [nx noiseSNR];
 % end
-% 
+%
 % avgnx = sum(reshape(nx,5,10),1)/N;
 
 %% plot the entire map
+close all;
 figname = '2 bands 200 SRC 20 ITE 1 MBLT';
 figure(1)
 % yyaxis right
@@ -169,9 +174,9 @@ plot(x,y,'o',sx,sy,'s')
 hold on
 % plot grid
 for k=1:N
-%         semilogx(binSNR_log,ybin_up(:,k),'b-');
+    %         semilogx(binSNR_log,ybin_up(:,k),'b-');
     plot(binSNR,ybin_up(:,k),'b-');
-%         semilogx(binSNR_log,ybin_low(:,k),'b--');
+    %         semilogx(binSNR_log,ybin_low(:,k),'b--');
     plot(binSNR,ybin_low(:,k),'b--');
 end
 hold off
@@ -276,9 +281,9 @@ plot(x,y,'o',sx,sy,'s')
 hold on
 % plot grid
 for k=1:N
-%         semilogx(binSNR_log,ybin_up(:,k),'b-');
+    %         semilogx(binSNR_log,ybin_up(:,k),'b-');
     plot(binSNR,ybin_up(:,k),'b-');
-%         semilogx(binSNR_log,ybin_low(:,k),'b--');
+    %         semilogx(binSNR_log,ybin_low(:,k),'b--');
     plot(binSNR,ybin_low(:,k),'b--');
 end
 hold off
@@ -292,16 +297,46 @@ saveas(gcf,[figname,' SNRcutoff ',num2str(SNRcut)],'png');
 savefig([figname,' SNRcutoff ',num2str(SNRcut)]);
 
 %% freq. only plot
-szy = length(y); % size of simulated freq.
-szsy = length(sy); % size of est. freq.
-cst = zeros(szy,1);
-csts = zeros(szsy,1);
+yb = Sy(1e-7 < Sy & Sy <= 2e-7);% simulated sources blow the boundary, 2e-7 is the freq. separates two bands
+yb2 = Sy(Sy <= 1e-7);
+szyb = length(yb);
+szyb2 = length(yb2);
+cstb = zeros(szyb,1);
+cstb2 = zeros(szyb2,1);
+yu = Sy(Sy > 2e-7); 
+szyu = length(yu);
+cstu = zeros(szyu,1);
+
+syb = sy(1e-7< sy & sy <= 2e-7); % est. sources...
+syb2 = sy(sy <= 1e-7);
+szsyb = length(syb);
+szsyb2 = length(syb2);
+scstb = zeros(szsyb,1);
+scstb2 = zeros(szsyb2,1);
+syu = sy(sy > 2e-7);
+szsyu = length(syu);
+scstu = zeros(szsyu,1);
+
+
 
 figure(9)
-plot(y,cst,'ob',sy,csts,'sr');
+subplot(3,1,2)
+plot(yb,cstb,'ob',syb,scstb,'sr');
 xlabel('Frequency');
 ylabel('Constant');
-title([figname,' Freq-only SNRcutoff ',num2str(SNRcut)]);
+title([figname,' Freq-only SNRcutoff ',num2str(SNRcut),' Band 1 upper']);
+legend('Ture','Estimated');
+subplot(3,1,3)
+plot(yu,cstu,'ob',syu,scstu,'sr')
+xlabel('Frequency');
+ylabel('Constant');
+title([figname,' Freq-only SNRcutoff ',num2str(SNRcut),' Band 2']);
+legend('Ture','Estimated');
+subplot(3,1,1)
+plot(yb2,cstb2,'ob',syb2,scstb2,'sr')
+xlabel('Frequency');
+ylabel('Constant');
+title([figname,' Freq-only SNRcutoff ',num2str(SNRcut),' Band 1 lower']);
 legend('Ture','Estimated');
 saveas(gcf,[figname,' Freq-only SNRcutoff ',num2str(SNRcut)],'png')
 savefig([figname,' Freq-only SNRcutoff ',num2str(SNRcut)]);
