@@ -3,20 +3,20 @@
 clear;
 tic
 %% Set up
-simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands';
+simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/Shifted';
 simParamsName = 'searchParams';
 inParamsList = dir([simParamsDir,filesep,simParamsName,'*.mat']);
-simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
-estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/MBLT/GWBsimDataSKASrlz1Nrlz3_MBLT1/Results20';
+simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Shifted';
+estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Shifted/Results';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
-
-%%%%%%%%%%%%%%%%%%%% DON'T FOGET TO CHANGE THIS %%%%%%%%%%%%%%%%%%%%%%
 outputfiles = dir([estDataDir,filesep,'*',inputFileName,'*.mat']);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 Npara = length(inParamsList);
 NestSrc = length(outputfiles);
-nFile = dir([estDataDir,filesep,inputFileName,'band1','*.mat']); % count how many iterations are used.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DON'T FORGET TO CHECK THE NAME %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+nFile = dir([estDataDir,filesep,'1_',inputFileName,'*.mat']); % count how many iterations are used.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 num_ite = length(nFile);
 % Load the simulated source parameters.
 load([simDataDir,filesep,inputFileName,'.mat']);
@@ -25,7 +25,7 @@ estTimRes = zeros(simParams.Np,simParams.N);
 %% MBLT
 [file,Index]=rassign(estDataDir,outputfiles,NestSrc,simParams,yr);
 % disp(["File needs to be skipped: ",file]);
-outputFilename = 'GWBsimDataSKASrlz1Nrlz3_MBLT2';
+outputFilename = 'GWBsimDataSKASrlz1Nrlz3';
 OutputDir = [simDataDir,filesep,outputFilename];
 mkdir(OutputDir);
 for i = 1:Npara

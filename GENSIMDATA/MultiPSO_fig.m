@@ -241,7 +241,8 @@ savefig([figname,' DEC']);
 
 %% set up cutoff
 SNRcut = 50;
-Idx = find(x >= SNRcut); % set SNR cutoff for simulated sources
+Idx = find(x >= SNRcut);% set SNR cutoff for simulated sources
+Sx = x(Idx);
 Sy = y(Idx);
 sra = sra(Idx);
 sdec = sdec(Idx);
@@ -274,7 +275,7 @@ savefig([figname,' DEC-SNRcutoff ',num2str(SNRcut)]);
 figure(8)
 % yyaxis right
 % loglog(x,y,'o',sx,sy,'kd','MarkerSize',10);
-plot(x,y,'o',sx,sy,'s')
+plot(Sx,Sy,'o',sx,sy,'s')
 % semilogx(x,y,'o',sx,sy,'s');
 % disp(sy)
 
@@ -298,21 +299,27 @@ savefig([figname,' SNRcutoff ',num2str(SNRcut)]);
 
 %% freq. only plot
 yb = Sy(1e-7 < Sy & Sy <= 2e-7);% simulated sources blow the boundary, 2e-7 is the freq. separates two bands
-yb2 = Sy(Sy <= 1e-7);
+yb2 = Sy(2.5e-8 < Sy & Sy <= 1e-7);
+yb3 = Sy(Sy <= 2.5e-8 );
 szyb = length(yb);
 szyb2 = length(yb2);
+szyb3 = length(yb3);
 cstb = zeros(szyb,1);
 cstb2 = zeros(szyb2,1);
+cstb3 = zeros(szyb3,1);
 yu = Sy(Sy > 2e-7); 
 szyu = length(yu);
 cstu = zeros(szyu,1);
 
 syb = sy(1e-7< sy & sy <= 2e-7); % est. sources...
-syb2 = sy(sy <= 1e-7);
+syb2 = sy(2.5e-8 < sy & sy <= 1e-7);
+syb3 = sy(sy <= 2.5e-8);
 szsyb = length(syb);
 szsyb2 = length(syb2);
+szsyb3 = length(syb3);
 scstb = zeros(szsyb,1);
 scstb2 = zeros(szsyb2,1);
+scstb3 = zeros(szsyb3,1);
 syu = sy(sy > 2e-7);
 szsyu = length(syu);
 scstu = zeros(szsyu,1);
@@ -320,24 +327,34 @@ scstu = zeros(szsyu,1);
 
 
 figure(9)
-subplot(3,1,2)
+subplot(4,1,3)
 plot(yb,cstb,'ob',syb,scstb,'sr');
 xlabel('Frequency');
 ylabel('Constant');
 title([figname,' Freq-only SNRcutoff ',num2str(SNRcut),' Band 1 upper']);
 legend('Ture','Estimated');
-subplot(3,1,3)
+
+subplot(4,1,4)
 plot(yu,cstu,'ob',syu,scstu,'sr')
 xlabel('Frequency');
 ylabel('Constant');
 title([figname,' Freq-only SNRcutoff ',num2str(SNRcut),' Band 2']);
 legend('Ture','Estimated');
-subplot(3,1,1)
+
+subplot(4,1,2)
 plot(yb2,cstb2,'ob',syb2,scstb2,'sr')
 xlabel('Frequency');
 ylabel('Constant');
-title([figname,' Freq-only SNRcutoff ',num2str(SNRcut),' Band 1 lower']);
+title([figname,' Freq-only SNRcutoff ',num2str(SNRcut),' Band 1 Mid upper']);
 legend('Ture','Estimated');
+
+subplot(4,1,1)
+plot(yb3,cstb3,'ob',syb3,scstb3,'sr')
+xlabel('Frequency');
+ylabel('Constant');
+title([figname,' Freq-only SNRcutoff ',num2str(SNRcut),' Band 1 Mid lower']);
+legend('Ture','Estimated');
+
 saveas(gcf,[figname,' Freq-only SNRcutoff ',num2str(SNRcut)],'png')
 savefig([figname,' Freq-only SNRcutoff ',num2str(SNRcut)]);
 
