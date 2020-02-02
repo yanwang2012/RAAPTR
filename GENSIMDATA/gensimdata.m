@@ -1,6 +1,6 @@
 function []=gensimdata(path_to_parameters,path_to_pulsar_catalog,path_to_output,frqRng)
 %Generate PTA data realizations with multiple SMBHB sources
-%GENSIMDATA(P,D,O,LowFrqRng,UpFrqRng)
+%GENSIMDATA(P,D,O,[LowFrqRng,UpFrqRng])
 %P is the path to a .mat file containing the parameters for generating the
 %data. See the help for PARAMETERS for details about the parameters that must be
 %specified. D is the path to the file containing information about the
