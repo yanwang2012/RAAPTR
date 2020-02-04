@@ -1,6 +1,6 @@
 %function []=rmsrc(dataDir,outDir,srchParamDir,FileName,searchParamName,ext,bandNum,numSrc)
 %[]=rmsrc(dataDir,FileName,searchParamName,ext,bandNum,numSrc)
-% Subtract sources according to SNR recusively and output a new file.
+% Subtract sources from Max/Min SNR  recursively and output a new data file.
 % dataDir: Input data dirctory.
 % outDir: Output directory.
 % srchParamDir: search parameter file directory.
@@ -14,14 +14,14 @@
 clear
 tic
 %% Test
-dataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/FullBand/';
-outDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/FullBand/WLSRC-band1/6-10';
-srchParamDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/searchParams';
+dataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/ONE/band1';
+outDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/ONE/band1';
+srchParamDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands';
 FileName = 'GWBsimDataSKASrlz1Nrlz3';
-searchParamName = 'searchParams_Nyquist';
+searchParamName = 'searchParams';
 ext = '.mat';
 bandNum = 1;
-numSrc = 10;
+numSrc = 20;
 
 inputFile = strcat(dataDir,filesep,FileName,ext);
 for j = 1:numSrc
@@ -33,7 +33,8 @@ for j = 1:numSrc
     binsrcsnr = snr_chr(Index);
     Np = simParams.Np;
     N = simParams.N;
-    [~,I] = max(binsrcsnr);
+    %     [~,I] = max(binsrcsnr); % subtract from Max SNR
+    [~,I] = min(binsrcsnr); % subtract from Min SNR
     %I = 33; % debug
     %% calcu. timing residual
     phiI = zeros(Np,1);
@@ -66,7 +67,10 @@ for j = 1:numSrc
     copyfile(inputFile,newFile);
     m = matfile(newFile,'Writable',true);
     m.timingResiduals = timingResiduals_tmp1;
-    m.snr_chr(1,Index(I)) = snr_chr(Index(I)) - snr_chr_tmp;
+    %     m.snr_chr(1,Index(I)) = snr_chr(Index(I)) - snr_chr_tmp;
+    snr_chr_new = m.snr_chr;
+    snr_chr_new(Index(I)) = snr_chr(Index(I)) - snr_chr_tmp;
+    m.snr_chr = snr_chr_new;
     inputFile = newFile;
 end
 toc
