@@ -14,16 +14,19 @@
 clear
 tic
 %% Test
-dataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/ONE/band1';
-outDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/ONE/band1';
+dataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
+outDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/Band2woLoudest';
 srchParamDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands';
 FileName = 'GWBsimDataSKASrlz1Nrlz3';
 searchParamName = 'searchParams';
 ext = '.mat';
-bandNum = 1;
-numSrc = 20;
+bandNum = 2; % band where the source needs to be removed
+numSrc = 1; % number of sources need to be removed
 
 inputFile = strcat(dataDir,filesep,FileName,ext);
+simFile = inputFile;
+newFileName = {};
+
 for j = 1:numSrc
     load(inputFile);
     searchParams = strcat(srchParamDir,filesep,searchParamName,num2str(bandNum),ext);
@@ -33,8 +36,8 @@ for j = 1:numSrc
     binsrcsnr = snr_chr(Index);
     Np = simParams.Np;
     N = simParams.N;
-    %     [~,I] = max(binsrcsnr); % subtract from Max SNR
-    [~,I] = min(binsrcsnr); % subtract from Min SNR
+    [~,I] = max(binsrcsnr); % subtract from Max SNR
+    
     %I = 33; % debug
     %% calcu. timing residual
     phiI = zeros(Np,1);
@@ -64,6 +67,7 @@ for j = 1:numSrc
     %% substitute timing residual
     timingResiduals_tmp1 = timingResiduals - timingResiduals_tmp;
     newFile = strcat(outDataDir,filesep,FileName,'_rm',num2str(j),ext);
+    newFileName = [newFileName newFile];
     copyfile(inputFile,newFile);
     m = matfile(newFile,'Writable',true);
     m.timingResiduals = timingResiduals_tmp1;
@@ -73,5 +77,24 @@ for j = 1:numSrc
     m.snr_chr = snr_chr_new;
     inputFile = newFile;
 end
+
+%% Plot check
+ori = load(simFile);
+new = load(newFileName{1});
+
+ox = ori.snr_chr;
+oy = ori.omega/(2*pi*365*24*3600);
+
+nx = new.snr_chr;
+ny = new.omega/(2*pi*365*24*3600);
+
+plot(ox,oy,'or',nx,ny,'sb');
+legend('Origin','Removed')
+
+
+
+
+
+
 toc
 % EOF
