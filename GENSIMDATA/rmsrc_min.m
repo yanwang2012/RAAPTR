@@ -1,16 +1,5 @@
-%function []=rmsrc(dataDir,outDir,srchParamDir,FileName,searchParamName,ext,bandNum,numSrc)
-%[]=rmsrc(dataDir,FileName,searchParamName,ext,bandNum,numSrc)
-% Subtract sources from Max/Min SNR  recursively and output a new data file.
-% dataDir: Input data dirctory.
-% outDir: Output directory.
-% srchParamDir: search parameter file directory.
-% fileName: file wants to be subtracted without extension.
-% searchParamName: search parameter file name.
-% ext: File type.
-% bandNum: Where the sources are going to be removed.
-% numSrc: number of sources want to be subtracted.
-
-%2019.11.05 QYQ
+% Source removing script.
+% 2019.11.05 QYQ
 clear
 tic
 %% Test

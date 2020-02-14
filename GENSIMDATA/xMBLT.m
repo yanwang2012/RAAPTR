@@ -3,11 +3,11 @@
 clear;
 tic
 %% Set up
-simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/Shifted';
+simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands';
 simParamsName = 'searchParams';
 inParamsList = dir([simParamsDir,filesep,simParamsName,'*.mat']);
-simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Shifted';
-estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Shifted/Results';
+simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
+estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/Results';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 outputfiles = dir([estDataDir,filesep,'*',inputFileName,'*.mat']);
 Npara = length(inParamsList);
@@ -36,13 +36,14 @@ for i = 1:Npara
             else
 %                 disp("j is:"+j);
                 path_estData = [estDataDir,filesep,outputfiles(j).name];
+                disp(['File loaded: ',outputfiles(j).name]);
                 [srcParams]=ColSrcParams(path_estData);
                 [~,estTimRes_tmp] = Amp2Snr(srcParams,simParams,yr);
                 estTimRes = estTimRes + estTimRes_tmp;
             end
         end
     end
-    newFile = strcat(OutputDir,filesep,inputFileName,'band ',num2str(i),'.mat');
+    newFile = strcat(OutputDir,filesep,inputFileName,'band ',num2str(i),'check.mat');
     copyfile([simDataDir,filesep,inputFileName,'.mat'],newFile);
     m = matfile(newFile,'Writable',true);
     m.timingResiduals = timingResiduals - estTimRes;
