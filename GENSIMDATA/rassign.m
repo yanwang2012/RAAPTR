@@ -25,10 +25,11 @@ function [filename,Index]=rassign(estDataDir,outputfiles,N,simParams,yr)
 %% load data
 bestRealLoc = zeros(1007,N);
 SNR = zeros(N,1);
+outputfilenames = sort_nat({outputfiles.name});
 for i = 1:N
-    f = load([estDataDir,filesep,char(outputfiles(i).name)],'bestRealLoc');
+    f = load([estDataDir,filesep,char(outputfilenames(i))],'bestRealLoc');
     bestRealLoc(:,i) = f.bestRealLoc;
-    [SrcParam]=ColSrcParams([estDataDir,filesep,outputfiles(i).name]);
+    [SrcParam]=ColSrcParams([estDataDir,filesep,outputfilenames(i)]);
     [SNR(i,1),~]=Amp2Snr(SrcParam,simParams,yr);
 end
 
@@ -46,11 +47,11 @@ for k = 1:N
         if abs(SrcP(k,2)-SrcP(m,2)) < 3 && k ~= m % threshold for SNR
             if abs(SrcP(k,1)-SrcP(m,1)) < 5e-10 && k ~= m % threshold for Freq
                 if SrcP(k,2) > SrcP(m,2)
-                    disp(["File needs to be skipped is : ",outputfiles(m).name,'Index is: ',num2str(m)])
-                    filename = [filename outputfiles(m).name];
+                    disp(["File needs to be skipped is : ",outputfilenames(m),'Index is: ',num2str(m)])
+                    filename = [filename outputfilenames(m)];
                     Index = [Index m];
                 else
-                    disp(["File needs to be skipped is : ",outputfiles(k).name,'Index is: ',num2str(k)])
+                    disp(["File needs to be skipped is : ",outputfilenames(k),'Index is: ',num2str(k)])
                 end
             end
         end

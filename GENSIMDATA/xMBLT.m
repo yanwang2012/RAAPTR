@@ -23,10 +23,11 @@ load([simDataDir,filesep,inputFileName,'.mat']);
 estTimRes = zeros(simParams.Np,simParams.N);
 
 %% MBLT
+outputfilenames = sort_nat({outputfiles.name});
 [file,Index]=rassign(estDataDir,outputfiles,NestSrc,simParams,yr);
 % disp(["File needs to be skipped: ",file]);
-outputFilename = 'GWBsimDataSKASrlz1Nrlz3';
-OutputDir = [simDataDir,filesep,outputFilename];
+Filename = 'GWBsimDataSKASrlz1Nrlz3';
+OutputDir = [simDataDir,filesep,Filename];
 mkdir(OutputDir);
 for i = 1:Npara
     for j = 1:NestSrc
@@ -35,8 +36,8 @@ for i = 1:Npara
                 continue
             else
 %                 disp("j is:"+j);
-                path_estData = [estDataDir,filesep,outputfiles(j).name];
-                disp(['File loaded: ',outputfiles(j).name]);
+                path_estData = [estDataDir,filesep,outputfilenames(j)];
+                disp(['File loaded: ',outputfilenames(j)]);
                 [srcParams]=ColSrcParams(path_estData);
                 [~,estTimRes_tmp] = Amp2Snr(srcParams,simParams,yr);
                 estTimRes = estTimRes + estTimRes_tmp;

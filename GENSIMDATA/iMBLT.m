@@ -3,11 +3,11 @@
 clear;
 tic
 %% Set up
-simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands';
+simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
 simParamsName = 'searchParams';
 inParamsList = dir([simParamsDir,filesep,simParamsName,'*.mat']);
-simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/ONE/band1';
-estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/ONE/band1/Results10';
+simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
+estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/Results_supNar';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 bandNum = 1;
 outputfiles = dir([estDataDir,filesep,num2str(bandNum),'_',inputFileName,'*.mat']);
@@ -28,8 +28,10 @@ SNRarray = [];
 %% MBLT
 [file,Index]=rassign(estDataDir,outputfiles,NestSrc,simParams,yr);
 % disp(["File needs to be skipped: ",file]);
-outputFilename = 'GWBsimDataSKASrlz1Nrlz3';
-OutputDir = [simDataDir,filesep,outputFilename];
+Filename = 'supperNarrow_iMBLT1';
+OutputDir = [simDataDir,filesep,Filename];
+outputfilenames = sort_nat({outputfiles.name});
+
 mkdir(OutputDir);
 
 for j = 1:NestSrc
@@ -38,7 +40,7 @@ for j = 1:NestSrc
         continue
     else
         %                 disp("j is:"+j);
-        path_estData = [estDataDir,filesep,outputfiles(j).name];
+        path_estData = [estDataDir,filesep,char(outputfilenames(j))];
         [srcParams]=ColSrcParams(path_estData);
         [SNR,estTimRes_tmp] = Amp2Snr(srcParams,simParams,yr);
        ResCell = [ResCell estTimRes_tmp];
