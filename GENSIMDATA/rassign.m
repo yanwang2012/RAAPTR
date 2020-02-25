@@ -29,7 +29,7 @@ outputfilenames = sort_nat({outputfiles.name});
 for i = 1:N
     f = load([estDataDir,filesep,char(outputfilenames(i))],'bestRealLoc');
     bestRealLoc(:,i) = f.bestRealLoc;
-    [SrcParam]=ColSrcParams([estDataDir,filesep,outputfilenames(i)]);
+    [SrcParam]=ColSrcParams([estDataDir,filesep,char(outputfilenames(i))]);
     [SNR(i,1),~]=Amp2Snr(SrcParam,simParams,yr);
 end
 

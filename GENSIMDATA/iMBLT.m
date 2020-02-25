@@ -11,14 +11,9 @@ estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/B
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 bandNum = 1;
 outputfiles = dir([estDataDir,filesep,num2str(bandNum),'_',inputFileName,'*.mat']);
-Npara = length(inParamsList);
+% Npara = length(inParamsList);
 NestSrc = length(outputfiles);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DON'T FORGET TO CHECK THE NAME %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-nFile = dir([estDataDir,filesep,inputFileName,'*.mat']); % count how many iterations are used.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-num_ite = length(nFile);
 % Load the simulated source parameters.
 load([simDataDir,filesep,inputFileName,'.mat']);
 estTimRes = zeros(simParams.Np,simParams.N);
@@ -28,8 +23,8 @@ SNRarray = [];
 %% MBLT
 [file,Index]=rassign(estDataDir,outputfiles,NestSrc,simParams,yr);
 % disp(["File needs to be skipped: ",file]);
-Filename = 'supperNarrow_iMBLT1';
-OutputDir = [simDataDir,filesep,Filename];
+foldername = 'supperNarrow_iMBLT1';
+OutputDir = [simDataDir,filesep,foldername];
 outputfilenames = sort_nat({outputfiles.name});
 
 mkdir(OutputDir);
@@ -49,11 +44,13 @@ for j = 1:NestSrc
     
 end
 
-for i = 1:NestSrc-1
-    estTimRes = estTimRes + ResCell{i+1};
+% Accumulate the timing residulas for different sources.
+
+for nsrc = 2:6%NestSrc
+    estTimRes = estTimRes + ResCell{nsrc};
 end
 
-newFile = strcat(OutputDir,filesep,inputFileName,'band ',num2str(bandNum),'Only','.mat');
+newFile = strcat(OutputDir,filesep,inputFileName,'band ',num2str(bandNum),' 5 Src Removed','.mat');
 copyfile([simDataDir,filesep,inputFileName,'.mat'],newFile);
 m = matfile(newFile,'Writable',true);
 m.timingResiduals = timingResiduals - estTimRes;
