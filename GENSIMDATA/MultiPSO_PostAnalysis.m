@@ -4,8 +4,8 @@ tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
 simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/Whole';
-simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/RMSubsets/Interval 200';
-estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/RMSubsets/Interval 200/Results';
+simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/FreqRM/Only';
+estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/FreqRM/Only/Results_only';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 % Load the simulated source parameters.
 simDataList = dir([simDataDir,filesep,inputFileName,'*.mat']);
@@ -59,8 +59,8 @@ for lp = 1:simFiles
     inDataNames = sort_nat({inDataList.name});
     
     %% data pre-processing
-    bx = zeros(N,50);
-    by = zeros(N,50);
+    bx = zeros(N,3);
+    by = zeros(N,3);
     etyband = 0; % band doesn't have sources inside.
     
     for i = 1:N
@@ -172,9 +172,9 @@ for lp = 1:simFiles
     
     %% plot the entire map
     close all;
-    prefix = [simDataDir,filesep,'fig',filesep,simFileName];
+    prefix = [estDataDir,filesep,'fig',filesep,simFileName];
     mkdir(prefix);
-    figname = 'Full range removing test inter 100';
+    figname = ['Source ',num2str(lp+1),' with similar freq removed'];
     figure(1)
     % yyaxis right
     % loglog(x,y,'o',sx,sy,'kd','MarkerSize',10);
@@ -366,7 +366,7 @@ for lp = 1:simFiles
     title(' Band 1 lower');
     legend('Ture','Estimated');
     
-    sgtitle([prefix,filesep,figname,' Freq-only SNRcutoff ',num2str(SNRcut)]);
+    sgtitle([figname,' Freq-only SNRcutoff ',num2str(SNRcut)]);
     saveas(gcf,[prefix,filesep,figname,' Freq-only SNRcutoff ',num2str(SNRcut)],'png')
     savefig([prefix,filesep,figname,' Freq-only SNRcutoff ',num2str(SNRcut)]);
 end

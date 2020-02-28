@@ -87,8 +87,10 @@ for lp = 1:numSrc
     mm.timingResiduals = timingResiduals_tmpi;
     m.snr_chr = snr_chr_acu;
     mm.snr_chr = snr_chr_indv;
+    % reinitialization
     startpoint = srcN; % initialize startpoint again.
     snr_chr_indv = snr_chr;
+    timingResiduals_tmpc = zeros(Np,N);
 end
 
 
