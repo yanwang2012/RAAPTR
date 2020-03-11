@@ -1,13 +1,16 @@
-% MBLT in ONE band
-% QYQ 02/01/2019
+%% Remove estimated sources
+% Given a set of output files, remove all the estimated sources from
+% simulation data.
+% QYQ 03/11/2019
+
 clear;
 tic
 %% Set up
 simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
 estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/supperNarrow_iMBLT1/Results_5';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
-bandNum = 1;
-outputfiles = dir([estDataDir,filesep,num2str(bandNum),'_',inputFileName,'*.mat']);
+ext = '.mat';
+outputfiles = dir([estDataDir,filesep,'*',inputFileName,'*',ext]);
 % Npara = length(inParamsList);
 NestSrc = length(outputfiles);
 
@@ -42,7 +45,7 @@ for j = 1:NestSrc
 end
 
 % Accumulate the timing residulas for different sources.
-for nsrc = 2:6%NestSrc remove first 5 src.
+for nsrc = 2:NestSrc
     estTimRes = estTimRes + ResCell{nsrc};
 end
 

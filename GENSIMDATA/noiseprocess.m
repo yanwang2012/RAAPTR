@@ -1,26 +1,25 @@
 %% Noise processing
-function [avgnoise] = noiseprocess(estNoiseDir,simNoiseDir)
-%tic
-%clear;
-%estNoiseDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/noise/Results';
+function [avgnoise] = noiseprocess(estNoiseDir,simNoiseDir,num_ite,num_bands)
+% [avgnoise] = noiseprocess(estNoiseDir,simNoiseDir,num_ite,num_bands)
+% num_ite: number of iterations used to estimate noise-only data.
+% num_bands : number of bands used for noise-only data.
+% num_ite and num_bands for noise should match the one used for H1 data.
+
+%% Debug
+% estNoiseDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/noise/Results20/';
+% simNoiseDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/noise';
+% num_ite = 20;
+% num_bands = 5;
+
+%% Main
 estNoiseFiles = dir([estNoiseDir,filesep,'*.mat']);
-%simNoiseDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/noise';
 simNoiseFiles = dir([simNoiseDir,filesep,'*.mat']);
+
 numSimNoise = length(simNoiseFiles);
-numEstNoise = length(estNoiseFiles);
-num_ite = 10;
-num_bands = 5;
-estNoiseName = {};
-for i = 1:numEstNoise
-    estNoiseName = [estNoiseName estNoiseFiles(i).name];
-end
-simNoiseName = {};
-for j = 1:numSimNoise
-    simNoiseName = [simNoiseName simNoiseFiles(j).name];
-end
-estNoiseName = sort_nat(estNoiseName);
+
+estNoiseName = sort_nat({estNoiseFiles.name});
 estNoiseName = reshape(estNoiseName,num_ite*numSimNoise,num_bands);
-simNoiseName = sort_nat(simNoiseName);
+simNoiseName = sort_nat({simNoiseFiles.name});
 noise_tmp = 0;
 avgnoise_tmp = zeros(numSimNoise,num_ite);
 for m = 1:numSimNoise
@@ -38,4 +37,5 @@ for m = 1:numSimNoise
 end
 
 avgnoise = sum(avgnoise_tmp,1)/numSimNoise;
+
 %END
