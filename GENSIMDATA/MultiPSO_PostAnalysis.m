@@ -4,8 +4,8 @@ tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
 simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/Whole';
-simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/FreqRM/Only';
-estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/FreqRM/Only/Results_only';
+simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/';
+estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Whole/Results';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 % Load the simulated source parameters.
 simDataList = dir([simDataDir,filesep,inputFileName,'*.mat']);
@@ -33,28 +33,18 @@ for lp = 1:simFiles
     
     %%%%%%%%%%%%%%%%%%% DON'T FORGET %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     [~,simFileName,~] = fileparts(char(simDataList(lp)));
-    % nFile = dir([estDataDir,filesep,'1_',inputFileName,'*.mat']); % count how many iterations are used. For initial PSO est.
+%     nFile = dir([estDataDir,filesep,'1_',simFileName,'*.mat']); % count how many iterations are used. For initial PSO est.
     nFile = dir([estDataDir,filesep,simFileName,'*.mat']); % For MBLT and other tests with irregular filename.
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %% reading the files
     inParamsList = dir([simParamsDir,filesep,'searchParams','*.mat']);
-    inDataList = dir([estDataDir,filesep,simFileName,'*.mat']);
+    inDataList = dir([estDataDir,filesep,'*',simFileName,'*.mat']);
     
     num_ite = length(nFile);
-    % inParamNames = {};
-    % inDataNames = {};
-    N = length(inParamsList);% number of bands
+     N = length(inParamsList);% number of bands
     %     N = 1;
-    % % get the name and sort it
-    % for n = 1:N
-    %     inParamNames = [inParamNames inParamsList(n).name];
-    % end
-    %
-    % for m = 1:N*num_ite
-    %     inDataNames = [inDataNames inDataList(m).name];
-    % end
-    
+
     inParamNames = sort_nat({inParamsList.name});
     inDataNames = sort_nat({inDataList.name});
     
@@ -146,35 +136,16 @@ for lp = 1:simFiles
     stage = 1:1:num_ite;
     
     %% Noise processing
-    % noisedir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/noise/Results/';
-    % simNoiseDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/noise';
-    % disp('Processing noise-only data');
-    % [avgnoise] = noiseprocess(noisedir,simNoiseDir,10,5);
-    % noisefile = dir([noisedir,filesep,'*.mat']);
-    % numNoise = length(noisefile); % number of noise files.
-    % simNoiseFileName = 'noise1.mat';
-    % noise = load([simNoiseDir,filesep,simNoiseFileName]);
-    % noiseFileName = {};
-    % nx = []; % blank array for noise SNR.
-    
-    % for i = 1:numNoise
-    %     noiseFileName = [noiseFileName noisefile(i).name];
-    % end
-    %
-    % for i = 1:numNoise
-    %     path_noise_file = [noisedir,filesep,char(noiseFileName(i))];
-    %     noiseParams = ColSrcParams(path_noise_file);
-    %     [noiseSNR,~] = Amp2Snr(noiseParams,noise.simParams,yr);
-    %     nx = [nx noiseSNR];
-    % end
-    %
-    % avgnx = sum(reshape(nx,5,10),1)/N;
+    noisedir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/noise/results';
+    simNoiseDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/noise';
+    disp('Processing noise-only data');
+    [avgnoise] = noiseprocess(noisedir,simNoiseDir,num_ite,N);
     
     %% plot the entire map
     close all;
     prefix = [estDataDir,filesep,'fig',filesep,simFileName];
     mkdir(prefix);
-    figname = ['Source ',num2str(lp+1),' with similar freq removed'];
+    figname = 'One band Estimation';
     figure(1)
     % yyaxis right
     % loglog(x,y,'o',sx,sy,'kd','MarkerSize',10);
@@ -201,26 +172,26 @@ for lp = 1:simFiles
     savefig([prefix,filesep,figname]);
     % save('estTimRes01.mat','estTimRes');
     
-    % figure(2)
-    % Legend = {N,1};
-    % hold on
-    % for i = 1:N - etyband
-    %     %plot(stage,sx(10*(i-1)+1:10*i));
-    %     semilogy(stage,sx(num_ite*(i-1)+1:num_ite*i));
-    %     Legend{i} = ['Band ', num2str(i)+etyband];
-    %     if i == (N - etyband)
-    %         %plot(stage, avgnx,'--k');
-    %         semilogy(stage,avgnoise,'--k');
-    %         Legend{i+1} = 'Noise';
-    %     end
-    % end
-    % hold off
-    % legend(Legend);
-    % title([figname,' SNR vs. Stage']);
-    % xlabel('Stage');
-    % ylabel('SNR');
-    % saveas(gcf,[figname,' SNR-Stage'],'png');
-    % savefig([figname,' SNR-Stage']);
+    figure(2)
+    Legend = {N,1};
+    hold on
+    for i = 1:N - etyband
+        %plot(stage,sx(10*(i-1)+1:10*i));
+        semilogy(stage,sx(num_ite*(i-1)+1:num_ite*i));
+        Legend{i} = ['Band ', num2str(i)+etyband];
+        if i == (N - etyband)
+            %plot(stage, avgnx,'--k');
+            semilogy(stage,avgnoise,'--k');
+            Legend{i+1} = 'Noise';
+        end
+    end
+    hold off
+    legend(Legend);
+    title([figname,' SNR vs. Stage']);
+    xlabel('Stage');
+    ylabel('SNR');
+    saveas(gcf,[prefix,filesep,figname,' SNR-Stage'],'png');
+    savefig([prefix,filesep,figname,' SNR-Stage']);
     
     figure(3)
     plot(sra,sdec,'ob',ra,dec,'sr');
