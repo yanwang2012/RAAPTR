@@ -1,15 +1,15 @@
 %% Noise processing
-function [avgnoise] = noiseprocess(estNoiseDir,simNoiseDir,num_ite,num_bands)
+% function [avgnoise] = noiseprocess(estNoiseDir,simNoiseDir,num_ite,num_bands)
 % [avgnoise] = noiseprocess(estNoiseDir,simNoiseDir,num_ite,num_bands)
 % num_ite: number of iterations used to estimate noise-only data.
 % num_bands : number of bands used for noise-only data.
 % num_ite and num_bands for noise should match the one used for H1 data.
 
-%% Debug
-% estNoiseDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/noise/Results20/';
-% simNoiseDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/noise';
-% num_ite = 20;
-% num_bands = 5;
+%% Setting up
+estNoiseDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/noise/results';
+simNoiseDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/noise';
+num_ite = 20;
+num_bands = 1;
 
 %% Main
 estNoiseFiles = dir([estNoiseDir,filesep,'*.mat']);
@@ -37,5 +37,7 @@ for m = 1:numSimNoise
 end
 
 avgnoise = sum(avgnoise_tmp,1)/numSimNoise;
+noisefile =[simNoiseDir,filesep,'noise.mat'];
+save(noisefile,'avgnoise');
 
 %END
