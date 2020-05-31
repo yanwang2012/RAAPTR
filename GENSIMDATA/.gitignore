@@ -5,3 +5,5 @@
 *.hdf5
 *.pdf
 *.slurm
+*.fig
+*.png

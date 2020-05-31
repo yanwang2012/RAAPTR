@@ -8,17 +8,17 @@
 % Nnis: number of realization of noise only cases H0
 tic;
 clear;
-Ns = 100;
+Ns = 200;%100;
 Np = 1000; % for the specific pulsar catalog
-Nrlz = 5; % number of H1 realization
-Nnis = 50; % number of H0 realization
+Nrlz = 50; % number of H1 realization
+Nnis = 1; % number of H0 realization
 %frqRng = [8.26e-8,4.130e-7];% Angular velocity is converted to Hz by divided by 2*pi*365*24*3600
 parameters(Ns,Np,Nrlz,Nnis);
-outDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/FullBand/test';
+outDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final';
 mkdir(outDir);
 
 gensimdata('GWBsimDataSKAParams.mat',...
            'survey_ska.mat',...
             outDir)%,...
-            %frqRng); % frequency range
+%             [5.0468e-09,2e-7]); % frequency range
 toc;

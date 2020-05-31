@@ -3,14 +3,15 @@ clear;
 tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
-simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/shifted';
-simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Shifted';
-estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Shifted/GWBsimDataSKASrlz1Nrlz3/Results';
+simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
+simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11';
+estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/supperNarrow_iMBLT1_after_20/Results_20/2_iMBLT/results/2iMBLT_after/results/3_iMBLT/results/3iMBLT_after/results/4_iMBLT/results/4iMBLT_after/results/5_iMBLT/results/5iMBLT_after/results/6_iMBLT/results';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 % Load the simulated source parameters.
 simDataList = dir([simDataDir,filesep,inputFileName,'*.mat']);
 simDataList = sort_nat({simDataList.name});
 simFiles = length(simDataList);
+
 for lp = 1:simFiles
     load([simDataDir,filesep,char(simDataList(lp))],'omega','alpha','delta',...
         'timingResiduals_tmp', 'yr','snr_chr','simParams');
@@ -33,8 +34,8 @@ for lp = 1:simFiles
     
     %%%%%%%%%%%%%%%%%%% DON'T FORGET %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     [~,simFileName,~] = fileparts(char(simDataList(lp)));
-%     nFile = dir([estDataDir,filesep,'1_',simFileName,'*.mat']); % count how many iterations are used. For initial PSO est.
-        nFile = dir([estDataDir,filesep,simFileName,'band1','*.mat']); % For MBLT and other tests with irregular filename.
+    nFile = dir([estDataDir,filesep,'1_',simFileName,'*.mat']); % count how many iterations are used. For initial PSO est.
+%     nFile = dir([estDataDir,filesep,simFileName,'*.mat']); % For MBLT and other tests with irregular filename.
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %% reading the files
@@ -63,7 +64,7 @@ for lp = 1:simFiles
         
         
         if isempty(Indx)
-            disp(["There's no signal injected in band",num2str(i)]);
+            disp(["There's no signal injected in band ",num2str(i)]);
             etyband = i;
             continue
         end
@@ -148,7 +149,7 @@ for lp = 1:simFiles
     close all;
     prefix = [estDataDir,filesep,'fig',filesep,simFileName];
     mkdir(prefix);
-    figname = '5 shift-bands 200 Src 20 Ite 1 MBLT';
+    figname = '2bands-iMBLT6';
     figure(1)
     % yyaxis right
     % loglog(x,y,'o',sx,sy,'kd','MarkerSize',10);
@@ -175,27 +176,28 @@ for lp = 1:simFiles
     savefig([prefix,filesep,figname]);
     % save('estTimRes01.mat','estTimRes');
     
-    figure(2)
-    Legend = {N,1};
-    hold on
-    for i = 1:N - etyband
-        plot(stage,sx(num_ite*(i-1)+1:num_ite*i));
-%         semilogy(stage,sx(num_ite*(i-1)+1:num_ite*i));
-        Legend{i} = ['Band ', num2str(i)+etyband];
-        if i == (N - etyband)
-            plot(stage, avgnoise,'--k');
-%             semilogy(stage,avgnoise,'--k');
-            Legend{i+1} = 'Noise';
-        end
-    end
-    hold off
-    legend(Legend);
-    title([figname,' SNR vs. Stage']);
-    xlabel('Stage');
-    xlim([1 num_ite]);
-    ylabel('SNR');
-    saveas(gcf,[prefix,filesep,figname,' SNR-Stage'],'png');
-    savefig([prefix,filesep,figname,' SNR-Stage']);
+%  % SNR vs. Stage figure   
+%     figure(2)
+%     Legend = {N,1};
+%     hold on
+%     for i = 1:N - etyband
+%         plot(stage,sx(num_ite*(i-1)+1:num_ite*i));
+% %         semilogy(stage,sx(num_ite*(i-1)+1:num_ite*i));
+%         Legend{i} = ['Band ', num2str(i)+etyband];
+%         if i == (N - etyband)
+%             plot(stage, avgnoise,'--k');
+% %             semilogy(stage,avgnoise,'--k');
+%             Legend{i+1} = 'Noise';
+%         end
+%     end
+%     hold off
+%     legend(Legend);
+%     title([figname,' SNR vs. Stage']);
+%     xlabel('Stage');
+%     xlim([1 num_ite]);
+%     ylabel('SNR');
+%     saveas(gcf,[prefix,filesep,figname,' SNR-Stage'],'png');
+%     savefig([prefix,filesep,figname,' SNR-Stage']);
     
     figure(3)
     plot(sra,sdec,'ob',ra,dec,'sr');

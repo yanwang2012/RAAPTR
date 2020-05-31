@@ -1,7 +1,7 @@
 % A script convert searchParams file from .mat to hdf5
 clear;
-FileDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/searchParams/MBLT';
-OutDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/searchParams/MBLT/HDF5';
+FileDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
+OutDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/superNarrow';
 inFileList = dir([FileDir,filesep,'*.mat']);
 mkdir(OutDir);
 for lpc = 1:length(inFileList)

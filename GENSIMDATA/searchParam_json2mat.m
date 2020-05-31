@@ -2,11 +2,11 @@
 % Generate specific band width search parameter files
 
 clear;
-Dir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/searchParams/MBLT';
+Dir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
 Filelist = dir([Dir,filesep,'*.json']);
 n = length(Filelist);
 NyqFreRan = [81.8345;1.0]; %upper; lower
-NumBands = 5; % total number of bands
+NumBands = 2; % total number of bands
 for i = 1:n
 searchParams = jsondecode(fileread([Dir,filesep,Filelist(i).name]));
 FreqRange = NyqFreRan;

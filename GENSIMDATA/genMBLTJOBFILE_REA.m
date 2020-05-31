@@ -1,22 +1,18 @@
 clear;
-simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/Realizations/GWBsimDataSKASrlz1Nrlz5/HDF5'; % local
+simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/Sources/GWBsimDataSKASrlz1Nrlz3/HDF5'; % local
 %simDataDir = '/work/05884/qyqstc/lonestar/GWBsimDataSKA_HDF5'; % on ls5
 search_paramDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test10/searchParams/HDF5';
 inFileList = dir([simDataDir,filesep,'GWB*.hdf5']);% original file
 inFileList_param = dir([search_paramDataDir,filesep,'*.hdf5']);
 nParamFiles = length(inFileList_param);
 nFiles = length(inFileList);
-fid = fopen('~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/MBLTJOBFILE_REA2.txt','a'); % 'a' for appending data at the end of the file.
+fid = fopen('~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/MBLTJOBFILE_SRC2.txt','a'); % 'a' for appending data at the end of the file.
 excut = '/work/05884/qyqstc/lonestar/RAAPTR/MxAvPhaseC/Multi_PSO.out ';
 searchParamDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task7/searchParams/';
-dataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/Realizations/GWBsimDataSKASrlz1Nrlz5/';
-resultsDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/Realizations/GWBsimDataSKASrlz1Nrlz5/Results/';
+dataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/Sources/GWBsimDataSKASrlz1Nrlz3/';
+resultsDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/Sources/GWBsimDataSKASrlz1Nrlz3/Results/';
 
-inFileName = {};
-for k = 1:nFiles
-    inFileName = [inFileName inFileList(k).name];
-end
-inFileName = sort_nat(inFileName);
+inFileName = sort_nat({inFileList.name});
 
 for ppc = 1:nFiles
     bandNum = h5readatt([search_paramDataDir,'/',inFileList_param(ppc).name],...

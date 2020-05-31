@@ -6,13 +6,13 @@
 %   cfunc                  - function calculating the c coefficients
 %   chkstdsrchrng          - Checks for points that are outside the standardized search range 
 %   coco                   - --------------------------------------------------------
-%   convertAmp2snr         - core function of converting Amp to SNR
+
 %   cosined                - --------------------------------------------------------------------
 %   findBestLoc            - post analysis for multiple gw sources
 %   FullResiduals          - Function to calculate the timing residuals for a full set of parameters 
-%   gatherParams           - Gather all the info for the function convertAmp2snr
+
 %   GenerateRandomGWSource - to generate random sources of GW
-%   genls5launcherjobfile  - simDataDir = '/work/05884/qyqstc/lonestar/GWBsimDataSKA_HDF5'; % on ls5
+%   genls5launcherjobfile  - 
 %   genptaconsts           - ======== constants ===========
 %   gensimdata             - Generate PTA data realizations with multiple SMBHB sources
 %   hdf52mat_script        - A script convert .hdf5 file to .mat file
@@ -24,7 +24,7 @@
 %   mat2hdf5_script        - convert .mat file to .hdf5 file
 %   matfile2hdf5           - Convert input data file to HDF5 format (C convention for matrices)
 %   MauritiusFig_Amp       - 
-%   MautitiusFigPlot       - 
+
 %   mpavinfile2hdf5        - Convert input data file to HDF5 format file with structures exploded
 %   mpavoutfile2mat        - Convert output file in HDF5 format to MAT file with structures restored
 %   parameters             - given the numer of random GW sources [Ns], the number of pulsars

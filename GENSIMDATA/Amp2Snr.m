@@ -1,6 +1,6 @@
 function [snr_chr,timingResiduals]=Amp2Snr(srcParams,psrParams,yr)
 % A function to convert amplitude to SNR
-% [SNR,timingResiduals]=Amp2Snr(sourceParams,pulsarParams)
+% [SNR,timingResiduals]=Amp2Snr(sourceParams,pulsarParams,yr)
 
 % QYQ 9th April, 2019
 %% calculate SNR
