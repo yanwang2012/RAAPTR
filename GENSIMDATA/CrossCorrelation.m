@@ -81,28 +81,30 @@ end
 % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MAC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,SrcSNR,EstSrc,simParams,yr,'snr');
 
 % Max Weighted Ave. CC
-[rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MWAC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,SrcSNR,EstSrc,simParams,yr,0);
+% [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MWAC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,SrcSNR,EstSrc,simParams,yr,'snr');
 
+% Max over Threshold CC
+[rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MTC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr,0.85);
 
 
 % Max coefficients of sources
-for band = 1:Nband
-    NtsrcBand = length(SrcAlpha{band});
-    for src = 1:NestsrcBand
-        for tsrc = 1:NtsrcBand
-            if tsrc ~= id_max(src,band)
-                rho{band}(src,tsrc) = 0;
-            end
-        end
-    end
-end
+% for band = 1:Nband
+%     NtsrcBand = length(SrcAlpha{band});
+%     for src = 1:NestsrcBand
+%         for tsrc = 1:NtsrcBand
+%             if tsrc ~= id_max(src,band)
+%                 rho{band}(src,tsrc) = 0;
+%             end
+%         end
+%     end
+% end
 
 
 
 %% Plotting
 prefix = [estdataDir,filesep,'fig',filesep,Filename];
 mkdir(prefix);
-figname = 'MWAC_0_unique';
+figname = 'MTC';
 
 for fig = 1:Nband
     figure
@@ -116,16 +118,16 @@ for fig = 1:Nband
 end
 
 
-% figname2 = 'MWAC_SNR_snr';
-% for fig2 = 1:Nband
-%     figure
-%     plot(estSNR(fig2,:),rho_max{fig2},'ob')
-%     xlabel('Estimated SNR')
-%     ylabel('MWAC_{snr}')
-%     title(['Band ',num2str(fig2)])
-%     saveas(gcf,[prefix,filesep,figname2,'Band ',num2str(fig2)],'png');
-%     savefig([prefix,filesep,figname2,'Band ',num2str(fig2)]);
-% end
+figname2 = 'MTC_SNR';
+for fig2 = 1:Nband
+    figure
+    plot(estSNR(fig2,:),rho_max{fig2},'ob')
+    xlabel('Estimated SNR')
+    ylabel('MTC')
+    title(['Band ',num2str(fig2)])
+    saveas(gcf,[prefix,filesep,figname2,'Band ',num2str(fig2)],'png');
+    savefig([prefix,filesep,figname2,'Band ',num2str(fig2)]);
+end
 
 % figname3 = 'Freq_CC';
 % for fig3 = 1:Nband
@@ -168,75 +170,124 @@ end
 % end
 
 
-% figname6 = 'MWAC_freq_snr';
-% 
-% for fig = 1:Nband
-%     figure
-%     plot(dif_freq_max(:,fig),rho_max{fig},'ob')
-%     xlabel('Difference of Freq. Percentage (%)')
-%     ylabel('MWAC_{snr}')
-%     title(['Band ',num2str(fig)])
-%     saveas(gcf,[prefix,filesep,figname6,'Band ',num2str(fig)],'png');
-%     savefig([prefix,filesep,figname6,'Band ',num2str(fig)]);
-% end
-% 
-% figname7 = 'MWAC_RA_snr';
-% 
-% for fig = 1:Nband
-%     figure
-%     plot(dif_ra_max(:,fig),rho_max{fig},'ob')
-%     xlabel('Difference of RA Percentage (%)')
-%     ylabel('MWAC_{snr}')
-%     title(['Band ',num2str(fig)])
-%     saveas(gcf,[prefix,filesep,figname7,'Band ',num2str(fig)],'png');
-%     savefig([prefix,filesep,figname7,'Band ',num2str(fig)]);
-% end
-% 
-% figname8 = 'MWAC_DEC_snr';
-% 
-% for fig = 1:Nband
-%     figure
-%     plot(dif_dec_max(:,fig),rho_max{fig},'ob')
-%     xlabel('Difference of DEC Percentage (%)')
-%     ylabel('MWAC_{snr}')
-%     title(['Band ',num2str(fig)])
-%     saveas(gcf,[prefix,filesep,figname8,'Band ',num2str(fig)],'png');
-%     savefig([prefix,filesep,figname8,'Band ',num2str(fig)]);
-% end
+figname6 = 'MTC_freq';
+
+for fig = 1:Nband
+    figure
+    plot(dif_freq_max(:,fig),rho_max{fig},'ob')
+    xlabel('Difference of Freq. Percentage (%)')
+    ylabel('MTC')
+    title(['Band ',num2str(fig)])
+    saveas(gcf,[prefix,filesep,figname6,'Band ',num2str(fig)],'png');
+    savefig([prefix,filesep,figname6,'Band ',num2str(fig)]);
+end
+
+figname7 = 'MTC_RA';
+
+for fig = 1:Nband
+    figure
+    plot(dif_ra_max(:,fig),rho_max{fig},'ob')
+    xlabel('Difference of RA Percentage (%)')
+    ylabel('MTC')
+    title(['Band ',num2str(fig)])
+    saveas(gcf,[prefix,filesep,figname7,'Band ',num2str(fig)],'png');
+    savefig([prefix,filesep,figname7,'Band ',num2str(fig)]);
+end
+
+figname8 = 'MTC_DEC';
+
+for fig = 1:Nband
+    figure
+    plot(dif_dec_max(:,fig),rho_max{fig},'ob')
+    xlabel('Difference of DEC Percentage (%)')
+    ylabel('MTC')
+    title(['Band ',num2str(fig)])
+    saveas(gcf,[prefix,filesep,figname8,'Band ',num2str(fig)],'png');
+    savefig([prefix,filesep,figname8,'Band ',num2str(fig)]);
+end
+
+
 
 %% plot est. src vs. true src.
-figname9 = 'Freq-LogSNR-W0';
-cst = 1/(365*24*3600*2*pi); % constant to convert angular frequency to Hz.
-EstFreq = zeros(Nband,NestsrcBand);
-EstRA = zeros(Nband,NestsrcBand);
-EstDEC = zeros(Nband,NestsrcBand);
+% figname9 = 'Freq-LogSNR-W0';
+% cst = 1/(365*24*3600*2*pi); % constant to convert angular frequency to Hz.
+% EstFreq = zeros(Nband,NestsrcBand);
+% EstRA = zeros(Nband,NestsrcBand);
+% EstDEC = zeros(Nband,NestsrcBand);
 
-for fig = 1:Nband
-    EstFreq(fig,:) = arrayfun(@(r) EstSrc{fig,r}.omega * cst, 1:NestsrcBand); % get the freq. of est. src.
-    figure
-    plot(log(SrcSNR{fig}(id_max(:,fig))),SrcOmega{fig}(id_max(:,fig))*cst,'ob',log(estSNR(fig,:)),EstFreq(fig,:),'sr')
-    xlabel('Log(SNR)')
-    ylabel('Frequency')
-    title(['Band ',num2str(fig)])
-    legend('True Sources','Estimated Sources')
-    saveas(gcf,[prefix,filesep,figname9,'Band ',num2str(fig)],'png');
-    savefig([prefix,filesep,figname9,'Band ',num2str(fig)]);
-end
+% for fig = 1:Nband
+%     EstFreq(fig,:) = arrayfun(@(r) EstSrc{fig,r}.omega * cst, 1:NestsrcBand); % get the freq. of est. src.
+%     figure
+%     plot(log(SrcSNR{fig}(id_max(:,fig))),SrcOmega{fig}(id_max(:,fig))*cst,'ob',log(estSNR(fig,:)),EstFreq(fig,:),'sr')
+%     xlabel('Log(SNR)')
+%     ylabel('Frequency')
+%     title(['Band ',num2str(fig)])
+%     legend('True Sources','Estimated Sources')
+%     saveas(gcf,[prefix,filesep,figname9,'Band ',num2str(fig)],'png');
+%     savefig([prefix,filesep,figname9,'Band ',num2str(fig)]);
+% end
 
-figname10 = 'skyLoc-W0';
+% without restriction
+% figname9 = 'Freq-LogSNR-snr-NR';
+% for fig = 1:Nband
+%     EstFreq(fig,:) = arrayfun(@(r) EstSrc{fig,r}.omega * cst, 1:NestsrcBand); % get the freq. of est. src.
+%     figure
+%     f = plot(log(SrcSNR{fig}(id_max(:,fig))),SrcOmega{fig}(id_max(:,fig))*cst,'ob');
+%     hold on
+%     for src = 1:NestsrcBand
+%         if src > 1 && sum(id_max(src,fig) == id_max(src-1:-1:1,fig)) >= 1
+%             f1 = plot(log(estSNR(fig,src)),EstFreq(fig,src),'^k');
+%         else
+%             f2 = plot(log(estSNR(fig,src)),EstFreq(fig,src),'sr');
+%         end
+%     end
+%     hold off
+%     xlabel('Log(SNR)')
+%     ylabel('Frequency')
+%     title(['Band ',num2str(fig)])
+%     legend([f,f1,f2],'True Sources','Repeated Sources','Estimated Sources')
+%     saveas(gcf,[prefix,filesep,figname9,'Band ',num2str(fig)],'png');
+%     savefig([prefix,filesep,figname9,'Band ',num2str(fig)]);
+% end
 
-for fig = 1:Nband
-    EstRA(fig,:) = arrayfun(@(r) EstSrc{fig,r}.alpha, 1:NestsrcBand); % get the RA of est. src.
-    EstDEC(fig,:) = arrayfun(@(r) EstSrc{fig,r}.delta, 1:NestsrcBand); % get the DEC of est. src.
-    figure
-    plot(SrcAlpha{fig}(id_max(:,fig)),SrcDelta{fig}(id_max(:,fig)),'ob',EstRA(fig,:),EstDEC(fig,:),'sr')
-    xlabel('RA')
-    ylabel('DEC')
-    title(['Band ',num2str(fig)])
-    legend('True Sources','Estimated Sources')
-    saveas(gcf,[prefix,filesep,figname10,'Band ',num2str(fig)],'png');
-    savefig([prefix,filesep,figname10,'Band ',num2str(fig)]);
-end
 
+% figname10 = 'skyLoc-W0';
+
+% for fig = 1:Nband
+%     EstRA(fig,:) = arrayfun(@(r) EstSrc{fig,r}.alpha, 1:NestsrcBand); % get the RA of est. src.
+%     EstDEC(fig,:) = arrayfun(@(r) EstSrc{fig,r}.delta, 1:NestsrcBand); % get the DEC of est. src.
+%     figure
+%     plot(SrcAlpha{fig}(id_max(:,fig)),SrcDelta{fig}(id_max(:,fig)),'ob',EstRA(fig,:),EstDEC(fig,:),'sr')
+%     xlabel('RA')
+%     ylabel('DEC')
+%     title(['Band ',num2str(fig)])
+%     legend('True Sources','Estimated Sources')
+%     saveas(gcf,[prefix,filesep,figname10,'Band ',num2str(fig)],'png');
+%     savefig([prefix,filesep,figname10,'Band ',num2str(fig)]);
+% end
+
+% without restriction
+% figname10 = 'SkyLoc-snr-NR';
+% for fig = 1:Nband
+%     EstRA(fig,:) = arrayfun(@(r) EstSrc{fig,r}.alpha, 1:NestsrcBand); % get the RA of est. src.
+%     EstDEC(fig,:) = arrayfun(@(r) EstSrc{fig,r}.delta, 1:NestsrcBand); % get the DEC of est. src.
+%     figure
+%     f = plot(SrcAlpha{fig}(id_max(:,fig)),SrcDelta{fig}(id_max(:,fig)),'ob');
+%     hold on
+%     for src = 1:NestsrcBand
+%         if src > 1 && sum(id_max(src,fig) == id_max(src-1:-1:1,fig)) >= 1
+%             f1 = plot(EstRA(fig,src),EstDEC(fig,src),'^k');
+%         else
+%             f2 =  plot(EstRA(fig,src),EstDEC(fig,src),'sr');
+%         end
+%     end
+%     hold off
+%     xlabel('RA')
+%     ylabel('DEC')
+%     title(['Band ',num2str(fig)])
+%     legend([f,f1,f2],'True Sources','Repeated Sources','Estimated Sources')
+%     saveas(gcf,[prefix,filesep,figname10,'Band ',num2str(fig)],'png');
+%     savefig([prefix,filesep,figname10,'Band ',num2str(fig)]);
+% end
 
 toc

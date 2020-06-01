@@ -1,12 +1,11 @@
-function [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MWAC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,...
-    SrcIota,SrcThetaN,SrcAmp,SrcSNR,EstSrc,simParams,yr,weight)
-% A function calculates averaged cross-correlation coefficients using
-% wieght factors.
-% [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] =
-% MWC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,SrcSNR,EstSrc,simParams,yr,weight)
+function [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MTC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,...
+    SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr,threshold)
+% A function calculates cross-correlation coefficients above a chosen
+% threshold.
+% [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,estSNR] =
+% MWC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr,threshold)
 % rho: cross-correlation coefficient matrix
-% rho_max: max cross-correlation coefficients matrix
-% weighted parameter.
+% rho_max: maximum value of rho.
 % dif_freq_max: error in frequency.
 % dif_ra_max: error in RA.
 % dif_dec_max: error in DEC.
@@ -18,19 +17,19 @@ function [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MWAC(
 % EstSrc: cell collects all the parameters of estimated source.
 % simParams: pulsar config.
 % yr: observation span.
-% weight: choose weight factor, can be 'omega', 'snr' and 0
+% threshold: a threshold chosen by user.
 
 % Author: QYQ 5/24/2020
 %%
 
 % display weight factor used
-if strcmp(weight,'omega') == 1
-    disp("Using Freq. as weight factor")
-elseif strcmp(weight,'snr') == 1
-    disp("Using SNR as weight factor")
-elseif weight == 0
-    disp("Using no weight factor")
-end
+% if strcmp(weight,'omega') == 1
+%     disp("Using Freq. as weight factor")
+% elseif strcmp(weight,'snr') == 1
+%     disp("Using SNR as weight factor")
+% elseif weight == 0
+%     disp("Using no weight factor")
+% end
 
 %% Cross-Corelation
 Np = simParams.Np; % number of pulsars
@@ -42,8 +41,8 @@ distP = simParams.distP;
 rho_tmp = zeros(Np,1);
 
 rho = {}; % cross-correlation coefficients matrix
-rho_max = {};
-gamma = {}; % averaged cross-correlation coefficients
+% rho_max = {};
+gamma = cell(1,2); % averaged cross-correlation coefficients
 
 % investigations
 estSNR = zeros(Nband,NestsrcBand);
@@ -59,7 +58,7 @@ dif_dec_max = zeros(NestsrcBand,Nband);
 
 for band = 1:Nband
     NtsrcBand = length(SrcAlpha{band}); % number of true sources in each band
-    
+    gamma{band} = zeros(NestsrcBand,NtsrcBand); % initialize the gamma cell.
     for src = 1:NestsrcBand
         [snr,~] = Amp2Snr(EstSrc{band,src},simParams,yr); % get SNR for estimated source
         estSNR(band,src) = snr;
@@ -86,47 +85,50 @@ for band = 1:Nband
                     EstSrc{band,src}.Amp,EstSrc{band,src}.iota,EstSrc{band,src}.thetaN,theta,yr); % timing residuals for estimated source
                 
                 %                 tmp_est1 = tmp_est1 + norm(tmp_est);
-                tmp_true = tmp_true + norm(tmp); % for gamma star
+                %                 tmp_true = tmp_true + norm(tmp); % for gamma star
                 
                 rho_tmp(psr,tsrc) = abs(tmp' * tmp_est/(norm(tmp)*norm(tmp_est))); % cross-correlation
+                
                 %                 tmp2 = tmp2 + rho_tmp(psr,tsrc) * norm(tmp_est);
-                tmp2 = tmp2 + rho_tmp(psr,tsrc) * norm(tmp); % for gamma star
+                %                 tmp2 = tmp2 + rho_tmp(psr,tsrc) * norm(tmp); % for gamma star
                 
             end
             % choose weight factor
-            if strcmp(weight,'omega') == 1
-                %                 disp("Using Freq. as weight factor")
-                w = 1/(1+abs(SrcOmega{band}(tsrc)-EstSrc{band,src}.omega) / SrcOmega{band}(tsrc)); % weight factor: Freq
-            elseif strcmp(weight,'snr') == 1
-                %                 disp("Using SNR as weight factor")
-                w = 1/(1+abs(SrcSNR{band}(tsrc)-snr)/SrcSNR{band}(tsrc)); % weight factor: SNR
-            elseif weight == 0
-                %                 disp("Using no weight factor")
-                w = 1; % no weight used
-            end
+            %             if strcmp(weight,'omega') == 1
+            %                 %                 disp("Using Freq. as weight factor")
+            %                 w = 1/(1+abs(SrcOmega{band}(tsrc)-EstSrc{band,src}.omega) / SrcOmega{band}(tsrc)); % weight factor: Freq
+            %             elseif strcmp(weight,'snr') == 1
+            %                 %                 disp("Using SNR as weight factor")
+            %                 w = 1/(1+abs(SrcSNR{band}(tsrc)-snr)/SrcSNR{band}(tsrc)); % weight factor: SNR
+            %             elseif weight == 0
+            %                 %                 disp("Using no weight factor")
+            %                 w = 1; % no weight used
+            %             end
             
-            gamma{band}(src,tsrc) = tmp2 * w / tmp_true; % averaged c-c coefficients using gamma star.
+            %             gamma{band}(src,tsrc) = tmp2 * w / tmp_true; % averaged c-c coefficients using gamma star.
             %             gamma{band}(src,tsrc) = tmp2 * w / tmp_est1; % averaged c-c coefficients
             
 %             dif_freq{band}(src,tsrc) = abs(SrcOmega{band}(tsrc) - EstSrc{band,src}.omega);
 %             dif_ra{band}(src,tsrc) = abs(SrcAlpha{band}(tsrc) - EstSrc{band,src}.alpha);
 %             dif_dec{band}(src,tsrc) = abs(SrcDelta{band}(tsrc) - EstSrc{band,src}.delta);
         end
-        
+        above_threshold = sum(rho_tmp > threshold);
+        [~,id_max(src,band)] = max(above_threshold);
+        gamma{band}(src,id_max(src,band)) = max(rho_tmp(:,id_max(src,band)));
     end
     rho{band} = gamma{band};
-    [rho_max{band},id_max(:,band)] = max(rho{band},[],2); % get index of true sources when rho reaches maximum
+    rho_max{band} = max(rho{band},[],2); % get index of true sources when rho reaches maximum
     % make id_max unique
-%     for src1 = 1:NestsrcBand - 1
-%         for src2 = src1+1:NestsrcBand
-%             if id_max(src1,band) == id_max(src2,band)
-%                 [~,I] = sort(rho{band}(src2,:),'descend');
-%                 id_max(src2,band) = I(2); % take the index of second maximum.
-%                 rho_max{band}(src2) = rho{band}(src2,id_max(src2,band));
-%             end
-%         end
-%     end
-     
+    %     for src1 = 1:NestsrcBand - 1
+    %         for src2 = src1+1:NestsrcBand
+    %             if id_max(src1,band) == id_max(src2,band)
+    %                 [~,I] = sort(rho{band}(src2,:),'descend');
+    %                 id_max(src2,band) = I(2); % take the index of second maximum.
+    %                 rho_max{band}(src2) = rho{band}(src2,id_max(src2,band));
+    %             end
+    %         end
+    %     end
+    
     %     dif_freq_max(:,band) = abs(arrayfun(@(x) EstSrc{band,x}.omega, 1:NestsrcBand) - SrcOmega{band}(id_max(:,band)')) / (365*24*3600*2*pi); % convert to Hz
     dif_freq_max(:,band) = abs(arrayfun(@(x) EstSrc{band,x}.omega, 1:NestsrcBand) - SrcOmega{band}(id_max(:,band)')) * 100 ./ SrcOmega{band}(id_max(:,band)'); % error as percentage
     %     dif_ra_max(:,band) = abs(arrayfun(@(x) EstSrc{band,x}.alpha, 1:NestsrcBand) - SrcAlpha{band}(id_max(:,band)'));
