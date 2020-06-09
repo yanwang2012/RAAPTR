@@ -1,21 +1,18 @@
-function []=gensimdata(path_to_parameters,path_to_pulsar_catalog,path_to_output,varargin)
+function []=gensimdata(path_to_parameters,path_to_pulsar_catalog,path_to_output,frqRng)
 %Generate PTA data realizations with multiple SMBHB sources
 %GENSIMDATA(P,D,O,[LowFrqRng,UpFrqRng])
 %P is the path to a .mat file containing the parameters for generating the
 %data. See the help for PARAMETERS for details about the parameters that must be
 %specified. D is the path to the file containing information about the
 %pulsars in the PTA. See 'survey_ska.mat' for an example of this file. O is
-%the path to the folder where the data realizations will be stored.
-%varargin{1} is the frequency range of the sources, if it is empty, use 
-%the default value, i.e. the whole frequency range.
-% Add mask function by taking a new argument, noise, whose standard deviation is
-% specified by input varargin{2}. The default standard deviation is 100 ns.
+%the path to the folder where the data realizations will be stored. frqRng
+%is the frequency range of the sources, if it is empty, use the default
+%value, i.e. the whole frequency range.
 
 % Authors: Yi-Qian Qian, Yan Wang, Soumya Mohanty, Sep 16, 2018
 
 %Sep 2018
 %Original code by YW. Turned into a function by YQ.
-%updated on June 4, 2020.
 
 %Get constants
 dy2yr = genptaconsts('dy2yr');
@@ -33,7 +30,7 @@ rng(1) % for repeatable works
 Nyquist_freq = 81.8345/(2*pi*24*365*3600); % Nyquist frequency
 
 % setting up the freq filter
-if nargin == 3 || isempty(varargin{2}) == 0 && isempty(varargin{1}) == 1
+if nargin == 3
     disp("Searching whole band.");
     if max(fgwOut) > Nyquist_freq
         disp("Warning: Frequency above Nyquist frequency:" +Nyquist_freq)
@@ -50,10 +47,9 @@ if nargin == 3 || isempty(varargin{2}) == 0 && isempty(varargin{1}) == 1
     NNs = sum(Index);
 %     disp("The number of sources is:" + NNs)
     
-elseif nargin > 3 && isempty(varargin{1}) == 0
-    
-    fgwl = varargin{1,1};
-    fgwu = varargin{1,2};
+elseif nargin == 4
+    fgwl = frqRng(1);
+    fgwu = frqRng(2);
     disp("The lower limit is:" + fgwl);
     disp("The upper limit is:" + fgwu);
     Index = (fgwOut >= fgwl & fgwOut <= fgwu);% select the sources within bands
@@ -81,7 +77,6 @@ deltaP=zeros(Np,1);  % declination, in radian
 distP=zeros(Np,1);  % (parallax) distance from SSB to pulsars, from mas/pc to ly
 kp=zeros(Np,3);  % unit vector pointing from SSB to pulsars,
 sd=zeros(Np,1);  % standard deviation of noise for different pulsar
-esd=zeros(Np,1); % extra standard deviation of noise.
 dy=zeros(N,1);  % observation epoch, in day
 yr=zeros(N,1);  % observation epoch, in year
 
@@ -107,7 +102,6 @@ for i=1:1:Np
     deltaP(i)=OutList(1,2);  % in rad
     distP(i)=skamsp.D(I(i));  %0.28*kilo*pc2ly;  % in ly
     sd(i)=1.0*10^(-7);  % 100 ns
-    esd(i)=sqrt(varargin{2}^2 - 100^2)*10^(-9); % extra standard deviation.
     
 end
 
@@ -189,8 +183,7 @@ for i=1:1:Np  % number of pulsar
         
         % calculate the perfect fitness value
         
-%         snr_chr2_tmp(i,j) = dot(tmp,tmp)/sd(i)^2; 
-        snr_chr2_tmp(i,j) = dot(tmp,tmp)/(sd(i)^2+esd(i)^2); % additional noise added.
+        snr_chr2_tmp(i,j) = dot(tmp,tmp)/sd(i)^2;
         
         % standardization of the true coordinates
         stdTrueCoord(j,1)=(alpha_tmp(j)-xmaxmin(1,2))/(xmaxmin(1,1)-xmaxmin(1,2));  % [0, 2*pi]
@@ -224,8 +217,7 @@ for jj=1:1:Nrlz
     for i=1:1:Np
         
         % generating a realization of noise
-%         noise(i,:)=sd(i)*randn(1,N);  % Gaussian noise
-        noise(i,:)=sd(i)*randn(1,N) + esd(i)*randn(1,N); % additional noise added.
+        noise(i,:)=sd(i)*randn(1,N);  % Gaussian noise
         % calculate the actual snr
         %fftnoise(i,:)=fft(noise(i,:));
         
@@ -286,8 +278,7 @@ for ii=1:1:Nnis
     for i=1:1:Np
         
         % generating a realization of noise
-%         noise(i,:)=sd(i)*randn(1,N);  % Gaussian noise
-        noise(i,:)=sd(i)*randn(1,N) + esd(i)*randn(1,N); % with additional noise.
+        noise(i,:)=sd(i)*randn(1,N);  % Gaussian noise
         timingResiduals(i,:)=noise(i,:);
         %timingResiduals(i,:)=timingResiduals_tmp(i,:)+noise(i,:);  % add noise on signal
         
