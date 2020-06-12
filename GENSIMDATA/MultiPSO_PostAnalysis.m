@@ -3,9 +3,9 @@ clear;
 tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
-simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
-simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11';
-estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/supperNarrow_iMBLT1_after_20/Results_20/2_iMBLT/results/2iMBLT_after/results/3_iMBLT/results/3iMBLT_after/results/4_iMBLT/results/4iMBLT_after/results/5_iMBLT/results/5iMBLT_after/results/6_iMBLT/results';
+simParamsDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/searchParams/2bands/superNarrow';
+simDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Mask/sd_400'
+estDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Mask/sd_400/results';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 % Load the simulated source parameters.
 simDataList = dir([simDataDir,filesep,inputFileName,'*.mat']);
@@ -140,16 +140,16 @@ for lp = 1:simFiles
     %     noisedir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/noise/results';
     %     disp('Processing noise-only data');
     %     [avgnoise] = noiseprocess(noisedir,simNoiseDir,num_ite,N);
-    simNoiseDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/noise';
-    noisefile = [simNoiseDir,filesep,'noise.mat'];
-    load(noisefile);
+    %simNoiseDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/noise';
+    %noisefile = [simNoiseDir,filesep,'noise.mat'];
+    %load(noisefile);
     
     
     %% plot the entire map
     close all;
     prefix = [estDataDir,filesep,'fig',filesep,simFileName];
     mkdir(prefix);
-    figname = '2bands-iMBLT6';
+    figname = 'Mask2';
     figure(1)
     % yyaxis right
     % loglog(x,y,'o',sx,sy,'kd','MarkerSize',10);
