@@ -11,7 +11,7 @@ stage = 2; % stages of Mask
 etr_sd = 4.0 * 10^(-7); % standard deviation of extra noise
 simParams.sd = sqrt(simParams.sd.^2 + etr_sd^2);
 etr_noise = etr_sd * rand(1,N);
-timingResiduals = timingResiduals + etr_noise;
+timingResiduals = timingResiduals_tmp + etr_noise;
 
 outputDir = ['/Users/qianyiqian/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_',num2str(etr_sd*10^9)];
 mkdir(outputDir)
