@@ -126,6 +126,8 @@ for lp = 1:simFiles
         end
     end
     
+    sx = sx .* simParams.sd(1)/(100*10^(-9)); % rescale SNR into 100 ns.
+    
     y = y/(2*pi*365*24*3600);
     uplim = max(max(x),max(sx))+50;
     binSNR = 0:1:uplim;
@@ -154,15 +156,15 @@ for lp = 1:simFiles
     % yyaxis right
     % loglog(x,y,'o',sx,sy,'kd','MarkerSize',10);
     plot(x,y,'o',sx,sy,'s')
-    % semilogx(x,y,'o',sx,sy,'s');
+%     semilogx(x,y,'o',sx,sy,'s');
     % disp(sy)
     
     hold on
     % plot grid
     for k=1:N
-        %         semilogx(binSNR_log,ybin_up(:,k),'b-');
+%                 semilogx(binSNR_log,ybin_up(:,k),'b-');
         plot(binSNR,ybin_up(:,k),'b-');
-        %         semilogx(binSNR_log,ybin_low(:,k),'b--');
+%                 semilogx(binSNR_log,ybin_low(:,k),'b--');
         plot(binSNR,ybin_low(:,k),'b--');
     end
     hold off
