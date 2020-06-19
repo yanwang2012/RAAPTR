@@ -3,11 +3,11 @@
 clear;
 tic
 %% Set up
-simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands';
+simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
 simParamsName = 'searchParams';
 inParamsList = dir([simParamsDir,filesep,simParamsName,'*.mat']);
 simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
-estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/Results';
+estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/Results_supNar';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 outputfiles = dir([estDataDir,filesep,'*',inputFileName,'*.mat']);
 Npara = length(inParamsList);
@@ -26,8 +26,8 @@ estTimRes = zeros(simParams.Np,simParams.N);
 outputfilenames = sort_nat({outputfiles.name});
 [file,Index]=rassign(estDataDir,outputfiles,NestSrc,simParams,yr);
 % disp(["File needs to be skipped: ",file]);
-Filename = 'GWBsimDataSKASrlz1Nrlz3';
-OutputDir = [simDataDir,filesep,Filename];
+Filename = 'GWBsimDataSKASrlz1Nrlz3_xMBLT';
+OutputDir = [estDataDir,filesep,Filename];
 mkdir(OutputDir);
 for i = 1:Npara
     for j = 1:NestSrc
@@ -36,15 +36,15 @@ for i = 1:Npara
                 continue
             else
 %                 disp("j is:"+j);
-                path_estData = [estDataDir,filesep,outputfilenames(j)];
-                disp(['File loaded: ',outputfilenames(j)]);
+                path_estData = [estDataDir,filesep,char(outputfilenames(j))];
+                disp(['File loaded: ',char(outputfilenames(j))]);
                 [srcParams]=ColSrcParams(path_estData);
                 [~,estTimRes_tmp] = Amp2Snr(srcParams,simParams,yr);
                 estTimRes = estTimRes + estTimRes_tmp;
             end
         end
     end
-    newFile = strcat(OutputDir,filesep,inputFileName,'band ',num2str(i),'check.mat');
+    newFile = strcat(OutputDir,filesep,inputFileName,'band ',num2str(i),'.mat');
     copyfile([simDataDir,filesep,inputFileName,'.mat'],newFile);
     m = matfile(newFile,'Writable',true);
     m.timingResiduals = timingResiduals - estTimRes;

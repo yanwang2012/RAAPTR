@@ -2,18 +2,23 @@
 
 %% add extra noise to timing residual
 clear;
-simDataDir = '/Users/qianyiqian/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_500/subtract';
+simDataDir = '/Users/qianyiqian/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_489.9/subtract';
 simFileName = 'GWBsimDataSKASrlz1Nrlz3';
 
 load([simDataDir,filesep,simFileName,'_sub','.mat'])
 N = simParams.N;
+Np = simParams.Np;
 stage = 2; % stages of Mask
-etr_sd = 4.0 * 10^(-7); % standard deviation of extra noise
-simParams.sd = sqrt(simParams.sd.^2 + etr_sd^2);
-etr_noise = etr_sd * rand(1,N);
-timingResiduals = timingResiduals_tmp + etr_noise;
+etr_sd = zeros(Np,1);
+etr_noise = zeros(Np,N);
+for i = 1:Np
+    etr_sd(i) = 4.0 * 10^(-7); % standard deviation of extra noise
+    etr_noise(i,:) = etr_sd(i) * randn(1,N);
+    timingResiduals(i,:) = timingResiduals(i,:) + etr_noise(i,:);
+end
+simParams.sd = sqrt(simParams.sd.^2 + etr_sd.^2);
 
-outputDir = ['/Users/qianyiqian/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_',num2str(etr_sd*10^9)];
+outputDir = ['/Users/qianyiqian/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_',num2str(etr_sd(1)*10^9)];
 mkdir(outputDir)
 newFile = [simFileName,'_Mask',num2str(stage)];
 copyfile([simDataDir,filesep,simFileName,'_sub','.mat'],[outputDir,filesep,newFile,'.mat']);
@@ -24,10 +29,11 @@ m.timingResiduals = timingResiduals;
 %% subtract est. sources from ori. sim data
 clear;
 OriSimDataDir = '/Users/qianyiqian/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/';
-simDataDir = '/Users/qianyiqian/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_500/';
+simDataDir = '/Users/qianyiqian/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_489.9/';
 simFileName = 'GWBsimDataSKASrlz1Nrlz3';
-estDataDir = '/Users/qianyiqian/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_500/results';
-load([simDataDir,filesep,simFileName]);
+estDataDir = '/Users/qianyiqian/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_489.9/results';
+stage = 1;
+load([simDataDir,filesep,simFileName,'_Mask',num2str(stage),'.mat'],'simParams','yr');
 estFiles = dir([estDataDir,filesep,'*',simFileName,'*','.mat']);
 
 nFiles = length(estFiles);
@@ -54,7 +60,7 @@ for idx = 1:Ni
 end
 
 % subtract from orig. file
-output = '/Users/qianyiqian/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_500/subtract';
+output = [simDataDir,filesep,'subtract'];
 mkdir(output);
 newFile = [output,filesep,simFileName,'_sub','.mat'];
 copyfile([OriSimDataDir,filesep,simFileName,'.mat'],newFile);
