@@ -1,6 +1,6 @@
 % A script convert .hdf5 file to .mat file
 clear;
-inputFileDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/searchParams/2bands/superNarrow'
+inputFileDir = '/work/05884/qyqstc/lonestar/MultiPSO/Mask/sd_400/results'
 % outputFileDir = [inputFileDir,filesep,'MAT'];
 inFileList = dir([inputFileDir,filesep,'*.hdf5']); % input file directory
 % mkdir(outputFileDir)% output directory

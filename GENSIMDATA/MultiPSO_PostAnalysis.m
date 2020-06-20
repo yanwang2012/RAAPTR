@@ -126,7 +126,7 @@ for lp = 1:simFiles
         end
     end
     
-    sx = sx .* simParams.sd(1)/(100*10^(-9)); % rescale SNR into 100 ns.
+    % sx = sx .* simParams.sd(1)/(100*10^(-9)); % rescale SNR into 100 ns.
     
     y = y/(2*pi*365*24*3600);
     uplim = max(max(x),max(sx))+50;
