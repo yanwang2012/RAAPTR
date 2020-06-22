@@ -4,8 +4,8 @@ tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
 simParamsDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/searchParams/2bands/superNarrow';
-simDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Mask/sd_400'
-estDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Mask/sd_400/results';
+simDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Mask/sd_300'
+estDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Mask/sd_300/results';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 % Load the simulated source parameters.
 simDataList = dir([simDataDir,filesep,inputFileName,'*.mat']);
@@ -126,7 +126,7 @@ for lp = 1:simFiles
         end
     end
     
-    % sx = sx .* simParams.sd(1)/(100*10^(-9)); % rescale SNR into 100 ns.
+    sx = sx .* simParams.sd(1)/(100*10^(-9)); % rescale SNR into 100 ns.
     
     y = y/(2*pi*365*24*3600);
     uplim = max(max(x),max(sx))+50;
@@ -151,7 +151,7 @@ for lp = 1:simFiles
     close all;
     prefix = [estDataDir,filesep,'fig',filesep,simFileName];
     mkdir(prefix);
-    figname = 'Mask2';
+    figname = 'Mask2-rescaled';
     figure(1)
     % yyaxis right
     % loglog(x,y,'o',sx,sy,'kd','MarkerSize',10);
