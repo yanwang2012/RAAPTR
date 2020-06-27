@@ -4,7 +4,7 @@ tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
 simParamsDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/searchParams/2bands/superNarrow';
-simDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Mask/sd_300'
+simDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Mask/sd_300';
 estDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Mask/sd_300/results';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 % Load the simulated source parameters.
