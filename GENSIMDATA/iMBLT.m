@@ -4,11 +4,11 @@ clear;
 tic
 %% Set up
 simDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/BANDEDGE/2bands/SupNar_xMBLT_iMBLT20/GWBsimDataSKASrlz1Nrlz3_xMBLT2';
-iMBLTDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/BANDEDGE/2bands/SupNar_xMBLT_iMBLT20/GWBsimDataSKASrlz1Nrlz3_xMBLT2';
-estDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/BANDEDGE/2bands/SupNar_xMBLT_iMBLT20/GWBsimDataSKASrlz1Nrlz3_xMBLT2/results';
+iMBLTDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/BANDEDGE/2bands/SupNar_xMBLT_iMBLT20/GWBsimDataSKASrlz1Nrlz3_xMBLT2/results/1_iMBLT/results/1iMBLT_after/results/2_iMBLT/results/2iMBLT_after/results/3_iMBLT/results/3iMBLT_after/results/4_iMBLT/results/4iMBLT_after';
+estDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/BANDEDGE/2bands/SupNar_xMBLT_iMBLT20/GWBsimDataSKASrlz1Nrlz3_xMBLT2/results/1_iMBLT/results/1iMBLT_after/results/2_iMBLT/results/2iMBLT_after/results/3_iMBLT/results/3iMBLT_after/results/4_iMBLT/results/4iMBLT_after/results';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 bandNum = 2; % number of band
-stage = 1; % iMBLT stages
+stage = 5; % iMBLT stages
 for band = 1:bandNum
     if bandNum > 1
         outputfiles = dir([estDataDir,filesep,num2str(band),'_',inputFileName,'*.mat']);
@@ -19,8 +19,8 @@ for band = 1:bandNum
     NestSrc = length(outputfiles);
     
     % Load the simulated source parameters.
-    load([simDataDir,filesep,num2str(band),'_',inputFileName,'.mat']);
-    % load([iMBLTDataDir,filesep,inputFileName,'_after_',num2str(stage-1),'iMBLT','.mat'])
+    % load([simDataDir,filesep,num2str(band),'_',inputFileName,'.mat']);
+    load([iMBLTDataDir,filesep,num2str(band),'_',inputFileName,'_after_',num2str(stage-1),'iMBLT','.mat'])
     estTimRes = zeros(simParams.Np,simParams.N);
     ResCell = {}; % a cell of timing residuals to store all the estimated residuals.
     SNRarray = [];
@@ -64,8 +64,8 @@ for band = 1:bandNum
     
     % remove sources from input data
     newFile = strcat(OutputDir,filesep,num2str(band),'_',inputFileName,'_',num2str(stage),'iMBLT','.mat');
-    copyfile([simDataDir,filesep,num2str(band),'_',inputFileName,'.mat'],newFile);
-    % copyfile([iMBLTDataDir,filesep,inputFileName,'_after_',num2str(stage-1),'iMBLT','.mat'],newFile); % can't use * to match files
+    % copyfile([simDataDir,filesep,num2str(band),'_',inputFileName,'.mat'],newFile);
+    copyfile([iMBLTDataDir,filesep,num2str(band),'_',inputFileName,'_after_',num2str(stage-1),'iMBLT','.mat'],newFile); % can't use * to match files
     
     m = matfile(newFile,'Writable',true); % .mat file needs to be V7.3, if can't load, use command save('filename','-v7.3') convert
     m.timingResiduals = timingResiduals - estTimRes;
