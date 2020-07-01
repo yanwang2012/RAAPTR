@@ -3,9 +3,9 @@ clear;
 tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
-simParamsDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/searchParams/2bands/superNarrow';
-simDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/BANDEDGE/2bands/SupNar_xMBLT_iMBLT20/';
-estDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/BANDEDGE/2bands/SupNar_xMBLT_iMBLT20/GWBsimDataSKASrlz1Nrlz3_xMBLT2/results/1_iMBLT/results/1iMBLT_after/results/2_iMBLT/results/2iMBLT_after/results/3_iMBLT/results/3iMBLT_after/results/4_iMBLT/results/4iMBLT_after/results/5_iMBLT/results/5iMBLT_after/results/6_iMBLT/results/6iMBLT_after/results/7_iMBLT/results';
+simParamsDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
+simDataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_400/';
+estDataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_400/results';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 % Load the simulated source parameters.
 simDataList = dir([simDataDir,filesep,inputFileName,'*.mat']);
@@ -35,7 +35,7 @@ for lp = 1:simFiles
     %%%%%%%%%%%%%%%%%%% DON'T FORGET %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     [~,simFileName,~] = fileparts(char(simDataList(lp)));
     nFile = dir([estDataDir,filesep,'1_',simFileName,'*.mat']); % count how many iterations are used. For initial PSO est.
-%     nFile = dir([estDataDir,filesep,simFileName,'*.mat']); % For MBLT and other tests with irregular filename.
+%     nFile = dir([estDataDir,filesep,simFileName,'band1','*.mat']); % For MBLT and other tests with irregular filename.
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %% reading the files
@@ -126,7 +126,7 @@ for lp = 1:simFiles
         end
     end
     
-    sx = sx .* simParams.sd(1)/(100*10^(-9)); % rescale SNR into 100 ns.
+%     sx = sx .* simParams.sd(1)/(100*10^(-9)); % rescale SNR into 100 ns.
     
     y = y/(2*pi*365*24*3600);
     uplim = max(max(x),max(sx))+50;
@@ -149,9 +149,9 @@ for lp = 1:simFiles
     
     %% plot the entire map
     close all;
-    prefix = [estDataDir,filesep,'fig',filesep,simFileName];
+    prefix = [estDataDir,filesep,'fig',filesep,simFileName,'re'];
     mkdir(prefix);
-    figname = 'SupNar-xMBLT-iMBLT7';
+    figname = 'SuprNar-Mask2-300ns';
     figure(1)
     % yyaxis right
     % loglog(x,y,'o',sx,sy,'kd','MarkerSize',10);
@@ -239,6 +239,7 @@ for lp = 1:simFiles
     
     Sidx = find(sx >= SNRcut);% SNR cutoff for est. sources
     sx = sx(Sidx);
+    sx = sx .* simParams.sd(1)/(100*10^(-9)); % rescale SNR into 100 ns.
     sy = sy(Sidx);
     ra = ra(Sidx);
     dec = dec(Sidx);
