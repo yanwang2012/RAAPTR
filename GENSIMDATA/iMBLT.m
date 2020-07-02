@@ -36,7 +36,7 @@ for band = 1:bandNum
     
     for j = 1:NestSrc
         
-        if j == Index
+        if ismember(j,Index) == 1
             continue
         else
             %                 disp("j is:"+j);
@@ -50,11 +50,13 @@ for band = 1:bandNum
     end
     
     % Accumulate the timing residulas for different sources.
-    if NestSrc >= 6
+    nskp = length(Index); % number of skipped files
+
+    if NestSrc - nskp >= 6
         for nsrc = 2:6%NestSrc remove first 5 src.
             estTimRes = estTimRes + ResCell{nsrc};
         end
-    elseif 1 < NestSrc && NestSrc < 6
+    elseif 1 < NestSrc && NestSrc - nskp < 6
         for nsrc = 2:NestSrc % when output files less than 5, remove all the rest sources lower than the target.
             estTimRes = estTimRes + ResCell{nsrc};
         end
