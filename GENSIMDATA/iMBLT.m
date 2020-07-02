@@ -57,7 +57,7 @@ for band = 1:bandNum
             estTimRes = estTimRes + ResCell{nsrc};
         end
     elseif 1 < NestSrc && NestSrc - nskp < 6
-        for nsrc = 2:NestSrc % when output files less than 5, remove all the rest sources lower than the target.
+        for nsrc = 2:NestSrc - nskp % when output files less than 5, remove all the rest sources lower than the target.
             estTimRes = estTimRes + ResCell{nsrc};
         end
     else
