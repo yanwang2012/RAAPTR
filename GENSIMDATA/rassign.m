@@ -45,17 +45,17 @@ filename = [];
 for k = 1:N
     for m = 1:N
         if abs(SrcP(k,2)-SrcP(m,2)) < 3 && abs(SrcP(k,1)-SrcP(m,1)) < 5e-10 && k~= m % reassign constrain dsnr < 3 and dfreq < 5e10
-           % if abs(SrcP(k,1)-SrcP(m,1)) < 5e-10 && k ~= m % threshold for Freq
-                if SrcP(k,2) > SrcP(m,2)
-                    disp(["File needs to be skipped is : ",outputfilenames(m),'Index is: ',num2str(m)])
-                    filename = [filename outputfilenames(m)];
-                    Index = [Index m];
-                else
-                    disp(["File needs to be skipped is : ",outputfilenames(k),'Index is: ',num2str(k)])
-		    filename = [filename outputfilenames(k)];
-		    Index = [Index k];
-                end
+            % if abs(SrcP(k,1)-SrcP(m,1)) < 5e-10 && k ~= m % threshold for Freq
+            if SrcP(k,2) > SrcP(m,2)
+                disp(["File needs to be skipped is : ",outputfilenames(m),'Index is: ',num2str(m)])
+                filename = [filename outputfilenames(m)];
+                Index = [Index m];
+            else
+                disp(["File needs to be skipped is : ",outputfilenames(k),'Index is: ',num2str(k)])
+                filename = [filename outputfilenames(k)];
+                Index = [Index k];
             end
+            % end
         end
     end
 end
