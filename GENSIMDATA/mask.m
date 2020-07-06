@@ -26,12 +26,13 @@ m = matfile([outputDir,filesep,newFile],'Writable',true);
 m.simParams = simParams;
 m.timingResiduals = timingResiduals;
 
-%% subtract est. sources from ori. sim data
+%% subtract est. sources from precedent subtrac data
 clear;
-OriSimDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/';
+
+PreSimDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_489.9/subtract';
 simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_300/';
 simFileName = 'GWBsimDataSKASrlz1Nrlz3';
-estDataDir = '/Users/qianyiqian/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_300/results';
+estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_300/results';
 stage = 2;
 load([simDataDir,filesep,simFileName,'_Mask',num2str(stage),'.mat'],'simParams','yr');
 estFiles = dir([estDataDir,filesep,'*',simFileName,'*','.mat']);
@@ -63,7 +64,7 @@ end
 output = [simDataDir,filesep,'subtract'];
 mkdir(output);
 newFile = [output,filesep,simFileName,'_sub','.mat'];
-copyfile([OriSimDataDir,filesep,simFileName,'.mat'],newFile);
+copyfile([PreSimDataDir,filesep,simFileName,'_sub','.mat'],newFile);
 m = matfile(newFile,'Writable',true);
 
 m.timingResiduals = m.timingResiduals - timRes;
