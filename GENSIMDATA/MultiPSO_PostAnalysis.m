@@ -3,9 +3,12 @@ clear;
 tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
-simParamsDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
-simDataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_200/';
-estDataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_200/results';
+<<<<<<< HEAD
+=======
+simParamsDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/searchParams/2bands/superNarrow';
+simDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Mask';
+estDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Mask/sd_200/results';
+>>>>>>> 97d434553b606a6a05690b62f8ecc0ed5d7d96b1
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 % Load the simulated source parameters.
 simDataList = dir([simDataDir,filesep,inputFileName,'*.mat']);
@@ -151,7 +154,11 @@ for lp = 1:simFiles
     close all;
     prefix = [estDataDir,filesep,'fig',filesep,simFileName,'re'];
     mkdir(prefix);
+<<<<<<< HEAD
     figname = 'SuprNar-Mask3-200ns';
+=======
+    figname = 'Mask3-200ns';
+>>>>>>> 97d434553b606a6a05690b62f8ecc0ed5d7d96b1
     figure(1)
     % yyaxis right
     % loglog(x,y,'o',sx,sy,'kd','MarkerSize',10);
