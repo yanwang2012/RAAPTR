@@ -2,13 +2,13 @@
 
 %% add extra noise to timing residual
 clear;
-simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_300/subtract';
+simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_300_whole/subtract';
 simFileName = 'GWBsimDataSKASrlz1Nrlz3';
 
-load([simDataDir,filesep,simFileName,'_sub','.mat'])
+load([simDataDir,filesep,simFileName,'_sub','_whole','.mat'])
 N = simParams.N;
 Np = simParams.Np;
-stage = 3; % stages of Mask
+stage = 2; % stages of Mask
 etr_sd = zeros(Np,1);
 etr_noise = zeros(Np,N);
 for i = 1:Np
@@ -18,10 +18,12 @@ for i = 1:Np
 end
 simParams.sd = sqrt(simParams.sd.^2 + etr_sd.^2);
 
-outputDir = ['~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_',num2str(etr_sd(1)*10^9)];
+outputDir = ['~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_',num2str(etr_sd(1)*10^9),'_whole'];
 mkdir(outputDir)
 newFile = [simFileName,'_Mask',num2str(stage)];
-copyfile([simDataDir,filesep,simFileName,'_sub','.mat'],[outputDir,filesep,newFile,'.mat']);
+% copyfile([simDataDir,filesep,simFileName,'_sub','.mat'],[outputDir,filesep,newFile,'.mat']);
+copyfile([simDataDir,filesep,simFileName,'_sub','_whole','.mat'],[outputDir,filesep,newFile,'.mat']);
+
 m = matfile([outputDir,filesep,newFile],'Writable',true);
 m.simParams = simParams;
 m.timingResiduals = timingResiduals;
@@ -30,9 +32,9 @@ m.timingResiduals = timingResiduals;
 clear;
 
 PreSimDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_489.9/subtract';
-simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_300/';
+simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_300_whole';
 simFileName = 'GWBsimDataSKASrlz1Nrlz3';
-estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_300/results';
+estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Mask/sd_300_whole/results_whole';
 stage = 2;
 load([simDataDir,filesep,simFileName,'_Mask',num2str(stage),'.mat'],'simParams','yr');
 estFiles = dir([estDataDir,filesep,'*',simFileName,'*','.mat']);
@@ -63,8 +65,9 @@ end
 % subtract from orig. file
 output = [simDataDir,filesep,'subtract'];
 mkdir(output);
-newFile = [output,filesep,simFileName,'_sub','.mat'];
-copyfile([PreSimDataDir,filesep,simFileName,'_sub','.mat'],newFile);
+newFile = [output,filesep,simFileName,'_sub','_whole','.mat'];
+copyfile([PreSimDataDir,filesep,simFileName,'_sub','_whole','.mat'],newFile); % can't substute '_sub' with '*', the later will copy the whole folder.
+% copyfile([PreSimDataDir,filesep,simFileName,'.mat'],newFile); % for stage 1 specific.
 m = matfile(newFile,'Writable',true);
 
 m.timingResiduals = m.timingResiduals - timRes;

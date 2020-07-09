@@ -7,8 +7,8 @@ tic
 
 %% Dir settings
 simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
-simdataDir = '/Users/qianyiqian/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/';
-estdataDir = '/Users/qianyiqian/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/supperNarrow_iMBLT_final';
+simdataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11';
+estdataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SupNar_xMBLT_iMBLT20/iMBLT20';
 Filename = 'GWBsimDataSKASrlz1Nrlz3';
 ext = '.mat';
 
@@ -84,7 +84,10 @@ end
 % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MWAC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,SrcSNR,EstSrc,simParams,yr,'snr');
 
 % Max over Threshold CC
-[rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MTC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr,0.85);
+% [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MTC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr,0.85);
+
+% Normalized MTC
+[rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr,0.85);
 
 
 % Max coefficients of sources
@@ -102,10 +105,10 @@ end
 
 
 %% Plotting
-prefix = [estdataDir,filesep,'fig',filesep,Filename];
+prefix = [estdataDir,filesep,'fig',filesep,'cross-correlation'];
 mkdir(prefix);
-figname = 'MTC';
 
+figname1 = 'NMTC';
 for fig = 1:Nband
     figure
     imagesc(rho{fig});
@@ -113,12 +116,12 @@ for fig = 1:Nband
     xlabel('True sources')
     ylabel('Estimated sources')
     title(['Band ',num2str(fig)])
-    saveas(gcf,[prefix,filesep,figname,'Band ',num2str(fig)],'png');
-    savefig([prefix,filesep,figname,'Band ',num2str(fig)]);
+    saveas(gcf,[prefix,filesep,figname1,'Band ',num2str(fig)],'png');
+    savefig([prefix,filesep,figname1,'Band ',num2str(fig)]);
 end
 
 
-figname2 = 'MTC_SNR';
+figname2 = 'NMTC_SNR';
 for fig2 = 1:Nband
     figure
     plot(estSNR(fig2,:),rho_max{fig2},'ob')
@@ -170,7 +173,7 @@ end
 % end
 
 
-figname6 = 'MTC_freq';
+figname6 = 'NMTC_freq';
 
 for fig = 1:Nband
     figure
@@ -182,7 +185,7 @@ for fig = 1:Nband
     savefig([prefix,filesep,figname6,'Band ',num2str(fig)]);
 end
 
-figname7 = 'MTC_RA';
+figname7 = 'NMTC_RA';
 
 for fig = 1:Nband
     figure
@@ -194,7 +197,7 @@ for fig = 1:Nband
     savefig([prefix,filesep,figname7,'Band ',num2str(fig)]);
 end
 
-figname8 = 'MTC_DEC';
+figname8 = 'NMTC_DEC';
 
 for fig = 1:Nband
     figure

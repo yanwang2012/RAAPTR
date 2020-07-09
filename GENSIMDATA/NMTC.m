@@ -1,4 +1,4 @@
-function [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MTC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,...
+function [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,...
     SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr,threshold)
 % A function calculates cross-correlation coefficients above a chosen
 % threshold.
@@ -114,8 +114,8 @@ for band = 1:Nband
         end
         above_threshold = sum(rho_tmp > threshold);
         [~,id_max(src,band)] = max(above_threshold);
-        gamma{band}(src,id_max(src,band)) = max(rho_tmp(:,id_max(src,band))); % Maximized CC
-%         gamma{band}(src,id_max(src,band)) = sum(rho_tmp(rho_tmp(:,id_max(src,band)) > threshold,id_max(src,band))) / 1000; % nomalized over Np (1000) pulsars.
+%         gamma{band}(src,id_max(src,band)) = max(rho_tmp(:,id_max(src,band))); % Maximized CC
+        gamma{band}(src,id_max(src,band)) = sum(rho_tmp(rho_tmp(:,id_max(src,band)) > threshold,id_max(src,band))) / 1000; % nomalized over Np (1000) pulsars.
         
     end
     rho{band} = gamma{band};
