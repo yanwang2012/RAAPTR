@@ -78,7 +78,7 @@ end
 %% Cross-Corelation
 
 % Max Weighted CC
-% [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MAC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,SrcSNR,EstSrc,simParams,yr,'snr');
+% [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MWC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,SrcSNR,EstSrc,simParams,yr,'snr');
 
 % Max Weighted Ave. CC
 % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MWAC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,SrcSNR,EstSrc,simParams,yr,'snr');
@@ -87,7 +87,9 @@ end
 % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MTC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr,0.85);
 
 % Normalized MTC
-[rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr,0.85);
+[rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MinDMaxC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr);
+
+% Minimum distance Maximum CC.
 
 
 % Max coefficients of sources
@@ -105,28 +107,29 @@ end
 
 
 %% Plotting
-prefix = [estdataDir,filesep,'fig',filesep,'cross-correlation'];
+prefix = [estdataDir,filesep,'fig',filesep,'MinDMaxC'];
 mkdir(prefix);
 
-figname1 = 'NMTC';
+figname1 = 'MinDMaxC';
 for fig = 1:Nband
     figure
     imagesc(rho{fig});
-    colorbar
+    a = colorbar;
     xlabel('True sources')
     ylabel('Estimated sources')
+    ylabel(a,'Corss-Correlation Coefficients')
     title(['Band ',num2str(fig)])
     saveas(gcf,[prefix,filesep,figname1,'Band ',num2str(fig)],'png');
     savefig([prefix,filesep,figname1,'Band ',num2str(fig)]);
 end
 
 
-figname2 = 'NMTC_SNR';
+figname2 = 'MinDMaxC-SNR';
 for fig2 = 1:Nband
     figure
     plot(estSNR(fig2,:),rho_max{fig2},'ob')
     xlabel('Estimated SNR')
-    ylabel('MTC')
+    ylabel('MinDMaxC')
     title(['Band ',num2str(fig2)])
     saveas(gcf,[prefix,filesep,figname2,'Band ',num2str(fig2)],'png');
     savefig([prefix,filesep,figname2,'Band ',num2str(fig2)]);
@@ -173,31 +176,31 @@ end
 % end
 
 
-figname6 = 'NMTC_freq';
+figname6 = 'MinDMaxC-freq';
 
 for fig = 1:Nband
     figure
     plot(dif_freq_max(:,fig),rho_max{fig},'ob')
     xlabel('Difference of Freq. Percentage (%)')
-    ylabel('MTC')
+    ylabel('MinDMaxC')
     title(['Band ',num2str(fig)])
     saveas(gcf,[prefix,filesep,figname6,'Band ',num2str(fig)],'png');
     savefig([prefix,filesep,figname6,'Band ',num2str(fig)]);
 end
 
-figname7 = 'NMTC_RA';
+figname7 = 'MinDMaxC-RA';
 
 for fig = 1:Nband
     figure
     plot(dif_ra_max(:,fig),rho_max{fig},'ob')
     xlabel('Difference of RA Percentage (%)')
-    ylabel('MTC')
+    ylabel('MinDMaxC')
     title(['Band ',num2str(fig)])
     saveas(gcf,[prefix,filesep,figname7,'Band ',num2str(fig)],'png');
     savefig([prefix,filesep,figname7,'Band ',num2str(fig)]);
 end
 
-figname8 = 'NMTC_DEC';
+figname8 = 'MinDMaxC-DEC';
 
 for fig = 1:Nband
     figure
