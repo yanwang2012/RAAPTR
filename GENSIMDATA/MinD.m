@@ -1,4 +1,4 @@
-function [id_tsrc] = MinD(band,NtsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,...
+function [d,id_tsrc] = MinD(band,NtsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,...
     SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr)
 % A function returns the index of true source which has the minimum
 % distance to the estimated source.
@@ -10,6 +10,9 @@ function [id_tsrc] = MinD(band,NtsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,...
 % EstSrc: parameters of estimated sources
 % simParams: pulsar parameters
 % yr: observation span
+% returns: 
+% d: distance array for each est. source
+% id_tsrc: the index of the closest true source w.r.t the est. source
 
 % Author: QYQ 07/16/2020
 

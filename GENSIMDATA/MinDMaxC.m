@@ -39,6 +39,7 @@ estSNR = zeros(Nband,NestsrcBand);
 dif_freq = {}; % frequency difference
 dif_ra = {};
 dif_dec = {};
+% d = {};
 
 id_max = zeros(NestsrcBand,Nband); % index of max. cc
 dif_freq_max = zeros(NestsrcBand,Nband);
@@ -51,9 +52,9 @@ for band = 1:Nband
     for src = 1:NestsrcBand
         [snr,~] = Amp2Snr(EstSrc{band,src},simParams,yr); % get SNR for estimated source
         estSNR(band,src) = snr;
-        [id_tsrc] = MinD(band,NtsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,...
+        [~,id_tsrc] = MinD(band,NtsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,...
             SrcIota,SrcThetaN,SrcAmp,EstSrc{band,src},simParams,yr); % get the index of true source whic is closest to the est. source.
-        
+%         disp(["Band: ",band, "Est. source: ",src, "True source match by: ",id_tsrc]);
         for psr = 1:Np
             % GW sky location in Cartesian coordinate
             k=zeros(1,3);  % unit vector pointing from SSB to source
