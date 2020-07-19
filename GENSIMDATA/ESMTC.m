@@ -96,24 +96,7 @@ for band = 1:Nband
                 %                 tmp2 = tmp2 + rho_tmp(psr,tsrc) * norm(tmp); % for gamma star
                 
             end
-            % choose weight factor
-            %             if strcmp(weight,'omega') == 1
-            %                 %                 disp("Using Freq. as weight factor")
-            %                 w = 1/(1+abs(EstSrc1{band,tsrc}.omega-EstSrc{band,src}.omega) / EstSrc1{band,tsrc}.omega); % weight factor: Freq
-            %             elseif strcmp(weight,'snr') == 1
-            %                 %                 disp("Using SNR as weight factor")
-            %                 w = 1/(1+abs(SrcSNR{band}(tsrc)-snr)/SrcSNR{band}(tsrc)); % weight factor: SNR
-            %             elseif weight == 0
-            %                 %                 disp("Using no weight factor")
-            %                 w = 1; % no weight used
-            %             end
-            
-            %             gamma{band}(src,tsrc) = tmp2 * w / tmp_true; % averaged c-c coefficients using gamma star.
-            %             gamma{band}(src,tsrc) = tmp2 * w / tmp_est1; % averaged c-c coefficients
-            
-            %             dif_freq{band}(src,tsrc) = abs(EstSrc1{band,tsrc}.omega - EstSrc{band,src}.omega);
-            %             dif_ra{band}(src,tsrc) = abs(EstSrc1{band,tsrc}.alpha - EstSrc{band,src}.alpha);
-            %             dif_dec{band}(src,tsrc) = abs(EstSrc1{band,tsrc}.delta - EstSrc{band,src}.delta);
+         
         end
         above_threshold = sum(rho_tmp > threshold);
         [~,id_max(src,band)] = max(above_threshold);
@@ -123,16 +106,7 @@ for band = 1:Nband
     end
     rho{band} = gamma{band};
     rho_max{band} = max(rho{band},[],2); % get index of true sources when rho reaches maximum
-    % make id_max unique
-    %     for src1 = 1:NestsrcBand - 1
-    %         for src2 = src1+1:NestsrcBand
-    %             if id_max(src1,band) == id_max(src2,band)
-    %                 [~,I] = sort(rho{band}(src2,:),'descend');
-    %                 id_max(src2,band) = I(2); % take the index of second maximum.
-    %                 rho_max{band}(src2) = rho{band}(src2,id_max(src2,band));
-    %             end
-    %         end
-    %     end
+    
     
     %     dif_freq_max(:,band) = abs(arrayfun(@(x) EstSrc{band,x}.omega, 1:NestsrcBand) - SrcOmega{band}(id_max(:,band)')) / (365*24*3600*2*pi); % convert to Hz
     dif_freq_max(:,band) = arrayfun(@(x) abs(EstSrc2{band,x}.omega - EstSrc1{band,id_max(x,band)}.omega) * 100 / EstSrc1{band,id_max(x,band)}.omega, 1:NestsrcBand); % error as percentage
