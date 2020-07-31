@@ -3,12 +3,9 @@ clear;
 tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
-<<<<<<< HEAD
-=======
-simParamsDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/searchParams/2bands/superNarrow';
-simDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Mask';
-estDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Mask/sd_200/results';
->>>>>>> 97d434553b606a6a05690b62f8ecc0ed5d7d96b1
+simParamsDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
+simDataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11';
+estDataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/Results_supNar/GWBsimDataSKASrlz1Nrlz3_xMBLT/results';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 % Load the simulated source parameters.
 simDataList = dir([simDataDir,filesep,inputFileName,'*.mat']);
@@ -37,8 +34,8 @@ for lp = 1:simFiles
     
     %%%%%%%%%%%%%%%%%%% DON'T FORGET %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     [~,simFileName,~] = fileparts(char(simDataList(lp)));
-    nFile = dir([estDataDir,filesep,'1_',simFileName,'*.mat']); % count how many iterations are used. For initial PSO est.
-%     nFile = dir([estDataDir,filesep,simFileName,'band1','*.mat']); % For MBLT and other tests with irregular filename.
+%     nFile = dir([estDataDir,filesep,'1_',simFileName,'*.mat']); % count how many iterations are used. For initial PSO est.
+        nFile = dir([estDataDir,filesep,simFileName,'band1','*.mat']); % For MBLT and other tests with irregular filename.
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %% reading the files
@@ -47,7 +44,7 @@ for lp = 1:simFiles
     
     num_ite = length(nFile);
     N = length(inParamsList);% number of bands
-    %     N = 1;
+    %     N = 1; % For plotting only 1 band
     
     inParamNames = sort_nat({inParamsList.name});
     inDataNames = sort_nat({inDataList.name});
@@ -55,6 +52,8 @@ for lp = 1:simFiles
     %% data pre-processing
     bx = zeros(N,3);
     by = zeros(N,3);
+    size = zeros(N,1);
+    %     esize =zeros(N,1);
     etyband = 0; % band doesn't have sources inside.
     
     for i = 1:N
@@ -73,14 +72,14 @@ for lp = 1:simFiles
         end
         % Get their frequencies in Hz
         binsrcOmega = omega(Indx);
-        y = [y binsrcOmega];
-        size = length(binsrcOmega);
-        by(i,1:size) = binsrcOmega;
+        y = [y binsrcOmega]; % total y for all bands
+        size(i) = length(binsrcOmega);
+        by(i,1:size(i)) = binsrcOmega;
         %binsrcF = (binsrcOmega/(2*pi))/(24*3600*365);
         % Get their SNR
         binsrcSNR = snr_chr(Indx);
-        x = [x binsrcSNR];
-        bx(i,1:size) = binsrcSNR;
+        x = [x binsrcSNR]; % total x for all bands
+        bx(i,1:size(i)) = binsrcSNR;
         % Get the sky location
         sra = [sra alpha(Indx)];
         sdec = [sdec delta(Indx)];
@@ -97,6 +96,7 @@ for lp = 1:simFiles
             [estSNR,estTimRes] = Amp2Snr(sourceParams,simParams,yr);
             sy = [sy estFreq];
             sx = [sx estSNR];
+            %             esize(i) = length(sx);
             ra = [ra bestRealLoc(1)];
             dec = [dec bestRealLoc(2)];
             %%
@@ -132,6 +132,7 @@ for lp = 1:simFiles
     scalx = sx .* simParams.sd(1)/(100*10^(-9)); % rescale SNR into 100 ns.
     
     y = y/(2*pi*365*24*3600);
+    by = by/(2*pi*365*24*3600); % change from rad/yr to Hz
     uplim = max(max(x),max(scalx))+30;
     binSNR = 0:1:uplim;
     binSNR_log = logspace(-5,3,length(binSNR));
@@ -140,7 +141,7 @@ for lp = 1:simFiles
     ybin_low = ybin_low/(2*pi*365*24*3600);
     ybin_low = repmat(ybin_low,length(binSNR),1);
     stage = 1:1:num_ite;
-    
+    sortsy = sort(sy); % sort sy in ascending order.
     %% Noise processing
     %     noisedir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/noise/results';
     %     disp('Processing noise-only data');
@@ -150,28 +151,27 @@ for lp = 1:simFiles
     %load(noisefile);
     
     
-    %% plot the entire map
+    %% plot settings
     close all;
-    prefix = [estDataDir,filesep,'fig',filesep,simFileName,'re'];
+    prefix = [estDataDir,filesep,'fig',filesep,simFileName];
     mkdir(prefix);
-<<<<<<< HEAD
-    figname = 'SuprNar-Mask3-200ns';
-=======
-    figname = 'Mask3-200ns';
->>>>>>> 97d434553b606a6a05690b62f8ecc0ed5d7d96b1
+    figname = 'xMBLT';
+    
+    %% Plot
     figure(1)
     % yyaxis right
     % loglog(x,y,'o',sx,sy,'kd','MarkerSize',10);
-    plot(x,y,'o',sx,sy,'s')
-%     semilogx(x,y,'o',sx,sy,'s');
+    plot(x,y,'ob',sx,sy,'sr')
+    %     semilogx(x,y,'o',sx,sy,'s');
     % disp(sy)
     
     hold on
+    
     % plot grid
     for k=1:N
-%                 semilogx(binSNR_log,ybin_up(:,k),'b-');
+        %                 semilogx(binSNR_log,ybin_up(:,k),'b-');
         plot(binSNR,ybin_up(:,k),'b-');
-%                 semilogx(binSNR_log,ybin_low(:,k),'b--');
+        %                 semilogx(binSNR_log,ybin_low(:,k),'b--');
         plot(binSNR,ybin_low(:,k),'b--');
     end
     hold off
@@ -185,28 +185,48 @@ for lp = 1:simFiles
     savefig([prefix,filesep,figname]);
     % save('estTimRes01.mat','estTimRes');
     
-%  % SNR vs. Stage figure   
-%     figure(2)
-%     Legend = {N,1};
-%     hold on
-%     for i = 1:N - etyband
-%         plot(stage,sx(num_ite*(i-1)+1:num_ite*i));
-% %         semilogy(stage,sx(num_ite*(i-1)+1:num_ite*i));
-%         Legend{i} = ['Band ', num2str(i)+etyband];
-%         if i == (N - etyband)
-%             plot(stage, avgnoise,'--k');
-% %             semilogy(stage,avgnoise,'--k');
-%             Legend{i+1} = 'Noise';
-%         end
-%     end
-%     hold off
-%     legend(Legend);
-%     title([figname,' SNR vs. Stage']);
-%     xlabel('Stage');
-%     xlim([1 num_ite]);
-%     ylabel('SNR');
-%     saveas(gcf,[prefix,filesep,figname,' SNR-Stage'],'png');
-%     savefig([prefix,filesep,figname,' SNR-Stage']);
+    for m = 1:N
+        figure(10+m)
+        % add label to each est. and true sources
+        plot(bx(m,1:size(m)),by(m,1:size(m)),'ob',sx((m-1)*num_ite+1:m*num_ite),sy((m-1)*num_ite+1:m*num_ite),'sr')
+        hold on
+        plot(binSNR,ybin_up(:,m),'b-');
+        plot(binSNR,ybin_low(:,m),'b--');
+        hold off
+        xlabel('SNR');
+        xlim([0 uplim]);
+        ylabel('Frequency');
+        legend('True','Estimated','Location','northeast');
+        title([figname,'-Band',num2str(m)]);
+        [sorx,id_true] = sort(bx(m,1:size(m)),'descend');
+        text(sorx+1,by(m,id_true),num2str((1:numel(bx(m,1:size(m))))'),'Color','#0072BD')
+        text(sx((m-1)*num_ite+1:m*num_ite)+1,sy((m-1)*num_ite+1:m*num_ite),num2str((1:num_ite)'),'Color','#D95319')
+        saveas(gcf,[prefix,filesep,figname,'Band',num2str(m)],'png');
+        savefig([prefix,filesep,figname,'Band',num2str(m)]);
+    end
+    
+    %  % SNR vs. Stage figure
+    %     figure(2)
+    %     Legend = {N,1};
+    %     hold on
+    %     for i = 1:N - etyband
+    %         plot(stage,sx(num_ite*(i-1)+1:num_ite*i));
+    % %         semilogy(stage,sx(num_ite*(i-1)+1:num_ite*i));
+    %         Legend{i} = ['Band ', num2str(i)+etyband];
+    %         if i == (N - etyband)
+    %             plot(stage, avgnoise,'--k');
+    % %             semilogy(stage,avgnoise,'--k');
+    %             Legend{i+1} = 'Noise';
+    %         end
+    %     end
+    %     hold off
+    %     legend(Legend);
+    %     title([figname,' SNR vs. Stage']);
+    %     xlabel('Stage');
+    %     xlim([1 num_ite]);
+    %     ylabel('SNR');
+    %     saveas(gcf,[prefix,filesep,figname,' SNR-Stage'],'png');
+    %     savefig([prefix,filesep,figname,' SNR-Stage']);
     
     figure(3)
     plot(sra,sdec,'ob',ra,dec,'sr');
@@ -365,6 +385,20 @@ for lp = 1:simFiles
     sgtitle([figname,' Freq-only SNRcutoff ',num2str(SNRcut)]);
     saveas(gcf,[prefix,filesep,figname,' Freq-only SNRcutoff ',num2str(SNRcut)],'png')
     savefig([prefix,filesep,figname,' Freq-only SNRcutoff ',num2str(SNRcut)]);
+    
+    %% Frequency histogram
+    dy = diff(sortsy);
+    figure
+    histogram(dy)
+    saveas(gcf,[prefix,filesep,figname,'Diff-freq-histogram'],'png')
+    savefig([prefix,filesep,figname,'Diff-freq-histogram']);
+    figure
+    plot(dy,sortsy(2:end),'ob')
+    xlabel('Frequency differences')
+    ylabel('Frequency')
+    title('Dff. Frequency vs. Frequency')
+    saveas(gcf,[prefix,filesep,figname,'Diff-Frequency'],'png')
+    savefig([prefix,filesep,figname,'Diff-Frequency']);
 end
 
 toc

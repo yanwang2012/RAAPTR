@@ -96,13 +96,13 @@ for band = 1:Nband
                 %                 tmp2 = tmp2 + rho_tmp(psr,tsrc) * norm(tmp); % for gamma star
                 
             end
-         
+            
         end
         above_threshold = sum(rho_tmp > threshold);
         [~,id_max(src,band)] = max(above_threshold);
         
         %         gamma{band}(src,id_max(src,band)) = max(rho_tmp(:,id_max(src,band))); % maximize method
-        gamma{band}(src,id_max(src,band)) = sum(rho_tmp(rho_tmp(:,id_max(src,band)) > threshold,id_max(src,band))) / 1000; % nomalized over Np (1000) pulsars.
+        gamma{band}(src,id_max(src,band)) = sum(rho_tmp(:,id_max(src,band))) / 1000; % nomalized over Np (1000) pulsars.
     end
     rho{band} = gamma{band};
     rho_max{band} = max(rho{band},[],2); % get index of true sources when rho reaches maximum

@@ -7,7 +7,7 @@ tic
 %% Dir settings
 simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
 simdataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
-estSrc1Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/Results_supNar';
+estSrc1Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/Results_supNar/GWBsimDataSKASrlz1Nrlz3_xMBLT/results';
 estSrc2Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SupNar_xMBLT_iMBLT20/iMBLT20';
 Filename = 'GWBsimDataSKASrlz1Nrlz3';
 ext = '.mat';
@@ -40,7 +40,7 @@ end
 %% Plotting
 prefix = [estSrc2Dir,filesep,'EstvsEst'];
 mkdir(prefix)
-baseName = 'initial-iMBLT-after-xMBLT';
+baseName = 'xMBLT-iMBLT-after-xMBLT';
 % SNR
 figname1 = [baseName,'-SNR'];
 snr1 = zeros(Nband,NestsrcBand);
@@ -56,12 +56,12 @@ figure(1)
 subplot(1,2,1)
 plot(snr1(1,:),snr2(1,:),'ob')
 title('band 1')
-xlabel('initial')
+xlabel('xMBLT')
 ylabel('iMBLT after xMBLT')
 subplot(1,2,2)
 plot(snr1(2,:),snr2(2,:),'or')
 title('band 2')
-xlabel('initial')
+xlabel('xMBLT')
 ylabel('iMBLT after xMBLT')
 sgtitle('initial vs. iMBLT after xMBLT SNR')
 saveas(gcf,[prefix,filesep,figname1],'png')
@@ -80,14 +80,14 @@ figure(2)
 subplot(1,2,1)
 plot(freq1(1,:),freq2(1,:),'ob')
 title('band 1')
-xlabel('initial')
+xlabel('xMBLT')
 ylabel('iMBLT after xMBLT')
 xlim([0 4.5e-8])
 % ylim([0 4.5e-7])
 subplot(1,2,2)
 plot(freq1(2,:),freq2(2,:),'or')
 title('band 2')
-xlabel('initial')
+xlabel('xMBLT')
 ylabel('iMBLT after xMBLT')
 sgtitle('initial vs. iMBLT after xMBLT Freq.')
 saveas(gcf,[prefix,filesep,figname2],'png')
@@ -103,7 +103,7 @@ for i = 1:2
     title([figname3,'Band ',num2str(i)]);
     xlabel('SNR');
     ylabel('Frequency');
-    legend('initial','iMBLTafterxMBLT');
+    legend('xMBLT','iMBLTafterxMBLT');
     saveas(gcf,[prefix,filesep,figname3,'Band ',num2str(i)],'png')
     savefig([prefix,filesep,figname3,'Band ',num2str(i)])
 end

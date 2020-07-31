@@ -112,14 +112,14 @@ for band = 1:Nband
             %             dif_ra{band}(src,tsrc) = abs(SrcAlpha{band}(tsrc) - EstSrc{band,src}.alpha);
             %             dif_dec{band}(src,tsrc) = abs(SrcDelta{band}(tsrc) - EstSrc{band,src}.delta);
         end
-        above_threshold = sum(rho_tmp > threshold);
+        above_threshold = sum(rho_tmp > threshold); % calculate how many CC. above the threshold.
         [~,id_max(src,band)] = max(above_threshold);
 %         gamma{band}(src,id_max(src,band)) = max(rho_tmp(:,id_max(src,band))); % Maximized CC
-        gamma{band}(src,id_max(src,band)) = sum(rho_tmp(rho_tmp(:,id_max(src,band)) > threshold,id_max(src,band))) / 1000; % nomalized over Np (1000) pulsars.
-        
+        gamma{band}(src,id_max(src,band)) = sum(rho_tmp(:,id_max(src,band))) / 1000; % nomalized over Np (1000) pulsars.
+%         gamma{band}(src,id_max(src,band)) = sum(rho_tmp(:,id_max(src,band)) > threshold) / 1000;
     end
     rho{band} = gamma{band};
-    rho_max{band} = max(rho{band},[],2); % get index of true sources when rho reaches maximum
+    rho_max{band} = max(rho{band},[],2); % get the maximum CC. value over true sources.
     % make id_max unique
     %     for src1 = 1:NestsrcBand - 1
     %         for src2 = src1+1:NestsrcBand
