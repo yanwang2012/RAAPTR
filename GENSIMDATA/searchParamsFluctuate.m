@@ -1,4 +1,4 @@
-% Read a searchParams.json file and fluctuate around the band boundary,
+% Read a searchParams.json file and fluctuate the band boundary,
 % then generate new search parameter set.
 
 % QYQ 08/2020
@@ -28,7 +28,10 @@ edge = s1.angular_velocity(1,1);
 fluctuation = 10 * randn; % fluctuation range
 new_edge = edge + fluctuation;
 
+% update searchParams for 1st band with new band edge
 s1.angular_velocity(1,1) = new_edge;
+searchParams.angular_velocity = s1.angular_velocity;
+
 [filePath,newFile,~] = fileparts(input_file_name);
 newFile = regexp(newFile,'[a-zA-Z]*','match');
 save([filePath,filesep,char(newFile),'Rand1','.mat'],'searchParams','NumBands','FreqRange');
