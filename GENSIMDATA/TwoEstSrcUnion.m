@@ -121,6 +121,12 @@ for b = 1:Nband
     end
 end
 
+%% Take union of two Est. sets
+UnSrc = {}; % united sources
+
+for i = 1:Nband
+    UnSrc{}
+end
 
 %% Plotting
 metric = 'NMTC';

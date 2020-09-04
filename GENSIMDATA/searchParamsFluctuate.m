@@ -25,7 +25,7 @@ fullRange = jsondecode(fileread(full_range_file_name));
 FreqRange = fullRange.angular_velocity;
 
 edge = s1.angular_velocity(1,1);
-fluctuation = 10 * randn; % fluctuation range
+fluctuation = randn; %10 * randn; % fluctuation range
 new_edge = edge + fluctuation;
 
 % update searchParams for 1st band with new band edge
