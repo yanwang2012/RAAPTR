@@ -1,258 +1,95 @@
-% Cross-Correlation Coefficients Matrix for Est. & Est. sources.
+% Cross-Correlation Coefficients analysis for two sets of est. sources
+% without spliting into different bands and take the union of both set of est.
+% sources by combining those highly correlated sources as well keep those not
+% correlated sources.
 
 % Author: QYQ
-% 05/13/2020
+% 09/14/2020
 
 clear;
 tic
 
 %% Dir settings
-simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
 simdataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
 estSrc1Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/Results_supNar/GWBsimDataSKASrlz1Nrlz3_xMBLT/results';
-estsrc1 = 'supNarxMBLT1';
-estSrc2Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/Results_supNar_rand1/GWBsimDataSKASrlz1Nrlz3_xMBLT/results'; 
-estsrc2 = 'supNarxMBLT2';
+estsrc1 = 'supNarxMBLT';
+estSrc2Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/Results_supNar_rand1/GWBsimDataSKASrlz1Nrlz3_xMBLT/results';
+estsrc2 = 'supNarxMBLTRand1';
 Filename = 'GWBsimDataSKASrlz1Nrlz3';
 ext = '.mat';
 
 %% Files
-paraFile = dir([simParamsDir,filesep,'searchParamsRand*',ext]);
-Nband = length(paraFile);
-simFile = [simdataDir,filesep,Filename,ext];
 estSrc1File = dir([estSrc1Dir,filesep,'*',Filename,'*',ext]);
 estSrc2File = dir([estSrc2Dir,filesep,'*',Filename,'*',ext]);
 Nestsrc = length(estSrc2File);
-% paraFilename = sort_nat({paraFile.name});
 estSrc2Filename = sort_nat({estSrc2File.name});
 estSrc1Filename = sort_nat({estSrc1File.name});
+simFile = [simdataDir,filesep,Filename,ext];
 load(simFile);
-
-%% pre-process true sources
-% Seperate sources into different bands
-Ntsrc = length(alpha); % Number of true sources.
-SrcSNR = {};
-SrcAlpha = {};
-SrcAmp = {};
-SrcDelta = {};
-SrcIota = {};
-SrcOmega = {};
-SrcPhi0 = {};
-SrcThetaN = {};
-
-for i = 1:Nband
-    load([simParamsDir,filesep,char(paraFilename(i))]);
-    Indx = find(omega >= searchParams.angular_velocity(2) & ...
-        omega <= searchParams.angular_velocity(1));
-    
-    SrcSNR{i} = snr_chr(Indx);
-    SrcAlpha{i} = alpha(Indx);
-    SrcDelta{i} = delta(Indx);
-    SrcAmp{i} = Amp(Indx);
-    SrcIota{i} = iota(Indx);
-    SrcOmega{i} = omega(Indx);
-    SrcPhi0{i} = phi0(Indx);
-    SrcThetaN{i} = thetaN(Indx);
-    
-end
-
-% Sort sources in different bands
-for j = 1:Nband
-    [~,id] = sort(SrcSNR{j},'descend'); % sort true sources according to SNR value
-    SrcSNR{j} = SrcSNR{j}(id);
-    SrcAlpha{j} = SrcAlpha{j}(id);
-    SrcDelta{j} = SrcDelta{j}(id);
-    SrcAmp{j} = SrcAmp{j}(id);
-    SrcIota{j} = SrcIota{j}(id);
-    SrcOmega{j} = SrcOmega{j}(id);
-    SrcPhi0{j} = SrcPhi0{j}(id);
-    SrcThetaN{j} = SrcThetaN{j}(id);
-end
-
 %% Get estimated sources info
-NestsrcBand = Nestsrc/Nband; % number of sources in a band.
 EstSrc2 = {};
 EstSrc1 = {};
-for band = 1:Nband
-    for k = 1:NestsrcBand
-        path_to_estimatedDataestSrc2 = [estSrc2Dir,filesep,char(estSrc2Filename((band - 1) * NestsrcBand + k))];
-        path_to_estimatedDataestSrc1 = [estSrc1Dir,filesep,char(estSrc1Filename((band - 1) * NestsrcBand + k))];
-        EstSrc2{band,k} = ColSrcParams(path_to_estimatedDataestSrc2);
-        EstSrc1{band,k} = ColSrcParams(path_to_estimatedDataestSrc1);
-    end
+
+for k = 1:Nestsrc
+    path_to_estimatedDataestSrc2 = [estSrc2Dir,filesep,char(estSrc2Filename(k))];
+    path_to_estimatedDataestSrc1 = [estSrc1Dir,filesep,char(estSrc1Filename(k))];
+    EstSrc2{k} = ColSrcParams(path_to_estimatedDataestSrc2);
+    EstSrc1{k} = ColSrcParams(path_to_estimatedDataestSrc1);
 end
 
-
-%% Cross-Corelation
-
-% Max Weighted CC
-% [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MAC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,SrcSNR,EstSrc,simParams,yr,'snr');
-
-% Max Weighted Ave. CC
-% [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MWAC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,SrcSNR,EstSrc,simParams,yr,0);
-
-% Max over Threshold CC
-[rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR1,estSNR2] = ESMTC(Nband,NestsrcBand,EstSrc1,EstSrc2,simParams,yr,0.90);
+% Cross-Corelation
+[gamma,rho,id_max,estSNR1,estSNR2] = ESNMTCW(Nestsrc,EstSrc1,EstSrc2,simParams,yr,0.90);
 
 
-% Max coefficients of sources
-% for band = 1:Nband
-%     NtsrcBand = length(SrcAlpha{band});
-%     for src = 1:NestsrcBand
-%         for tsrc = 1:NtsrcBand
-%             if tsrc ~= id_max(src,band)
-%                 rho{band}(src,tsrc) = 0;
-%             end
-%         end
-%     end
-% end
-
-%% Eliminating spurious sources
+%% find highly correlated sources
 t = 0.80; % NMTC threshold used to select sources.
-isrc = {}; % identified sources.
-r = {}; % rows
-c = {}; % columns
-for b = 1:Nband
-    [r{b},c{b},~] = find(rho{b} > t); % r is the row of rho, c is the column of rho.
-    % in rho, rows correspond to EstSrc2, columns correspond to EstSrc1.
-    % select the identified sources from est. sources.
-    for rr = 1:length(r{b})
-        isrc{b,rr} = EstSrc2{b,r{b}(rr)};
-    end
-end
+[r,c,~] = find(gamma > t); % r is the row of rho, c is the column of rho.
+% in gamma, rows correspond to EstSrc2, columns correspond to EstSrc1.
+map = [r c]; % create a map between EstSrc1 & EstSrc2.
 
 %% Take union of two Est. sets
-UnSrc = {}; % united sources
+EstSrc1d = EstSrc1(setdiff(1:Nestsrc,c)); % sources in EstSrc1 which indices are not in c
+EstSrc2d = EstSrc2(setdiff(1:Nestsrc,r)); % ...........EstSrc2..........................r
+estSNR1d = estSNR1(setdiff(1:Nestsrc,c));
+estSNR2d = estSNR2(setdiff(1:Nestsrc,r));
 
-for i = 1:Nband
-    UnSrc{}
-end
+UnSrc = [EstSrc1d EstSrc2d EstSrc2(r)]; % Union of 2 sets of est. sources with the choice of EstSrc2(r) as the combined highly correlated sources.
+UnSNR = cat(1,estSNR1d,estSNR2d,estSNR2(r));
 
 %% Plotting
 metric = 'NMTC';
-methods = 'supNarxMBLT1-supNarxMBLT2';
+methods = 'supNarxMBLT-supNarxMBLTRand1-ALL';
 prefix = [estSrc2Dir,filesep,'fig',filesep,metric,'-',methods];
 mkdir(prefix);
 
-
 figname = 'NMTC';
 
-for fig = 1:Nband
-    figure
-    imagesc(rho{fig});
-    colorbar
-    xlabel(estsrc1)
-    ylabel(estsrc2)
-    title(['Band ',num2str(fig)])
-    saveas(gcf,[prefix,filesep,figname,'Band ',num2str(fig)],'png');
-    savefig([prefix,filesep,figname,'Band ',num2str(fig)]);
+figure
+imagesc(gamma);
+colorbar
+xlabel(estsrc1)
+ylabel(estsrc2)
+title(figname)
+saveas(gcf,[prefix,filesep,figname],'png');
+savefig([prefix,filesep,figname]);
+
+figname = 'Uinon vs True';
+
+figure
+plot(snr_chr,omega/(365*24*3600*2*pi),'ob')
+hold on
+for i = 1:length(UnSrc)
+   plot(UnSNR(i),UnSrc{i}.omega/(365*24*3600*2*pi),'sr') 
 end
+hold off
 
-
-% figname2 = 'NMTC_SNR';
-% for fig2 = 1:Nband
-%     figure
-%     plot(estSNR(fig2,:),rho_max{fig2},'ob')
-%     xlabel('Estimated SNR')
-%     ylabel('NMTC')
-%     title(['Band ',num2str(fig2)])
-%     saveas(gcf,[prefix,filesep,figname2,'Band ',num2str(fig2)],'png');
-%     savefig([prefix,filesep,figname2,'Band ',num2str(fig2)]);
-% end
-
-% figname3 = 'Freq_CC';
-% for fig3 = 1:Nband
-%     for n = 1:NestsrcBand
-%         figure
-%         plot(dif_freq{fig3}(n,:),rho{fig3}(n,:),'ob')
-%         xlabel('Freq. difference')
-%         ylabel('Weighted cross-correlation')
-%         title(['Estimated source ',num2str(n)])
-%         saveas(gcf,[prefix,filesep,figname3,'EstSrc ',num2str(n)],'png');
-%         savefig([prefix,filesep,figname3,'EstSrc ',num2str(n)]);
-%     end
-% end
-%
-% figname4 = 'RA_CC';
-% for fig3 = 1:Nband
-%     for n = 1:NestsrcBand
-%         figure
-%         plot(dif_ra{fig3}(n,:),rho{fig3}(n,:),'ob')
-%         xlabel('RA difference')
-%         ylabel('Weighted cross-correlation')
-%         title(['Estimated source ',num2str(n)])
-%         saveas(gcf,[prefix,filesep,figname4,'EstSrc ',num2str(n)],'png');
-%         savefig([prefix,filesep,figname4,'EstSrc ',num2str(n)]);
-%     end
-% end
-%
-%
-% figname5 = 'DEC_CC';
-% for fig3 = 1:Nband
-%     for n = 1:NestsrcBand
-%         figure
-%         plot(dif_dec{fig3}(n,:),rho{fig3}(n,:),'ob')
-%         xlabel('DEC difference')
-%         ylabel('Weighted cross-correlation')
-%         title(['Estimated source ',num2str(n)])
-%         saveas(gcf,[prefix,filesep,figname5,'EstSrc ',num2str(n)],'png');
-%         savefig([prefix,filesep,figname5,'EstSrc ',num2str(n)]);
-%     end
-% end
-
-
-% figname6 = 'NMTC_freq';
-% 
-% for fig = 1:Nband
-%     figure
-%     plot(dif_freq_max(:,fig),rho_max{fig},'ob')
-%     xlabel('Difference of Freq. Percentage (%)')
-%     ylabel('NMTC')
-%     title(['Band ',num2str(fig)])
-%     saveas(gcf,[prefix,filesep,figname6,'Band ',num2str(fig)],'png');
-%     savefig([prefix,filesep,figname6,'Band ',num2str(fig)]);
-% end
-% 
-% figname7 = 'NMTC_RA';
-% 
-% for fig = 1:Nband
-%     figure
-%     plot(dif_ra_max(:,fig),rho_max{fig},'ob')
-%     xlabel('Difference of RA Percentage (%)')
-%     ylabel('NMTC')
-%     title(['Band ',num2str(fig)])
-%     saveas(gcf,[prefix,filesep,figname7,'Band ',num2str(fig)],'png');
-%     savefig([prefix,filesep,figname7,'Band ',num2str(fig)]);
-% end
-% 
-% figname8 = 'NMTC_DEC';
-% 
-% for fig = 1:Nband
-%     figure
-%     plot(dif_dec_max(:,fig),rho_max{fig},'ob')
-%     xlabel('Difference of DEC Percentage (%)')
-%     ylabel('NMTC')
-%     title(['Band ',num2str(fig)])
-%     saveas(gcf,[prefix,filesep,figname8,'Band ',num2str(fig)],'png');
-%     savefig([prefix,filesep,figname8,'Band ',num2str(fig)]);
-% end
-
-figname9 = 'identified-sources-initial-xMBLT-iMBLT';
-
-for fig = 1:Nband
-    ifreq = arrayfun(@(x) isrc{fig,x}.omega/(2*pi*365*24*3600), 1:length(r{fig}));
-    figure
-    plot(SrcSNR{fig},SrcOmega{fig}/(2*pi*365*24*3600),'ob',estSNR2(fig,r{fig}),ifreq,'sr')
-    text(SrcSNR{fig}+0.5,SrcOmega{fig}/(2*pi*365*24*3600), num2str((1:numel(SrcSNR{fig}))'), 'Color', '#0072BD')
-    text(estSNR2(fig,r{fig})-2.5,ifreq, num2str(r{fig}), 'HorizontalAlignment','right', 'Color', '#D95319')
-    title(['Identified Sources Band ',num2str(fig)])
-    xlabel('SNR')
-    ylabel('Frequency(Hz)')
-    legend('True Source','Identified Source')
-    saveas(gcf,[prefix,filesep,figname9,'Band ',num2str(fig)],'png');
-    savefig([prefix,filesep,figname9,'Band ',num2str(fig)]);
-end
-    
+title('Union vs. True')
+xlabel('SNR')
+ylabel('Frequency')
+legend('True','Union')
+saveas(gcf,[prefix,filesep,figname],'png')
+savefig([prefix,filesep,figname])
 
 
 toc
+%END

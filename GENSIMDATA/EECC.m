@@ -10,9 +10,9 @@ tic
 simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
 simdataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
 estSrc1Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/Results_supNar/GWBsimDataSKASrlz1Nrlz3_xMBLT/results';
-estsrc1 = 'supNarxMBLT1';
+estsrc1 = 'supNarxMBLT';
 estSrc2Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/Results_supNar_rand1/GWBsimDataSKASrlz1Nrlz3_xMBLT/results'; 
-estsrc2 = 'supNarxMBLT2';
+estsrc2 = 'supNarxMBLTRand1';
 Filename = 'GWBsimDataSKASrlz1Nrlz3';
 ext = '.mat';
 
@@ -23,7 +23,7 @@ simFile = [simdataDir,filesep,Filename,ext];
 estSrc1File = dir([estSrc1Dir,filesep,'*',Filename,'*',ext]);
 estSrc2File = dir([estSrc2Dir,filesep,'*',Filename,'*',ext]);
 Nestsrc = length(estSrc2File);
-% paraFilename = sort_nat({paraFile.name});
+paraFilename = sort_nat({paraFile.name});
 estSrc2Filename = sort_nat({estSrc2File.name});
 estSrc1Filename = sort_nat({estSrc1File.name});
 load(simFile);
@@ -92,7 +92,7 @@ end
 % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MWAC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,SrcSNR,EstSrc,simParams,yr,0);
 
 % Max over Threshold CC
-[rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR1,estSNR2] = ESMTC(Nband,NestsrcBand,EstSrc1,EstSrc2,simParams,yr,0.90);
+[gamma,rho,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR1,estSNR2] = ESNMTC(Nband,NestsrcBand,EstSrc1,EstSrc2,simParams,yr,0.90);
 
 
 % Max coefficients of sources
@@ -113,8 +113,8 @@ isrc = {}; % identified sources.
 r = {}; % rows
 c = {}; % columns
 for b = 1:Nband
-    [r{b},c{b},~] = find(rho{b} > t); % r is the row of rho, c is the column of rho.
-    % in rho, rows correspond to EstSrc2, columns correspond to EstSrc1.
+    [r{b},c{b},~] = find(gamma{b} > t); % r is the row of rho, c is the column of rho.
+    % in gamma, rows correspond to EstSrc2, columns correspond to EstSrc1.
     % select the identified sources from est. sources.
     for rr = 1:length(r{b})
         isrc{b,rr} = EstSrc2{b,r{b}(rr)};
@@ -124,7 +124,7 @@ end
 
 %% Plotting
 metric = 'NMTC';
-methods = 'supNarxMBLT1-supNarxMBLT2';
+methods = 'supNarxMBLT-supNarxMBLTRand1-new';
 prefix = [estSrc2Dir,filesep,'fig',filesep,metric,'-',methods];
 mkdir(prefix);
 
@@ -133,7 +133,7 @@ figname = 'NMTC';
 
 for fig = 1:Nband
     figure
-    imagesc(rho{fig});
+    imagesc(gamma{fig});
     colorbar
     xlabel(estsrc1)
     ylabel(estsrc2)
@@ -231,7 +231,7 @@ end
 %     savefig([prefix,filesep,figname8,'Band ',num2str(fig)]);
 % end
 
-figname9 = 'identified-sources-initial-xMBLT-iMBLT';
+figname9 = 'identified-sources-initial-xMBLT-xMBLTRand1';
 
 for fig = 1:Nband
     ifreq = arrayfun(@(x) isrc{fig,x}.omega/(2*pi*365*24*3600), 1:length(r{fig}));
