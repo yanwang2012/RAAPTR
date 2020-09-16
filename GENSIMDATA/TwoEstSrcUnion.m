@@ -56,6 +56,16 @@ estSNR2d = estSNR2(setdiff(1:Nestsrc,r));
 UnSrc = [EstSrc1d EstSrc2d EstSrc2(r)]; % Union of 2 sets of est. sources with the choice of EstSrc2(r) as the combined highly correlated sources.
 UnSNR = cat(1,estSNR1d,estSNR2d,estSNR2(r));
 
+%% copy files together
+NewFolder = [estSrc2Dir,filesep,'Union'];
+copyfile([estSrc2Dir,filesep,'*.mat'],NewFolder); % copy all files from est. sources 2
+
+% Copy est. sources 1 which are not in map.
+id_diff = setdiff(1:Nestsrc,c); % get indices of est. srouces 1 not in map. 
+for i = 1:length(id_diff)
+    copyfile([estSrc1Dir,filesep,estSrc1Filename{id_diff(i)}],NewFolder)
+end
+
 %% Plotting
 metric = 'NMTC';
 methods = 'supNarxMBLT-supNarxMBLTRand1-ALL';
