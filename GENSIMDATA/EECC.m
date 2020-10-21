@@ -9,21 +9,26 @@ tic
 %% Dir settings
 simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
 simdataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
-estSrc1Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/Results_supNar/GWBsimDataSKASrlz1Nrlz3_xMBLT/results';
-estsrc1 = 'supNarxMBLT';
-estSrc2Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/Results_supNar_rand1/GWBsimDataSKASrlz1Nrlz3_xMBLT/results'; 
-estsrc2 = 'supNarxMBLTRand1';
+estSrc1Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Results_supNar';
+estsrc1 = 'initial';
+estSrc2Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/SupNar_xMBLT_iMBLT20/iMBLT20'; 
+estsrc2 = 'xMBLT-iMBLT';
 Filename = 'GWBsimDataSKASrlz1Nrlz3';
 ext = '.mat';
 
 %% Files
-paraFile = dir([simParamsDir,filesep,'searchParamsRand*',ext]);
-Nband = length(paraFile);
+paraFile = dir([simParamsDir,filesep,'searchParams*',ext]);
 simFile = [simdataDir,filesep,Filename,ext];
 estSrc1File = dir([estSrc1Dir,filesep,'*',Filename,'*',ext]);
 estSrc2File = dir([estSrc2Dir,filesep,'*',Filename,'*',ext]);
 Nestsrc = length(estSrc2File);
+
 paraFilename = sort_nat({paraFile.name});
+exp = 'searchParams\d.mat'; % regular expressions for desire file names
+paraFilename = regexp(paraFilename,exp,'match');
+paraFilename = paraFilename(~cellfun(@isempty,paraFilename)); % get rid of empty cells
+Nband = length(paraFilename);
+
 estSrc2Filename = sort_nat({estSrc2File.name});
 estSrc1Filename = sort_nat({estSrc1File.name});
 load(simFile);
@@ -41,7 +46,7 @@ SrcPhi0 = {};
 SrcThetaN = {};
 
 for i = 1:Nband
-    load([simParamsDir,filesep,char(paraFilename(i))]);
+    load([simParamsDir,filesep,char(paraFilename{i})]);
     Indx = find(omega >= searchParams.angular_velocity(2) & ...
         omega <= searchParams.angular_velocity(1));
     
@@ -108,7 +113,7 @@ end
 % end
 
 %% Eliminating spurious sources
-t = 0.80; % NMTC threshold used to select sources.
+t = 0.70; % NMTC threshold used to identify sources.
 isrc = {}; % identified sources.
 r = {}; % rows
 c = {}; % columns
@@ -124,7 +129,7 @@ end
 
 %% Plotting
 metric = 'NMTC';
-methods = 'supNarxMBLT-supNarxMBLTRand1-new';
+methods = 'xMBLT-iMBLT-vs-initial';
 prefix = [estSrc2Dir,filesep,'fig',filesep,metric,'-',methods];
 mkdir(prefix);
 
@@ -231,7 +236,7 @@ end
 %     savefig([prefix,filesep,figname8,'Band ',num2str(fig)]);
 % end
 
-figname9 = 'identified-sources-initial-xMBLT-xMBLTRand1';
+figname9 = 'identified sources';
 
 for fig = 1:Nband
     ifreq = arrayfun(@(x) isrc{fig,x}.omega/(2*pi*365*24*3600), 1:length(r{fig}));
@@ -243,8 +248,8 @@ for fig = 1:Nband
     xlabel('SNR')
     ylabel('Frequency(Hz)')
     legend('True Source','Identified Source')
-    saveas(gcf,[prefix,filesep,figname9,'Band ',num2str(fig)],'png');
-    savefig([prefix,filesep,figname9,'Band ',num2str(fig)]);
+    saveas(gcf,[prefix,filesep,figname9,' Band ',num2str(fig)],'png');
+    savefig([prefix,filesep,figname9,' Band ',num2str(fig)]);
 end
     
 
