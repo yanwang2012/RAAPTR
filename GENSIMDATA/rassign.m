@@ -1,4 +1,4 @@
-function [filename,Index]=rassign(estDataDir,outputfiles,N,simParams,yr)
+function [filename,Index]=rassign(estDataDir,outputfilenames,N,N1,simParams,yr)
 % [filename,Index]=rassign(estDataDir,outputfiles,N,simParams,yr)
 % MBLT data pre-processing
 % Reassigning the close point near the edge
@@ -25,7 +25,7 @@ function [filename,Index]=rassign(estDataDir,outputfiles,N,simParams,yr)
 %% load data
 bestRealLoc = zeros(1007,N);
 SNR = zeros(N,1);
-outputfilenames = sort_nat({outputfiles.name});
+% outputfilenames = sort_nat({outputfiles.name});
 for i = 1:N
     f = load([estDataDir,filesep,char(outputfilenames(i))],'bestRealLoc');
     bestRealLoc(:,i) = f.bestRealLoc;
@@ -42,16 +42,16 @@ end
 
 Index = [];
 filename = [];
-for k = 1:N
-    for m = 1:N
+for k = 1:N1
+    for m = N1+1:N
         if abs(SrcP(k,2)-SrcP(m,2)) < 3 && abs(SrcP(k,1)-SrcP(m,1)) < 5e-10 && k~= m % reassign constrain dsnr < 3 and dfreq < 5e10
             % if abs(SrcP(k,1)-SrcP(m,1)) < 5e-10 && k ~= m % threshold for Freq
             if SrcP(k,2) > SrcP(m,2)
-                disp(["File needs to be skipped is : ",outputfilenames(m),'Index is: ',num2str(m)])
+                disp(['File ', char(outputfilenames(m)), ' is reassigned to file ', char(outputfilenames(k)), ' Index is ', num2str(m)])
                 filename = [filename outputfilenames(m)];
                 Index = [Index m];
             else
-                disp(["File needs to be skipped is : ",outputfilenames(k),'Index is: ',num2str(k)])
+                disp(['File ', char(outputfilenames(k)),' is reassigned to file ', char(outputfilenames(m)), ' Index is ', num2str(k)])
                 filename = [filename outputfilenames(k)];
                 Index = [Index k];
             end

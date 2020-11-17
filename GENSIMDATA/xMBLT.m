@@ -7,11 +7,11 @@ simParamsDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigati
 simParamsName = 'searchParams';
 inParamsList = dir([simParamsDir,filesep,simParamsName,'*.mat']);
 simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
-estDataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/Results_supNar';
+estDataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Results_supNar';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
-outputfiles = dir([estDataDir,filesep,'*',inputFileName,'*.mat']);
+
 Npara = length(inParamsList);
-NestSrc = length(outputfiles);
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DON'T FORGET TO CHECK THE NAME %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 nFile = dir([estDataDir,filesep,'1_',inputFileName,'*.mat']); % count how many iterations are used.
@@ -23,8 +23,11 @@ load([simDataDir,filesep,inputFileName,'.mat']);
 estTimRes = zeros(simParams.Np,simParams.N);
 
 %% MBLT
+outputfiles = dir([estDataDir,filesep,'*',inputFileName,'*.mat']);
+NestSrc = length(outputfiles);
+Nband1 = NestSrc/2;
 outputfilenames = sort_nat({outputfiles.name});
-[file,Index]=rassign(estDataDir,outputfiles,NestSrc,simParams,yr);
+[file,Index]=rassign(estDataDir,outputfilenames,NestSrc,Nband1,simParams,yr);
 % disp(["File needs to be skipped: ",file]);
 Filename = 'GWBsimDataSKASrlz1Nrlz3_xMBLT_test';
 OutputDir = [estDataDir,filesep,Filename];

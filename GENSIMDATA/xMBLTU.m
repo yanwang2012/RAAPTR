@@ -24,6 +24,9 @@ outfiles1 = dir([estDataDir,filesep,'1_*.mat']);
 outNames{1} = sort_nat({outfiles1.name});
 outfiles2 = dir([estDataDir,filesep,'2_*.mat']);
 outNames{2} = sort_nat({outfiles2.name});
+outfilesAll = dir([estDataDir,filesep,'*',inputFileName,'*.mat']);
+Allfilesname = sort_nat({outfilesAll.name});
+AllSrc = length(Allfilesname);
 Nfiles = zeros(Npara,1);% number of output files
 Nfiles(1) = length(outNames{1});
 Nfiles(2) = length(outNames{2});
@@ -54,18 +57,19 @@ load([simDataDir,filesep,inputFileName,'.mat']);
 estTimRes = zeros(simParams.Np,simParams.N);
 
 %% xMBLT
-Filename = 'GWBsimDataSKASrlz1Nrlz3_Union_xMBLT';
+
+[file,Index]=rassign(estDataDir,Allfilesname,AllSrc,Nfiles(1),simParams,yr);
+Filename = 'GWBsimDataSKASrlz1Nrlz3_Union_xMBLT3';
 OutputDir = [estDataDir,filesep,Filename];
 mkdir(OutputDir);
 for i = 1:Npara
     outputfiles = dir([estDataDir,filesep,num2str(swap(i)),'_*',inputFileName,'*.mat']);
     NestSrc = length(outputfiles);
     outputfilenames = sort_nat({outputfiles.name});
-    [file,Index]=rassign(estDataDir,outputfiles,NestSrc,simParams,yr);
-    nFile = dir([estDataDir,filesep,num2str(swap(i)),'_*',inputFileName,'*.mat']); % count how many sources in each band.
-    %     num_ite = length(nFile);
+%     nFile = dir([estDataDir,filesep,num2str(swap(i)),'_*',inputFileName,'*.mat']); % count how many sources in each band.
+%         num_ite = length(nFile);
     for j = 1:NestSrc
-        if ismember(j,Index) == 1
+        if ~isempty(file) && strcmp(char(outNames{swap(i)}(j)),char(file(1))) == 1
             continue
         else
             %                 disp("j is:"+j);

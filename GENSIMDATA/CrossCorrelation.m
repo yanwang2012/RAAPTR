@@ -8,7 +8,7 @@ tic
 %% Dir settings
 simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
 simdataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11';
-estdataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/SupNar_xMBLT_iMBLT20/iMBLT20';
+estdataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Union_xMBLT2/xMBLT-iMBLT-20';
 Filename = 'GWBsimDataSKASrlz1Nrlz3';
 ext = '.mat';
 
@@ -71,20 +71,22 @@ simSrc = struct('SrcSNR',SrcSNR,'SrcAlpha',SrcAlpha,'SrcDelta',SrcDelta,'SrcAmp'
     'SrcIota',SrcIota,'SrcOmega',SrcOmega,'SrcPhi0',SrcPhi0,'SrcThetaN',SrcThetaN); % Simulated sources parameters
 
 %% Get estimated sources info
-% NestsrcBand = Nestsrc/Nband; % number of sources in a band.
-% EstSrc = {};
-% for band = 1:Nband
-%     for k = 1:NestsrcBand
-%         path_to_estimatedData = [estdataDir,filesep,char(estFilename((band - 1) * NestsrcBand + k))];
-%         EstSrc{band,k} = ColSrcParams(path_to_estimatedData);
-%     end
-% end
+estsrcBand1 = Nestsrc/Nband; % number of sources in a band.
+estsrcBand2 = Nestsrc/Nband;
+NestsrcBand = struct('Band1',estsrcBand1,'Band2',estsrcBand2);
+EstSrc = {};
+for band = 1:Nband
+    for k = 1:estsrcBand1
+        path_to_estimatedData = [estdataDir,filesep,char(estFilename((band - 1) * estsrcBand1 + k))];
+        EstSrc{band,k} = ColSrcParams(path_to_estimatedData);
+    end
+end
 
 %% load identified sources
-load([estdataDir,filesep,'IdentifiedSrc.mat'])
-idsrcBand1 = length(idsrc(~cellfun('isempty',idsrc(1,:)))); % remove empty cells
-idsrcBand2 = length(idsrc(~cellfun('isempty',idsrc(2,:))));
-idSrcBand = struct('Band1',idsrcBand1,'Band2',idsrcBand2);
+% load([estdataDir,filesep,'IdentifiedSrc.mat'])
+% idsrcBand1 = length(idsrc(~cellfun('isempty',idsrc(1,:)))); % remove empty cells
+% idsrcBand2 = length(idsrc(~cellfun('isempty',idsrc(2,:))));
+% idSrcBand = struct('Band1',idsrcBand1,'Band2',idsrcBand2);
 
 %% Cross-Corelation
 
@@ -98,7 +100,7 @@ idSrcBand = struct('Band1',idsrcBand1,'Band2',idsrcBand2);
 % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MTC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr,0.85);
 
 % Normalized MTC
-[rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(Nband,idSrcBand,simSrc,idsrc,simParams,yr,0.90);
+[rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(Nband,NestsrcBand,simSrc,EstSrc,simParams,yr,0.90);
 
 
 % Minimum distance Maximum CC.
@@ -131,7 +133,7 @@ idSrcBand = struct('Band1',idsrcBand1,'Band2',idsrcBand2);
 
 %% Plotting
 metric = 'NMTC';
-methods = 'True-xMBLT-iMBLT-identified';
+methods = 'True vs Union-xMBLT-iMBLT';
 prefix = [estdataDir,filesep,'fig',filesep,metric,'-',methods];
 mkdir(prefix);
 

@@ -11,8 +11,8 @@ simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11
 simdataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
 estSrc1Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Results_supNar';
 estsrc1 = 'Initial';
-estSrc2Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/SupNar_xMBLT_iMBLT20/iMBLT20'; 
-estsrc2 = 'xMBLT-iMBLT';
+estSrc2Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Union_xMBLT2/xMBLT-iMBLT-20'; 
+estsrc2 = 'Union-xMBLT-iMBLT';
 Filename = 'GWBsimDataSKASrlz1Nrlz3';
 ext = '.mat';
 
@@ -150,7 +150,7 @@ save([estSrc2Dir,filesep,'IdentifiedSrc.mat'],'idsrc')
 
 %% Plotting
 metric = 'NMTC';
-methods = 'Union-vs-xMBLT-iMBLT';
+methods = 'Initial vs Union-xMBLT-iMBLT';
 prefix = [estSrc2Dir,filesep,'fig',filesep,metric,'-',methods];
 mkdir(prefix);
 
