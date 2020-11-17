@@ -10,9 +10,9 @@ tic
 simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
 simdataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
 estSrc1Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Results_supNar';
-estsrc1 = 'initial';
-estSrc2Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/SupNar_xMBLT_iMBLT20/iMBLT20'; 
-estsrc2 = 'xMBLT-iMBLT';
+estsrc1 = 'Initial';
+estSrc2Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Union_xMBLT2/xMBLT-iMBLT-20'; 
+estsrc2 = 'Union-xMBLT-iMBLT';
 Filename = 'GWBsimDataSKASrlz1Nrlz3';
 ext = '.mat';
 
@@ -21,7 +21,7 @@ paraFile = dir([simParamsDir,filesep,'searchParams*',ext]);
 simFile = [simdataDir,filesep,Filename,ext];
 estSrc1File = dir([estSrc1Dir,filesep,'*',Filename,'*',ext]);
 estSrc2File = dir([estSrc2Dir,filesep,'*',Filename,'*',ext]);
-Nestsrc = length(estSrc2File);
+Nestsrc2 = length(estSrc2File);
 
 paraFilename = sort_nat({paraFile.name});
 exp = 'searchParams\d.mat'; % regular expressions for desire file names
@@ -31,6 +31,8 @@ Nband = length(paraFilename);
 
 estSrc2Filename = sort_nat({estSrc2File.name});
 estSrc1Filename = sort_nat({estSrc1File.name});
+NestSrc1band1 = sum(startsWith(estSrc1Filename,'1_'));
+NestSrc1band2 = sum(startsWith(estSrc1Filename,'2_'));
 load(simFile);
 
 %% pre-process true sources
@@ -73,19 +75,38 @@ for j = 1:Nband
     SrcPhi0{j} = SrcPhi0{j}(id);
     SrcThetaN{j} = SrcThetaN{j}(id);
 end
+simSrc = struct('SrcSNR',SrcSNR,'SrcAlpha',SrcAlpha,'SrcDelta',SrcDelta,'SrcAmp',SrcAmp,...
+    'SrcIota',SrcIota,'SrcOmega',SrcOmega,'SrcPhi0',SrcPhi0,'SrcThetaN',SrcThetaN); % Simulated sources parameters
 
 %% Get estimated sources info
-NestsrcBand = Nestsrc/Nband; % number of sources in a band.
+NestSrc2Band = Nestsrc2/Nband; % number of sources in a band.
+BandSrc = struct('NestSrc1band1',NestSrc1band1,'NestSrc1band2',NestSrc1band2,'NestSrc2Band',NestSrc2Band);
 EstSrc2 = {};
 EstSrc1 = {};
 for band = 1:Nband
-    for k = 1:NestsrcBand
-        path_to_estimatedDataestSrc2 = [estSrc2Dir,filesep,char(estSrc2Filename((band - 1) * NestsrcBand + k))];
-        path_to_estimatedDataestSrc1 = [estSrc1Dir,filesep,char(estSrc1Filename((band - 1) * NestsrcBand + k))];
+    for k = 1:NestSrc2Band
+        path_to_estimatedDataestSrc2 = [estSrc2Dir,filesep,char(estSrc2Filename((band - 1) * NestSrc2Band + k))];
+        %path_to_estimatedDataestSrc1 = [estSrc1Dir,filesep,char(estSrc1Filename((band - 1) * Nestsrc2Band + k))];
         EstSrc2{band,k} = ColSrcParams(path_to_estimatedDataestSrc2);
-        EstSrc1{band,k} = ColSrcParams(path_to_estimatedDataestSrc1);
+        %EstSrc1{band,k} = ColSrcParams(path_to_estimatedDataestSrc1);
     end
 end
+
+for band = 1:Nband
+    switch band
+        case 1
+            for k = 1:NestSrc1band1
+            path_to_estimatedDataestSrc1 = [estSrc1Dir,filesep,char(estSrc1Filename(k))];
+            EstSrc1{band,k} = ColSrcParams(path_to_estimatedDataestSrc1);
+            end
+        case 2
+            for k = 1:NestSrc1band2
+                path_to_estimatedDataestSrc1 = [estSrc1Dir,filesep,char(estSrc1Filename(k + NestSrc1band1))];
+                EstSrc1{band,k} = ColSrcParams(path_to_estimatedDataestSrc1);
+            end
+    end
+end
+            
 
 
 %% Cross-Corelation
@@ -97,7 +118,7 @@ end
 % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MWAC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,SrcSNR,EstSrc,simParams,yr,0);
 
 % Max over Threshold CC
-[gamma,rho,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR1,estSNR2] = ESNMTC(Nband,NestsrcBand,EstSrc1,EstSrc2,simParams,yr,0.90);
+[gamma,rho,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR1,estSNR2] = ESNMTC(Nband,BandSrc,EstSrc1,EstSrc2,simParams,yr,0.90);
 
 
 % Max coefficients of sources
@@ -114,7 +135,7 @@ end
 
 %% Eliminating spurious sources
 t = 0.70; % NMTC threshold used to identify sources.
-isrc = {}; % identified sources.
+idsrc = {}; % identified sources.
 r = {}; % rows
 c = {}; % columns
 for b = 1:Nband
@@ -122,14 +143,14 @@ for b = 1:Nband
     % in gamma, rows correspond to EstSrc2, columns correspond to EstSrc1.
     % select the identified sources from est. sources.
     for rr = 1:length(r{b})
-        isrc{b,rr} = EstSrc2{b,r{b}(rr)};
+        idsrc{b,rr} = EstSrc2{b,r{b}(rr)};
     end
 end
-
+save([estSrc2Dir,filesep,'IdentifiedSrc.mat'],'idsrc')
 
 %% Plotting
 metric = 'NMTC';
-methods = 'xMBLT-iMBLT-vs-initial';
+methods = 'Initial vs Union-xMBLT-iMBLT';
 prefix = [estSrc2Dir,filesep,'fig',filesep,metric,'-',methods];
 mkdir(prefix);
 
@@ -239,7 +260,7 @@ end
 figname9 = 'identified sources';
 
 for fig = 1:Nband
-    ifreq = arrayfun(@(x) isrc{fig,x}.omega/(2*pi*365*24*3600), 1:length(r{fig}));
+    ifreq = arrayfun(@(x) idsrc{fig,x}.omega/(2*pi*365*24*3600), 1:length(r{fig}));
     figure
     plot(SrcSNR{fig},SrcOmega{fig}/(2*pi*365*24*3600),'ob',estSNR2(fig,r{fig}),ifreq,'sr')
     text(SrcSNR{fig}+0.5,SrcOmega{fig}/(2*pi*365*24*3600), num2str((1:numel(SrcSNR{fig}))'), 'Color', '#0072BD')

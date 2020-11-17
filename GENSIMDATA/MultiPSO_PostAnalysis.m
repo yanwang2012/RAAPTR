@@ -4,8 +4,8 @@ tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
 simParamsDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
-simDataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11';
-estDataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/Results_supNar/GWBsimDataSKASrlz1Nrlz3_xMBLT/results';
+simDataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
+estDataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Results_supNar';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 % Load the simulated source parameters.
 simDataList = dir([simDataDir,filesep,inputFileName,'*.mat']);
@@ -34,8 +34,8 @@ for lp = 1:simFiles
     
     %%%%%%%%%%%%%%%%%%% DON'T FORGET %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     [~,simFileName,~] = fileparts(char(simDataList(lp)));
-%     nFile = dir([estDataDir,filesep,'1_',simFileName,'*.mat']); % count how many iterations are used. For initial PSO est.
-        nFile = dir([estDataDir,filesep,simFileName,'band1','*.mat']); % For MBLT and other tests with irregular filename.
+    nFile = dir([estDataDir,filesep,'1_',simFileName,'*.mat']); % count how many iterations are used. For initial PSO est.
+    %         nFile = dir([estDataDir,filesep,simFileName,'band1*.mat']); % For MBLT and other tests with irregular filename.
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %% reading the files
@@ -43,10 +43,13 @@ for lp = 1:simFiles
     inDataList = dir([estDataDir,filesep,'*',simFileName,'*.mat']);
     
     num_ite = length(nFile);
-    N = length(inParamsList);% number of bands
-    %     N = 1; % For plotting only 1 band
     
     inParamNames = sort_nat({inParamsList.name});
+    exp = 'searchParams\d.mat'; % regular expressions for desire file names
+    inParamNames = regexp(inParamNames,exp,'match');
+    inParamNames = inParamNames(~cellfun(@isempty,inParamNames)); % get rid of empty cells
+    N = length(inParamNames);% number of bands
+    %     N = 1; % For plotting only 1 band
     inDataNames = sort_nat({inDataList.name});
     
     %% data pre-processing
@@ -58,7 +61,7 @@ for lp = 1:simFiles
     
     for i = 1:N
         % load bands and estimated data
-        load([simParamsDir,filesep,char(inParamNames(i))]);
+        load([simParamsDir,filesep,char(inParamNames{i})]);
         ybin_up = [ybin_up searchParams.angular_velocity(1)];% saving the band boundary
         ybin_low = [ybin_low searchParams.angular_velocity(2)];% Find the sources with frequencies in specific band
         Indx = find(omega >= searchParams.angular_velocity(2) & ...
@@ -153,15 +156,17 @@ for lp = 1:simFiles
     
     %% plot settings
     close all;
-    prefix = [estDataDir,filesep,'fig',filesep,simFileName];
+    prefix = [estDataDir,filesep,'fig',filesep,inputFileName];
     mkdir(prefix);
-    figname = 'xMBLT';
+    figname = 'Initial';
     
     %% Plot
     figure(1)
     % yyaxis right
     % loglog(x,y,'o',sx,sy,'kd','MarkerSize',10);
-    plot(x,y,'ob',sx,sy,'sr')
+    b1srcid = find(sy <= ybin_up(1,1)); % find sources in band 1.
+    b2srcid = find(sy > ybin_up(2,1));
+    plot(x,y,'ob',sx(b1srcid),sy(b1srcid),'sr',sx(b2srcid),sy(b2srcid),'dm');
     %     semilogx(x,y,'o',sx,sy,'s');
     % disp(sy)
     
@@ -179,7 +184,7 @@ for lp = 1:simFiles
     xlabel('SNR');
     xlim([0 uplim]);
     ylabel('Frequency');
-    legend('True','Estimated','Location','northeast');
+    legend('True','Estimated B1','Estimated B2','Location','northeast');
     title(figname);
     saveas(gcf,[prefix,filesep,figname],'png');
     savefig([prefix,filesep,figname]);
