@@ -11,9 +11,9 @@ tic
 
 %% Dir settings
 simdataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
-estSrc1Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/Results_supNar/GWBsimDataSKASrlz1Nrlz3_xMBLT/results';
+estSrc1Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Results_supNar/GWBsimDataSKASrlz1Nrlz3_xMBLT/results';
 estsrc1 = 'supNarxMBLT';
-estSrc2Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/Results_supNar_rand1/GWBsimDataSKASrlz1Nrlz3_xMBLT/results';
+estSrc2Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Results_supNar_rand1/GWBsimDataSKASrlz1Nrlz3_xMBLT/results';
 estsrc2 = 'supNarxMBLTRand1';
 Filename = 'GWBsimDataSKASrlz1Nrlz3';
 ext = '.mat';
@@ -45,7 +45,7 @@ end
 t = 0.80; % NMTC threshold used to select sources.
 [r,c,~] = find(gamma > t); % r is the row of rho, c is the column of rho.
 % in gamma, rows correspond to EstSrc2, columns correspond to EstSrc1.
-map = [r c]; % create a map between EstSrc1 & EstSrc2.
+% map = [r c]; % create a map between EstSrc1 & EstSrc2.
 
 %% Take union of two Est. sets
 EstSrc1d = EstSrc1(setdiff(1:Nestsrc,c)); % sources in EstSrc1 which indices are not in c
@@ -53,23 +53,27 @@ EstSrc2d = EstSrc2(setdiff(1:Nestsrc,r)); % ...........EstSrc2..................
 estSNR1d = estSNR1(setdiff(1:Nestsrc,c));
 estSNR2d = estSNR2(setdiff(1:Nestsrc,r));
 
-UnSrc = [EstSrc1d EstSrc2d EstSrc2(r)]; % Union of 2 sets of est. sources with the choice of EstSrc2(r) as the combined highly correlated sources.
-UnSNR = cat(1,estSNR1d,estSNR2d,estSNR2(r));
+UnSrc = [EstSrc1d EstSrc2]; % Union of 2 sets of est. sources with the choice of EstSrc2(r) as the combined highly correlated sources.
+UnSNR = cat(1,estSNR1d,estSNR2);
 
 %% copy files together
-NewFolder = [estSrc2Dir,filesep,'Union'];
+folderName = 'Union2';
+NewFolder = [estSrc2Dir,filesep,folderName];
 copyfile([estSrc2Dir,filesep,'*.mat'],NewFolder); % copy all files from est. sources 2
 
-% Copy est. sources 1 which are not in map.
+% Copy EstSrc1 which are not highly correlated with EstSrc2.
 id_diff = setdiff(1:Nestsrc,c); % get indices of est. srouces 1 not in map. 
+des = [NewFolder,filesep,'EstSrc1'];
+mkdir(des)
+
 for i = 1:length(id_diff)
-    copyfile([estSrc1Dir,filesep,estSrc1Filename{id_diff(i)}],NewFolder)
+    copyfile([estSrc1Dir,filesep,estSrc1Filename{id_diff(i)}],des);
 end
 
 %% Plotting
 metric = 'NMTC';
 methods = 'supNarxMBLT-supNarxMBLTRand1-ALL';
-prefix = [estSrc2Dir,filesep,'fig',filesep,metric,'-',methods];
+prefix = [estSrc2Dir,filesep,folderName,filesep,'fig',filesep,metric,'-',methods];
 mkdir(prefix);
 
 figname = 'NMTC';

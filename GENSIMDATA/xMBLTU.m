@@ -5,11 +5,12 @@
 clear;
 tic
 %% Set up
+
 simParamsDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
 simParamsName = 'searchParams';
 inParamsList = dir([simParamsDir,filesep,simParamsName,'*.mat']);
 simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
-estDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Results_supNar_rand1/GWBsimDataSKASrlz1Nrlz3_xMBLT/results/Union';
+estDataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Results_supNar_rand1/GWBsimDataSKASrlz1Nrlz3_xMBLT/results/Union2';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 
 inParamNames = sort_nat({inParamsList.name});
@@ -18,7 +19,7 @@ inParamNames = regexp(inParamNames,exp,'match');
 inParamNames = inParamNames(~cellfun(@isempty,inParamNames)); % get rid of empty cells
 Npara = length(inParamNames);
 
-% re-assemble united sources according to searchParams file
+% repartition united sources according to searchParams file
 outNames = {};
 outfiles1 = dir([estDataDir,filesep,'1_*.mat']);
 outNames{1} = sort_nat({outfiles1.name});
@@ -52,14 +53,13 @@ for i = 1:Npara
     end
 end
 
+%% xMBLT
 % Load the simulated source parameters.
 load([simDataDir,filesep,inputFileName,'.mat']);
 estTimRes = zeros(simParams.Np,simParams.N);
 
-%% xMBLT
-
 [file,Index]=rassign(estDataDir,Allfilesname,AllSrc,Nfiles(1),simParams,yr);
-Filename = 'GWBsimDataSKASrlz1Nrlz3_Union_xMBLT3';
+Filename = 'xMBLT';
 OutputDir = [estDataDir,filesep,Filename];
 mkdir(OutputDir);
 for i = 1:Npara

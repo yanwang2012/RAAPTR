@@ -89,7 +89,7 @@ for src1 = 1:Nestsrc
     [~,id_max(src1)] = max(above_threshold);
     
     %         gamma{band}(src,id_max(src,band)) = max(rho_tmp(:,id_max(src,band))); % maximize method
-    gamma(src1,id_max(src1)) = sum(rho_tmp(:,id_max(src1))) / 1000; % nomalized over Np (1000) pulsars.
+    gamma(src1,id_max(src1)) = sum(rho_tmp(:,id_max(src1))) / Np; % nomalized over Np (1000) pulsars.
 end
 rho = max(gamma,[],2); % get index of true sources when rho reaches maximum
 
