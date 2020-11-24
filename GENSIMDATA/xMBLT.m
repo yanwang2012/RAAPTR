@@ -3,15 +3,18 @@
 clear;
 tic
 %% Set up
-simParamsDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/searchParams/2bands/superNarrow';
+simParamsDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
 simParamsName = 'searchParams';
 inParamsList = dir([simParamsDir,filesep,simParamsName,'*.mat']);
-simDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/BANDEDGE/2bands/superNarrow/simData';
-estDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/BANDEDGE/2bands/superNarrow/Union2_xMBLT/results';
+simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
+estDataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Results_supNar';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 
-Npara = length(inParamsList);
-
+inParamNames = sort_nat({inParamsList.name});
+exp = 'searchParams\d.mat'; % regular expressions for desire file names
+inParamNames = regexp(inParamNames,exp,'match');
+inParamNames = inParamNames(~cellfun(@isempty,inParamNames)); % get rid of empty cells
+Npara = length(inParamNames);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DON'T FORGET TO CHECK THE NAME %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 nFile = dir([estDataDir,filesep,'1_',inputFileName,'*.mat']); % count how many iterations are used.
@@ -29,7 +32,7 @@ Nband1 = NestSrc/2;
 outputfilenames = sort_nat({outputfiles.name});
 [file,Index]=rassign(estDataDir,outputfilenames,NestSrc,Nband1,simParams,yr);
 % disp(["File needs to be skipped: ",file]);
-Filename = 'Union2_xMBLT2';
+Filename = 'GWBsimDataSKASrlz1Nrlz3_xMBLT_test';
 OutputDir = [estDataDir,filesep,Filename];
 mkdir(OutputDir);
 for i = 1:Npara
