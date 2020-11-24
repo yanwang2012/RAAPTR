@@ -3,11 +3,11 @@
 clear;
 tic
 %% Set up
-simParamsDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
+simParamsDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/searchParams/2bands/superNarrow';
 simParamsName = 'searchParams';
 inParamsList = dir([simParamsDir,filesep,simParamsName,'*.mat']);
-simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
-estDataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Results_supNar';
+simDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/BANDEDGE/2bands/superNarrow/simData';
+estDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/BANDEDGE/2bands/superNarrow/Union2_xMBLT/results';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 
 Npara = length(inParamsList);
@@ -29,7 +29,7 @@ Nband1 = NestSrc/2;
 outputfilenames = sort_nat({outputfiles.name});
 [file,Index]=rassign(estDataDir,outputfilenames,NestSrc,Nband1,simParams,yr);
 % disp(["File needs to be skipped: ",file]);
-Filename = 'GWBsimDataSKASrlz1Nrlz3_xMBLT_test';
+Filename = 'Union2_xMBLT2';
 OutputDir = [estDataDir,filesep,Filename];
 mkdir(OutputDir);
 for i = 1:Npara
