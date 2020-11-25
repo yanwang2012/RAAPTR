@@ -36,28 +36,28 @@ for band = 1:bandNum
     
     for j = 1:NestSrc
         
-        if ismember(j,Index) == 1
-            continue
-        else
-            %                 disp("j is:"+j);
-            path_estData = [estDataDir,filesep,char(outputfilenames{j})];
-            [srcParams]=ColSrcParams(path_estData);
-            [SNR,estTimRes_tmp] = Amp2Snr(srcParams,simParams,yr);
-            ResCell = [ResCell estTimRes_tmp];
-            SNRarray = [SNRarray SNR];
-        end
+        %         if ismember(j,Index) == 1
+        %             continue
+        %         else
+        %                 disp("j is:"+j);
+        path_estData = [estDataDir,filesep,char(outputfilenames(j))];
+        [srcParams]=ColSrcParams(path_estData);
+        [SNR,estTimRes_tmp] = Amp2Snr(srcParams,simParams,yr);
+        ResCell = [ResCell estTimRes_tmp];
+        SNRarray = [SNRarray SNR];
+        %         end
         
     end
     
     % Accumulate the timing residulas for different sources.
-    nskp = length(Index); % number of skipped files
-
-    if NestSrc - nskp >= 6
+%     nskp = length(Index); % number of skipped files
+    
+    if NestSrc >= 6
         for nsrc = 2:6%NestSrc remove first 5 src.
             estTimRes = estTimRes + ResCell{nsrc};
         end
-    elseif 1 < NestSrc && NestSrc - nskp < 6
-        for nsrc = 2:NestSrc - nskp % when output files less than 5, remove all the rest sources lower than the target.
+    elseif 1 < NestSrc && NestSrc < 6
+        for nsrc = 2:NestSrc % when output files less than 5, remove all the rest sources lower than the target.
             estTimRes = estTimRes + ResCell{nsrc};
         end
     else
