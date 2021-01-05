@@ -12,7 +12,7 @@ function []=gensimdata(path_to_parameters,path_to_pulsar_catalog,path_to_output,
 % Authors: Yi-Qian Qian, Yan Wang, Soumya Mohanty, Sep 16, 2018
 
 %Sep 2018
-%Original code by YW. Turned into a function by YQ.
+%Original code by YW. Turned into a function and made compatible for multi-source by YQ.
 
 %Get constants
 dy2yr = genptaconsts('dy2yr');
@@ -24,6 +24,7 @@ simDataDir = path_to_output;
 
 %rng('shuffle')  % initialize the random number generator using a different seed
 rng(1) % for repeatable works
+
 %% ==== Generate random GW sources ====
 [AmpOut,alphaOut,deltaOut,fgwOut,iotaOut,thetaNOut,phi0Out,r]=GenerateRandomGWSource(Ns);
 % put check for frequency above Nyquist freq
@@ -239,7 +240,7 @@ for jj=1:1:Nrlz
     
     % save metadata into a file for each realization (file name rule)
     %filename=strcat('snr',num2str(ii),'loc',num2str(j),'omg',num2str(l),'rlz',num2str(jj),'.mat');
-    filename=strcat('GWBsimDataSKA','Srlz',num2str(1),'Nrlz',num2str(jj),'.mat');
+    filename=strcat('GWBsimDataSKA','Srlz',num2str(1),'Nrlz',num2str(jj),'.mat'); % change Srlz when changing rng seed.
     snr=0;  % this variable is not useful here
     alpha=alpha_tmp;
     delta=delta_tmp;

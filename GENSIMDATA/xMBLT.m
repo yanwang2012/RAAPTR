@@ -1,14 +1,16 @@
 % MBLT Implementation for Multisource
-% QYQ 23/11/2019
+% Developed to handle multiple realizations
+% QYQ 1/4/2021
+
 clear;
 tic
 %% Set up
-simParamsDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/searchParams/2bands/superNarrow';
+simParamsDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
 simParamsName = 'searchParams';
 inParamsList = dir([simParamsDir,filesep,simParamsName,'*.mat']);
-simDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/BANDEDGE/2bands/superNarrow/simData';
-estDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/BANDEDGE/2bands/superNarrow/Union2_xMBLT/results';
-inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
+simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands';
+estDataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results';
+inputFileName = 'GWBsimDataSKASrlz1Nrlz';
 
 inParamNames = sort_nat({inParamsList.name});
 exp = 'searchParams\d.mat'; % regular expressions for desire file names
@@ -16,47 +18,65 @@ inParamNames = regexp(inParamNames,exp,'match');
 inParamNames = inParamNames(~cellfun(@isempty,inParamNames)); % get rid of empty cells
 Npara = length(inParamNames);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DON'T FORGET TO CHECK THE NAME %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-nFile = dir([estDataDir,filesep,'1_',inputFileName,'*.mat']); % count how many iterations are used.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+nReal = 50; % number of realizations
 
-num_ite = length(nFile);
-% Load the simulated source parameters.
-load([simDataDir,filesep,inputFileName,'.mat']);
-estTimRes = zeros(simParams.Np,simParams.N);
+% use regular expression to filter file names
+FileList = dir([estDataDir,filesep,'*',inputFileName,'*.mat']); % get all file names
 
-%% MBLT
-outputfiles = dir([estDataDir,filesep,'*',inputFileName,'*.mat']);
-NestSrc = length(outputfiles);
-Nband1 = NestSrc/2;
-outputfilenames = sort_nat({outputfiles.name});
-[file,Index]=rassign(estDataDir,outputfilenames,NestSrc,Nband1,simParams,yr);
-% disp(["File needs to be skipped: ",file]);
-Filename = 'Union2_xMBLT2';
-OutputDir = [estDataDir,filesep,Filename];
-mkdir(OutputDir);
-for i = 1:Npara
-    for j = 1:NestSrc
-        if j <= (i-1)*num_ite || j > i*num_ite
-            if ismember(j,Index) == 1
-                continue
-            else
-%                 disp("j is:"+j);
-                path_estData = [estDataDir,filesep,char(outputfilenames(j))];
-                disp(['File loaded: ',char(outputfilenames(j))]);
-                [srcParams]=ColSrcParams(path_estData);
-                [~,estTimRes_tmp] = Amp2Snr(srcParams,simParams,yr);
-                estTimRes = estTimRes + estTimRes_tmp;
+for r = 1:nReal
+    
+    
+    % set regexp
+    FilenameList = sort_nat({FileList.name});
+    exp = ['[12]_',inputFileName,num2str(r),'(?=_|\.mat)_?\d{0,2}.mat'];
+    FilenameList = regexp(FilenameList,exp,'match');
+    FilenameList = FilenameList(~cellfun(@isempty,FilenameList));
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DON'T FORGET TO CHECK THE NAME %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % nFile = dir([estDataDir,filesep,'1_',inputFileName,num2str(r),'_*.mat']); % count how many iterations are used.
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    num_ite = sum(startsWith(string(FilenameList),'1_'));
+    %num_ite = length(nFile); % since iteration starts from 0
+    
+    % Load the simulated source parameters.
+    load([simDataDir,filesep,inputFileName,num2str(r),'.mat']);
+    estTimRes = zeros(simParams.Np,simParams.N);
+    
+    %% MBLT
+    % outputfiles = dir([estDataDir,filesep,'*',inputFileName,num2str(r),'_*.mat']);
+    % NestSrc = length(outputfiles);
+    % Nband1 = NestSrc/2;
+    Nband1 = num_ite;
+    NestSrc = Npara * num_ite;
+    % outputfilenames = sort_nat({outputfiles.name});
+    [file,Index]=rassign(estDataDir,FilenameList,NestSrc,Nband1,simParams,yr);
+    % disp(["File needs to be skipped: ",file]);
+    Filename = ['GWBsimDataSKASrlz1Nrlz',num2str(r)];
+    OutputDir = [simDataDir,filesep,Filename,'_xMBLT'];
+    mkdir(OutputDir);
+    for i = 1:Npara
+        for j = 1:NestSrc
+            if j <= (i-1)*num_ite || j > i*num_ite
+                if ismember(j,Index) == 1
+                    continue
+                else
+                    %                 disp("j is:"+j);
+                    path_estData = [estDataDir,filesep,char(FilenameList{j})];
+                    disp(['File loaded: ',char(FilenameList{j})]);
+                    [srcParams]=ColSrcParams(path_estData);
+                    [~,estTimRes_tmp] = Amp2Snr(srcParams,simParams,yr);
+                    estTimRes = estTimRes + estTimRes_tmp;
+                end
             end
         end
+        newFile = strcat(OutputDir,filesep,num2str(i),'_',inputFileName,num2str(r),'.mat');
+        copyfile([simDataDir,filesep,inputFileName,num2str(r),'.mat'],newFile);
+        m = matfile(newFile,'Writable',true);
+        m.timingResiduals = timingResiduals - estTimRes;
+        estTimRes = zeros(simParams.Np,simParams.N);
     end
-    newFile = strcat(OutputDir,filesep,num2str(i),'_',inputFileName,'.mat');
-    copyfile([simDataDir,filesep,inputFileName,'.mat'],newFile);
-    m = matfile(newFile,'Writable',true);
-    m.timingResiduals = timingResiduals - estTimRes;
-    estTimRes = zeros(simParams.Np,simParams.N);
 end
-
 
 toc
 % END

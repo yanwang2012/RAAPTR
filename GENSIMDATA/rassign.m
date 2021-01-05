@@ -27,9 +27,9 @@ bestRealLoc = zeros(1007,N);
 SNR = zeros(N,1);
 % outputfilenames = sort_nat({outputfiles.name});
 for i = 1:N
-    f = load([estDataDir,filesep,char(outputfilenames(i))],'bestRealLoc');
+    f = load([estDataDir,filesep,char(outputfilenames{i})],'bestRealLoc');
     bestRealLoc(:,i) = f.bestRealLoc;
-    [SrcParam]=ColSrcParams([estDataDir,filesep,char(outputfilenames(i))]);
+    [SrcParam]=ColSrcParams([estDataDir,filesep,char(outputfilenames{i})]);
     [SNR(i,1),~]=Amp2Snr(SrcParam,simParams,yr);
 end
 
@@ -47,12 +47,12 @@ for k = 1:N1
         if abs(SrcP(k,2)-SrcP(m,2)) < 3 && abs(SrcP(k,1)-SrcP(m,1)) < 5e-10 && k~= m % reassign constrain dsnr < 3 and dfreq < 5e10
             % if abs(SrcP(k,1)-SrcP(m,1)) < 5e-10 && k ~= m % threshold for Freq
             if SrcP(k,2) > SrcP(m,2)
-                disp(['File ', char(outputfilenames(m)), ' is reassigned to file ', char(outputfilenames(k)), ' Index is ', num2str(m)])
-                filename = [filename outputfilenames(m)];
+                disp(['File ', char(outputfilenames{m}), ' is reassigned to file ', char(outputfilenames{k}), ' Index is ', num2str(m)])
+                filename = [filename outputfilenames{m}];
                 Index = [Index m];
             else
-                disp(['File ', char(outputfilenames(k)),' is reassigned to file ', char(outputfilenames(m)), ' Index is ', num2str(k)])
-                filename = [filename outputfilenames(k)];
+                disp(['File ', char(outputfilenames{k}),' is reassigned to file ', char(outputfilenames{m}), ' Index is ', num2str(k)])
+                filename = [filename outputfilenames{k}];
                 Index = [Index k];
             end
             % end
