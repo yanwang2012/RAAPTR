@@ -50,10 +50,10 @@ if nargin == 3
     
 elseif nargin == 4
     fgwl = frqRng(1);
-    fgwu = frqRng(2);
+    fgwh = frqRng(2);
     disp("The lower limit is:" + fgwl);
-    disp("The upper limit is:" + fgwu);
-    Index = (fgwOut >= fgwl & fgwOut <= fgwu);% select the sources within bands
+    disp("The upper limit is:" + fgwh);
+    Index = (fgwOut >= fgwl & fgwOut <= fgwh);% select the sources within bands
     Amp_tmp = AmpOut(Index);
     omega_tmp = 2*pi * fgwOut(Index) * 3.156*10^7; % unit change to yr^-1
     alpha_tmp = alphaOut(Index);
@@ -258,8 +258,8 @@ end
 
 % save the GW source parameters into a file, have duplication with data files
 filename=strcat('GWB_','Srlz',num2str(1),'.mat');
-save([simDataDir,filesep,filename],'AmpOut','alphaOut','deltaOut',...
-    'omega_tmp','fgwOut','iotaOut','thetaNOut','phi0Out','r','stdTrueCoord');
+save([simDataDir,filesep,filename],'Amp','alpha','delta',...
+    'omega','iota','thetaN','phi0','r','stdTrueCoord');
 
 % simulating noise without signal
 %Nnis=10; %100;  % number of realization of noise
