@@ -5,7 +5,7 @@ clear;
 tic
 
 %% Dir settings
-simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
+serchParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
 simdataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
 estSrc1Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/Results_supNar/GWBsimDataSKASrlz1Nrlz3_xMBLT/results';
 estSrc2Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SupNar_xMBLT_iMBLT20/iMBLT20';
@@ -13,7 +13,7 @@ Filename = 'GWBsimDataSKASrlz1Nrlz3';
 ext = '.mat';
 
 %% Files
-paraFile = dir([simParamsDir,filesep,'searchParams','*.mat']);
+paraFile = dir([serchParamsDir,filesep,'searchParams','*.mat']);
 Nband = length(paraFile);
 simFile = [simdataDir,filesep,Filename,ext];
 estSrc1File = dir([estSrc1Dir,filesep,'*',Filename,'*',ext]);

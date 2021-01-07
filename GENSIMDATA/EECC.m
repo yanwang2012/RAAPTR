@@ -7,17 +7,17 @@ clear;
 tic
 
 %% Dir settings
-simParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
+serchParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
 simdataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
-estSrc1Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Results_supNar';
-estsrc1 = 'Initial';
-estSrc2Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Union_xMBLT2/xMBLT-iMBLT-20'; 
-estsrc2 = 'Union-xMBLT-iMBLT';
+estSrc1Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Union2_xMBLT/results';
+estsrc1 = 'Union2-xMBLT';
+estSrc2Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Union2_xMBLT/Union2_iMBLT_after20'; 
+estsrc2 = 'Union2-xMBLT-iMBLT';
 Filename = 'GWBsimDataSKASrlz1Nrlz3';
 ext = '.mat';
 
 %% Files
-paraFile = dir([simParamsDir,filesep,'searchParams*',ext]);
+paraFile = dir([serchParamsDir,filesep,'searchParams*',ext]);
 simFile = [simdataDir,filesep,Filename,ext];
 estSrc1File = dir([estSrc1Dir,filesep,'*',Filename,'*',ext]);
 estSrc2File = dir([estSrc2Dir,filesep,'*',Filename,'*',ext]);
@@ -48,7 +48,7 @@ SrcPhi0 = {};
 SrcThetaN = {};
 
 for i = 1:Nband
-    load([simParamsDir,filesep,char(paraFilename{i})]);
+    load([serchParamsDir,filesep,char(paraFilename{i})]);
     Indx = find(omega >= searchParams.angular_velocity(2) & ...
         omega <= searchParams.angular_velocity(1));
     
@@ -121,18 +121,6 @@ end
 [gamma,rho,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR1,estSNR2] = ESNMTC(Nband,BandSrc,EstSrc1,EstSrc2,simParams,yr,0.90);
 
 
-% Max coefficients of sources
-% for band = 1:Nband
-%     NtsrcBand = length(SrcAlpha{band});
-%     for src = 1:NestsrcBand
-%         for tsrc = 1:NtsrcBand
-%             if tsrc ~= id_max(src,band)
-%                 rho{band}(src,tsrc) = 0;
-%             end
-%         end
-%     end
-% end
-
 %% Eliminating spurious sources
 t = 0.70; % NMTC threshold used to identify sources.
 idsrc = {}; % identified sources.
@@ -150,7 +138,7 @@ save([estSrc2Dir,filesep,'IdentifiedSrc.mat'],'idsrc')
 
 %% Plotting
 metric = 'NMTC';
-methods = 'Initial vs Union-xMBLT-iMBLT';
+methods = 'Union2-xMBLT vs Union2-xMBLT-iMBLT';
 prefix = [estSrc2Dir,filesep,'fig',filesep,metric,'-',methods];
 mkdir(prefix);
 

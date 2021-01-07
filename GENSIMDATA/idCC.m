@@ -1,7 +1,8 @@
 % Cross-Correlation Coefficients Matrix
+% True sources vs. Identified sources
 
 % Author: QYQ
-% 05/13/2020
+% 1/6/2021
 
 clear;
 tic
@@ -9,15 +10,15 @@ tic
 %% Dir settings
 searchParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
 simdataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11';
-estdataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Union_xMBLT2/xMBLT-iMBLT-20';
+identifydataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Union2_xMBLT/Union2_iMBLT_after20';
 Filename = 'GWBsimDataSKASrlz1Nrlz3';
+identifyFilename = 'identifiedSrc';
 ext = '.mat';
 
 %% Files
-paraFile = dir([searchParamsDir,filesep,'searchParams','*.mat']);
+paraFile = dir([searchParamsDir,filesep,'searchParams*',ext]);
 simFile = [simdataDir,filesep,Filename,ext];
-estFile = dir([estdataDir,filesep,'*',Filename,'*',ext]);
-Nestsrc = length(estFile);
+idFile = [identifydataDir,filesep,identifyFilename,ext];
 
 paraFilename = sort_nat({paraFile.name});
 exp = 'searchParams\d.mat'; % regular expressions for desire file names
@@ -25,8 +26,9 @@ paraFilename = regexp(paraFilename,exp,'match');
 paraFilename = paraFilename(~cellfun(@isempty,paraFilename)); % get rid of empty cells
 Nband = length(paraFilename);
 
-estFilename = sort_nat({estFile.name});
+
 load(simFile);
+load(idFile);
 
 %% Seperate sources into different bands
 % Ntsrc = length(alpha); % Number of true sources.
@@ -71,17 +73,10 @@ end
 simSrc = struct('SrcSNR',SrcSNR,'SrcAlpha',SrcAlpha,'SrcDelta',SrcDelta,'SrcAmp',SrcAmp,...
     'SrcIota',SrcIota,'SrcOmega',SrcOmega,'SrcPhi0',SrcPhi0,'SrcThetaN',SrcThetaN); % Simulated sources parameters
 
-%% Get estimated sources info
-estsrcBand1 = Nestsrc/Nband; % number of sources in a band.
-estsrcBand2 = Nestsrc/Nband;
-NestsrcBand = struct('Band1',estsrcBand1,'Band2',estsrcBand2);
-EstSrc = {};
-for band = 1:Nband
-    for k = 1:estsrcBand1
-        path_to_estimatedData = [estdataDir,filesep,char(estFilename((band - 1) * estsrcBand1 + k))];
-        EstSrc{band,k} = ColSrcParams(path_to_estimatedData);
-    end
-end
+%% Get identified sources info
+idsrcBand1 = sum(~cellfun('isempty',idsrc(1,:))); % number of sources in a band.
+idsrcBand2 = sum(~cellfun('isempty',idsrc(2,:)));
+idsrcBand = struct('Band1',idsrcBand1,'Band2',idsrcBand2);
 
 %% Cross-Corelation
 
@@ -95,16 +90,41 @@ end
 % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MTC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr,0.85);
 
 % Normalized MTC
-[rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(Nband,NestsrcBand,simSrc,EstSrc,simParams,yr,0.90);
+[rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(Nband,idsrcBand,simSrc,idsrc,simParams,yr,0.90);
 
 
 % Minimum distance Maximum CC.
 % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MinDMaxC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr);
 
+
+% Max coefficients of sources
+% for band = 1:Nband
+%     NtsrcBand = length(SrcAlpha{band});
+%     for src = 1:NestsrcBand
+%         for tsrc = 1:NtsrcBand
+%             if tsrc ~= id_max(src,band)
+%                 rho{band}(src,tsrc) = 0;
+%             end
+%         end
+%     end
+% end
+
+%% Eliminate the spurious sources
+% t = 0.70; % NMTC threshold used to select sources.
+% isrc = {}; % identified sources.
+% r = {};
+% for b = 1:Nband
+%     [r{b},c,~] = find(rho{b} > t);
+%     % select the identified sources from est. sources.
+%     for rr = 1:length(r{b})
+%         isrc{b,rr} = EstSrc{b,r{b}(rr)};
+%     end
+% end
+
 %% Plotting
 metric = 'NMTC';
-methods = 'True vs Union-xMBLT-iMBLT';
-prefix = [estdataDir,filesep,'fig',filesep,metric,'-',methods];
+methods = 'True vs Union2-xMBLT-iMBLT-identified';
+prefix = [identifydataDir,filesep,'fig',filesep,metric,'-',methods];
 mkdir(prefix);
 
 figname1 = metric;
@@ -113,7 +133,7 @@ for fig = 1:Nband
     imagesc(rho{fig});
     a = colorbar;
     xlabel('True sources')
-    ylabel('Estimated sources')
+    ylabel('Identified sources')
     ylabel(a,'Corss-Correlation Coefficients')
     title(['Band ',num2str(fig)])
     saveas(gcf,[prefix,filesep,figname1,'Band ',num2str(fig)],'png');
@@ -125,9 +145,9 @@ figname2 = [metric,'-SNR'];
 for fig2 = 1:Nband
     switch fig2
         case 1
-            N = estsrcBand1;
+            N = idsrcBand1;
         case 2
-            N = estsrcBand2;
+            N = idsrcBand2;
     end
     figure
     plot(estSNR(fig2,1:N),rho_max{fig2},'ob')
@@ -154,59 +174,59 @@ end
 %     savefig([prefix,filesep,figname3,'Band ',num2str(fig)]);
 % end
 
-figname6 = [metric,'-freq'];
-
-for fig = 1:Nband
-    switch fig
-        case 1
-            N = idsrcBand1;
-        case 2
-            N = idsrcBand2;
-    end
-    figure
-    plot(dif_freq_max(1:N,fig),rho_max{fig},'ob')
-    xlabel('Difference of Freq. Percentage (%)')
-    ylabel(metric)
-    title(['Band ',num2str(fig)])
-    saveas(gcf,[prefix,filesep,figname6,'Band ',num2str(fig)],'png');
-    savefig([prefix,filesep,figname6,'Band ',num2str(fig)]);
-end
-
-figname7 = [metric,'-RA'];
-
-for fig = 1:Nband
-    switch fig
-        case 1
-            N = idsrcBand1;
-        case 2
-            N = idsrcBand2;
-    end
-    figure
-    plot(dif_ra_max(1:N,fig),rho_max{fig},'ob')
-    xlabel('Difference of RA Percentage (%)')
-    ylabel(metric)
-    title(['Band ',num2str(fig)])
-    saveas(gcf,[prefix,filesep,figname7,'Band ',num2str(fig)],'png');
-    savefig([prefix,filesep,figname7,'Band ',num2str(fig)]);
-end
-
-figname8 = [metric,'-DEC'];
-
-for fig = 1:Nband
-    switch fig
-        case 1
-            N = idsrcBand1;
-        case 2
-            N = idsrcBand2;
-    end
-    figure
-    plot(dif_dec_max(1:N,fig),rho_max{fig},'ob')
-    xlabel('Difference of DEC Percentage (%)')
-    ylabel(metric)
-    title(['Band ',num2str(fig)])
-    saveas(gcf,[prefix,filesep,figname8,'Band ',num2str(fig)],'png');
-    savefig([prefix,filesep,figname8,'Band ',num2str(fig)]);
-end
+% figname6 = [metric,'-freq'];
+% 
+% for fig = 1:Nband
+%     switch fig
+%         case 1
+%             N = idsrcBand1;
+%         case 2
+%             N = idsrcBand2;
+%     end
+%     figure
+%     plot(dif_freq_max(1:N,fig),rho_max{fig},'ob')
+%     xlabel('Difference of Freq. Percentage (%)')
+%     ylabel(metric)
+%     title(['Band ',num2str(fig)])
+%     saveas(gcf,[prefix,filesep,figname6,'Band ',num2str(fig)],'png');
+%     savefig([prefix,filesep,figname6,'Band ',num2str(fig)]);
+% end
+% 
+% figname7 = [metric,'-RA'];
+% 
+% for fig = 1:Nband
+%     switch fig
+%         case 1
+%             N = idsrcBand1;
+%         case 2
+%             N = idsrcBand2;
+%     end
+%     figure
+%     plot(dif_ra_max(1:N,fig),rho_max{fig},'ob')
+%     xlabel('Difference of RA Percentage (%)')
+%     ylabel(metric)
+%     title(['Band ',num2str(fig)])
+%     saveas(gcf,[prefix,filesep,figname7,'Band ',num2str(fig)],'png');
+%     savefig([prefix,filesep,figname7,'Band ',num2str(fig)]);
+% end
+% 
+% figname8 = [metric,'-DEC'];
+% 
+% for fig = 1:Nband
+%     switch fig
+%         case 1
+%             N = idsrcBand1;
+%         case 2
+%             N = idsrcBand2;
+%     end
+%     figure
+%     plot(dif_dec_max(1:N,fig),rho_max{fig},'ob')
+%     xlabel('Difference of DEC Percentage (%)')
+%     ylabel(metric)
+%     title(['Band ',num2str(fig)])
+%     saveas(gcf,[prefix,filesep,figname8,'Band ',num2str(fig)],'png');
+%     savefig([prefix,filesep,figname8,'Band ',num2str(fig)]);
+% end
 
 
 toc

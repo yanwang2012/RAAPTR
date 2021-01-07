@@ -150,4 +150,4 @@ for band = 1:Nband
     dif_ra_max(1:NestsrcBand,band) = arrayfun(@(x) abs(EstSrc{band,x}.alpha - SrcAlpha{band}(id_max(x,band))) * 100 / SrcAlpha{band}(id_max(x,band)), 1:NestsrcBand); % error as percentage
     %     dif_dec_max(:,band) = abs(arrayfun(@(x) EstSrc{band,x}.delta, 1:NestsrcBand) - SrcDelta{band}(id_max(:,band)'));
     dif_dec_max(1:NestsrcBand,band) = arrayfun(@(x) abs(EstSrc{band,x}.delta - SrcDelta{band}(id_max(x,band))) * 100 / SrcDelta{band}(id_max(x,band)), 1:NestsrcBand); % error as percentage
-    end
+end
