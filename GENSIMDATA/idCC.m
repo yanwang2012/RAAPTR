@@ -96,31 +96,6 @@ idsrcBand = struct('Band1',idsrcBand1,'Band2',idsrcBand2);
 % Minimum distance Maximum CC.
 % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MinDMaxC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr);
 
-
-% Max coefficients of sources
-% for band = 1:Nband
-%     NtsrcBand = length(SrcAlpha{band});
-%     for src = 1:NestsrcBand
-%         for tsrc = 1:NtsrcBand
-%             if tsrc ~= id_max(src,band)
-%                 rho{band}(src,tsrc) = 0;
-%             end
-%         end
-%     end
-% end
-
-%% Eliminate the spurious sources
-% t = 0.70; % NMTC threshold used to select sources.
-% isrc = {}; % identified sources.
-% r = {};
-% for b = 1:Nband
-%     [r{b},c,~] = find(rho{b} > t);
-%     % select the identified sources from est. sources.
-%     for rr = 1:length(r{b})
-%         isrc{b,rr} = EstSrc{b,r{b}(rr)};
-%     end
-% end
-
 %% Plotting
 metric = 'NMTC';
 methods = 'True vs Union2-xMBLT-iMBLT-identified';
