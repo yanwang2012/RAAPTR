@@ -16,7 +16,7 @@ rng(1) % fix seed for reproducibility
 
 %% set source parameters using Yuyang's data
 sim_source = load('/Users/qyq/Research/PulsarTiming/YuYang_data/sim_source.txt');
-Amp_tmp = exp(sim_source(:,6));
+Amp_tmp = 10.^sim_source(:,6);
 alpha_tmp = sim_source(:,1);
 delta_tmp = asin(sim_source(:,2));
 omega_tmp = sim_source(:,7);

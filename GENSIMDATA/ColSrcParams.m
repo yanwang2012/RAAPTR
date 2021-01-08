@@ -1,6 +1,7 @@
-function [sourceParams]=ColSrcParams(path_to_estimatedData)
+function [sourceParams]=ColSrcParams(path_to_estimatedData,Np)
 % Collect the source parameters for function Amp2Snr
-% [sourceParams]=ColSrcParams(path_to_estimatedData)
+% [sourceParams]=ColSrcParams(path_to_estimatedData,Np)
+% Np: number of pulsars
 
 % Yiqian Qian 2nd April, 2019
 %% Load the information of pulsar
@@ -16,7 +17,7 @@ phi0 = source.bestRealLoc(4);
 Amp = source.bestRealLoc(5);
 iota = source.bestRealLoc(6);
 thetaN = source.bestRealLoc(7);
-phiI = source.bestRealLoc(8:1007);
+phiI = source.bestRealLoc(8:Np + 7);
 
 sourceParams = struct('alpha',alpha,'delta',delta,'omega',omega,'phi0',phi0,'Amp',Amp,...
                         'iota',iota,'thetaN',thetaN,'phiI',phiI);

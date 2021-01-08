@@ -3,13 +3,14 @@ clear;
 tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
-simParamsDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
-simDataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
-estDataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Results_supNar_rand1/GWBsimDataSKASrlz1Nrlz3_xMBLT/results/Union2';
-inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
+simParamsDir = '/Users/qyq/Research/PulsarTiming/YuYang_data/searchParams';
+simDataDir = '/Users/qyq/Research/PulsarTiming/YuYang_data';
+estDataDir = '/Users/qyq/Research/PulsarTiming/YuYang_data/results';
+inputFileName = 'GWBsimDataSKASrlz1Nrlz';
 % Load the simulated source parameters.
 simDataList = dir([simDataDir,filesep,inputFileName,'*.mat']);
 simDataList = sort_nat({simDataList.name});
+[~,simDataFileNames,~] = fileparts(simDataList); % get filenames without extansion
 simFiles = length(simDataList);
 
 for lp = 1:simFiles
@@ -45,7 +46,7 @@ for lp = 1:simFiles
     num_ite = length(nFile);
     
     inParamNames = sort_nat({inParamsList.name});
-    exp = 'searchParams\d.mat'; % regular expressions for desire file names
+    exp = 'searchParams_Nyquist\d.mat'; % regular expressions for desire file names
     inParamNames = regexp(inParamNames,exp,'match');
     inParamNames = inParamNames(~cellfun(@isempty,inParamNames)); % get rid of empty cells
     N = length(inParamNames);% number of bands
@@ -75,7 +76,7 @@ for lp = 1:simFiles
         end
         % Get their frequencies in Hz
         binsrcOmega = omega(Indx);
-        y = [y binsrcOmega]; % total y for all bands
+        y = [y binsrcOmega']; % total y for all bands
         size(i) = length(binsrcOmega);
         by(i,1:size(i)) = binsrcOmega;
         %binsrcF = (binsrcOmega/(2*pi))/(24*3600*365);
@@ -84,8 +85,8 @@ for lp = 1:simFiles
         x = [x binsrcSNR]; % total x for all bands
         bx(i,1:size(i)) = binsrcSNR;
         % Get the sky location
-        sra = [sra alpha(Indx)];
-        sdec = [sdec delta(Indx)];
+        sra = [sra alpha(Indx)'];
+        sdec = [sdec delta(Indx)'];
         for j = 1:num_ite
             load([estDataDir,filesep,char(inDataNames(j + num_ite * (i-1)))],'bestRealLoc');
             disp(['File: ',char(inDataNames(j + num_ite * (i-1))),' loaded']);
@@ -95,7 +96,7 @@ for lp = 1:simFiles
             %path_to_simulationData = '~/Research/PulsarTiming/SimDATA/Mauritius/GWBsimDataSKA/GWBsimDataSKASrlz1Nrlz9.mat';
             %     path_to_pulsar_catalog = 'survey_ska.mat';
             estFreq = bestRealLoc(3)/(2*pi*365*24*3600);% convert unit from yr-1 to Hz
-            [sourceParams]=ColSrcParams(path_to_estimatedData);
+            [sourceParams]=ColSrcParams(path_to_estimatedData, simParams.Np);
             [estSNR,estTimRes] = Amp2Snr(sourceParams,simParams,yr);
             sy = [sy estFreq];
             sx = [sx estSNR];
@@ -156,17 +157,20 @@ for lp = 1:simFiles
     
     %% plot settings
     close all;
-    prefix = [estDataDir,filesep,'fig',filesep,inputFileName];
+    prefix = [estDataDir,filesep,'fig',filesep,simDataFileNames{lp}];
     mkdir(prefix);
-    figname = 'Union2';
+    figname = 'YuyangSim';
     
     %% Plot
     figure(1)
     % yyaxis right
     % loglog(x,y,'o',sx,sy,'kd','MarkerSize',10);
-    b1srcid = find(sy <= ybin_up(1,1)); % find sources in band 1.
-    b2srcid = find(sy > ybin_up(2,1));
-    plot(x,y,'ob',sx(b1srcid),sy(b1srcid),'sr',sx(b2srcid),sy(b2srcid),'dm');
+    %     b1srcid = find(sy <= ybin_up(1,1)); % find sources in band 1.
+    %     b2srcid = find(sy > ybin_up(2,1));
+    %     plot(x,y,'ob',sx(b1srcid),sy(b1srcid),'sr',sx(b2srcid),sy(b2srcid),'dm');
+    %     catalog sources according to band edges, compatible with "Union"
+    %     results.
+    plot(x,y,'ob',sx(1:num_ite),sy(1:num_ite),'sr',sx(num_ite + 1:end),sy(num_ite + 1:end),'dm'); % catalog sources according to files loading sequence, compatible with number of sources in band 1 is the same as that in band 2.
     %     semilogx(x,y,'o',sx,sy,'s');
     % disp(sy)
     
