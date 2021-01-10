@@ -4,10 +4,10 @@
 % 1/5/2021
 
 clear;
-DataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands';
+DataDir = '/Users/qyq/Research/PulsarTiming/YuYang_data/simData';
 folderName = dir([DataDir,filesep,'*xMBLT']);
 folderName = sort_nat({folderName.name});
-Nreal = 50; % # of realizations
+Nreal = length(folderName); % # of realizations
 
 for r = 1:Nreal
     outDir = [DataDir,filesep,folderName{r},filesep,'HDF5'];

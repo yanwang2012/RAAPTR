@@ -23,13 +23,14 @@ function [filename,Index]=rassign(estDataDir,outputfilenames,N,N1,simParams,yr)
 % estTimRes = zeros(simParams.Np,simParams.N);
 
 %% load data
-bestRealLoc = zeros(1007,N);
+Np = simParams.Np;
+bestRealLoc = zeros(Np+7,N);
 SNR = zeros(N,1);
 % outputfilenames = sort_nat({outputfiles.name});
 for i = 1:N
     f = load([estDataDir,filesep,char(outputfilenames{i})],'bestRealLoc');
     bestRealLoc(:,i) = f.bestRealLoc;
-    [SrcParam]=ColSrcParams([estDataDir,filesep,char(outputfilenames{i})]);
+    [SrcParam]=ColSrcParams([estDataDir,filesep,char(outputfilenames{i})],Np);
     [SNR(i,1),~]=Amp2Snr(SrcParam,simParams,yr);
 end
 

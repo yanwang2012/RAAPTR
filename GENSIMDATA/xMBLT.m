@@ -5,30 +5,30 @@
 clear;
 tic
 %% Set up
-simParamsDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
+simParamsDir = '/Users/qyq/Research/PulsarTiming/YuYang_data/searchParams';
 simParamsName = 'searchParams';
 inParamsList = dir([simParamsDir,filesep,simParamsName,'*.mat']);
-simDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands';
-estDataDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results';
+simDataDir = '/Users/qyq/Research/PulsarTiming/YuYang_data/simData';
+NsimFiles = dir([simDataDir,filesep,'GWBsim*.mat']);
+Nrealizations = length(NsimFiles);
+estDataDir = '/Users/qyq/Research/PulsarTiming/YuYang_data/results';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz';
 
 inParamNames = sort_nat({inParamsList.name});
-exp = 'searchParams\d.mat'; % regular expressions for desire file names
+exp = 'searchParams_Nyquist\d.mat'; % regular expressions for desire file names
 inParamNames = regexp(inParamNames,exp,'match');
 inParamNames = inParamNames(~cellfun(@isempty,inParamNames)); % get rid of empty cells
 Npara = length(inParamNames);
 
-nReal = 50; % number of realizations
-
 % use regular expression to filter file names
 FileList = dir([estDataDir,filesep,'*',inputFileName,'*.mat']); % get all file names
 
-for r = 1:nReal
+for r = 1:Nrealizations
     
     
     % set regexp
     FilenameList = sort_nat({FileList.name});
-    exp = ['[12]_',inputFileName,num2str(r),'(?=_|\.mat)_?\d{0,2}.mat'];
+    exp = ['\d+_',inputFileName,num2str(r),'(?=_|\.mat)_?\d{0,2}.mat'];
     FilenameList = regexp(FilenameList,exp,'match');
     FilenameList = FilenameList(~cellfun(@isempty,FilenameList));
     
@@ -64,7 +64,7 @@ for r = 1:nReal
                     %                 disp("j is:"+j);
                     path_estData = [estDataDir,filesep,char(FilenameList{j})];
                     disp(['File loaded: ',char(FilenameList{j})]);
-                    [srcParams]=ColSrcParams(path_estData);
+                    [srcParams]=ColSrcParams(path_estData, simParams.Np);
                     [~,estTimRes_tmp] = Amp2Snr(srcParams,simParams,yr);
                     estTimRes = estTimRes + estTimRes_tmp;
                 end

@@ -4,28 +4,29 @@
 % 1/5/2021
 %% Setting up Path
 clear;
-DataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands'; % local
+DataDir = '/Users/qyq/Research/PulsarTiming/YuYang_data/simData'; % local
+NsimFiles = dir([DataDir,filesep,'GWBsim*.mat']);
 %simDataDir = '/work/05884/qyqstc/lonestar/GWBsimDataSKA_HDF5'; % on ls5
-search_paramDataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/HDF5';
+search_paramDataDir = '~/Research/PulsarTiming/YuYang_data/searchParams';
 folderName = dir([DataDir,filesep,'*xMBLT']);
 folderName = sort_nat({folderName.name});
 inFileList_para = dir([search_paramDataDir,filesep,'*','.hdf5']);
 ParaNames = sort_nat({inFileList_para.name});
-exp = 'searchParams\d.hdf5';
+exp = 'searchParams_Nyquist\d.hdf5';
 ParaNames = regexp(ParaNames,exp,'match');
 ParaNames = ParaNames(~cellfun(@isempty,ParaNames));
 nParamFiles = length(ParaNames);
 
-fid = fopen('~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/Realizations_xMBLT.txt','w');% 'a' for appending data at the end of the file.
+fid = fopen('~/Research/PulsarTiming/YuYang_data/JOBFILE_xMBLT.txt','w');% 'a' for appending data at the end of the file.
 
-Nreal = 50; % # of realizations
+Nreal = length(NsimFiles); % # of realizations
 
 %% LS5 config
 excut = '/work/05884/qyqstc/lonestar/RAAPTR/MxAvPhaseC/Multi_PSO.out ';
-searchParamDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/searchParams/2bands/HDF5/';
-dataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Final/realizations/2bands/xMBLT/';
+searchParamDir = '/work/05884/qyqstc/lonestar/MultiPSO/Yuyang/searchParams/'; % end with /
+dataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Yuyang/xMBLT/'; % end with /
 resultsDir = [dataDir,'results/'];
-ite = 20;
+ite = 3;
 
 
 
@@ -52,8 +53,8 @@ for r = 1:Nreal
                 ['/','Bands_Info'],'bandNumber');
             fprintf(fid,excut);
             fprintf(fid,searchParamDir + "%s ",char(ParaNames{lpc})); % double quotes create string, "plus" combine strings.
-            fprintf(fid,dataDir + "%s ",[folderName{r},filesep,char(inFileName((lpc-1) * bandFiles + ppc))]);
-            fprintf(fid,resultsDir + "%s ",[folderName{r},filesep,char(inFileName((lpc-1) * bandFiles + ppc))]);
+            fprintf(fid,dataDir + "%s ",[folderName{r},filesep,'HDF5',filesep,char(inFileName((lpc-1) * bandFiles + ppc))]);
+            fprintf(fid,resultsDir + "%s ",filesep,char(inFileName((lpc-1) * bandFiles + ppc)));
             fprintf(fid,'avPhase ');
             fprintf(fid,'%d',ite); % number of iteration
             fprintf(fid,'\n'); % if this line is the last line delete the blank line, it will affect Launcher counting the number of jobs.
