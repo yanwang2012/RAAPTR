@@ -96,6 +96,17 @@ idsrcBand = struct('Band1',idsrcBand1,'Band2',idsrcBand2);
 % Minimum distance Maximum CC.
 % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MinDMaxC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr);
 
+%% Save matched true sources
+% save sky locations
+matched_alpha = []; % right ascension
+matched_dec = []; % declination
+
+for band = 1:Nband
+    matched_alpha = [matched_alpha SrcAlpha{band}(id_max(id_max(:,band) ~= 0, band))]; % exclude 0 elements
+    matched_dec = [matched_dec SrcDelta{band}(id_max(id_max(:,band) ~= 0, band))];
+end
+
+save([identifydataDir,filesep,'Matched_Sources.mat'],'id_max','matched_alpha','matched_dec');
 %% Plotting
 metric = 'NMTC';
 methods = 'True vs Union2-xMBLT-iMBLT-identified';

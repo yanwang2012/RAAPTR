@@ -12,8 +12,10 @@ ext = '.mat';
 
 simFile = [simDataDir,filesep,Filename,ext];
 idFile = [idDataDir,filesep,identifyFilename,ext];
+id2true = [idDataDir,filesep,'Matched_Sources.mat'];
 load(simFile);
 load(idFile);
+load(id2true);
 
 %% Sky location
 simRA = alpha;
@@ -40,10 +42,18 @@ end
 
 %% plot
 figure
-plot(simRA,simDec,'bo',idRA,idDec,'rs');
+plot(simRA,simDec,'bo') % plot true sources
+hold on
+plot(idRA,idDec,'rs') % plot identified sources
+plot(matched_alpha,matched_dec,'g*') % plot truly matched true sources
+
+for j = 1:length(idRA)
+    plot([idRA(j),matched_alpha(j)],[idDec(j),matched_dec(j)],'Color','m') % connect identified and matched sources
+end
+
 xlabel('RA')
 ylabel('DEC')
 title('Sky Location')
-legend('True Sources', 'Identified Sources','Location','bestoutside')
+legend('True Sources', 'Identified Sources','Matched True Source','Line bewteen identified and turly matched source','Location','bestoutside')
 saveas(gcf,[idDataDir,filesep,'fig',filesep,'SkyLocation.png'])
 savefig([idDataDir,filesep,'fig',filesep,'SkyLocation'])
