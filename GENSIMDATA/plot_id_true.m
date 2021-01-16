@@ -18,11 +18,12 @@ load(idFile);
 load(id2true);
 
 %% Sky location
-simRA = alpha;
-simDec = delta;
+simRA_nm = []; % not matched true sources
+simDec_nm = [];
 
 idRA = [];
 idDec = [];
+idSNR = [];
 
 idBand1 = sum(~cellfun('isempty',idsrc(1,:)));
 idBand2 = sum(~cellfun('isempty',idsrc(2,:)));
@@ -34,18 +35,26 @@ for b = 1:2 % for 2 bands
         case 2
             N = idBand2;
     end
+    idx = setdiff(1:length(SrcAlpha{b}),id_max(:,b)); % get the complementary index
     for i = 1:N
         idRA = [idRA idsrc{b,i}.alpha];
         idDec = [idDec idsrc{b,i}.delta];
+        [idSNR_tmp,~] = Amp2Snr(idsrc{b,i},simParams,yr);
+        idSNR = [idSNR idSNR_tmp];
+        simRA_nm = [simRA_nm SrcAlpha{b}(idx)];
+        simDec_nm = [simDec_nm SrcDelta{b}(idx)];
     end
 end
 
 %% plot
 figure
-plot(simRA,simDec,'bo') % plot true sources
+% plot(simRA,simDec,'o','MarkerEdgeColor','##D4D8D9') % plot true sources
+scatter(simRA_nm,simDec_nm,'o','MarkerEdgeColor','#D4D8D9') % use scatter to make marker size change
 hold on
-plot(idRA,idDec,'rs') % plot identified sources
-plot(matched_alpha,matched_dec,'g*') % plot truly matched true sources
+% plot(idRA,idDec,'rs') % plot identified sources
+scatter(idRA,idDec,idSNR,'rs')
+% plot(matched_alpha,matched_dec,'ob') % plot truly matched true sources
+scatter(matched_alpha,matched_dec,matched_snr,'ob')
 
 for j = 1:length(idRA)
     plot([idRA(j),matched_alpha(j)],[idDec(j),matched_dec(j)],'Color','m') % connect identified and matched sources
@@ -57,3 +66,5 @@ title('Sky Location')
 legend('True Sources', 'Identified Sources','Matched True Source','Line bewteen identified and turly matched source','Location','bestoutside')
 saveas(gcf,[idDataDir,filesep,'fig',filesep,'SkyLocation.png'])
 savefig([idDataDir,filesep,'fig',filesep,'SkyLocation'])
+
+%END

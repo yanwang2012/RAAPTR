@@ -30,14 +30,14 @@ estFreq = sort(estFreq); % sort frequencies in ascending order
 % calculate joint freq difference
 difreq = zeros(1,Nfiles);
 for j = 1:Nfiles - 1
-        difreq(j) = abs(estFreq(j+1) - estFreq(j));
+        difreq(j) = abs(estFreq(j+1) - estFreq(j))/estFreq(j); % relative frequency gap
 end
 
 %% plot
 figure
 plot(estFreq,difreq,'ro')
 xlabel('Frequency [Hz]')
-ylabel('Frquency Diff')
+ylabel('Relative Freq. Diff')
 title('Frequency Gap')
 saveas(gcf,[estSrcDir,filesep,'fig',filesep,'FreqGap.png'])
 savefig([estSrcDir,filesep,'fig',filesep,'FreqGap'])

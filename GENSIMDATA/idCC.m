@@ -100,13 +100,16 @@ idsrcBand = struct('Band1',idsrcBand1,'Band2',idsrcBand2);
 % save sky locations
 matched_alpha = []; % right ascension
 matched_dec = []; % declination
+matched_snr = [];
 
 for band = 1:Nband
     matched_alpha = [matched_alpha SrcAlpha{band}(id_max(id_max(:,band) ~= 0, band))]; % exclude 0 elements
     matched_dec = [matched_dec SrcDelta{band}(id_max(id_max(:,band) ~= 0, band))];
+    matched_snr = [matched_snr SrcSNR{band}(id_max(id_max(:,band) ~= 0, band))];
 end
 
-save([identifydataDir,filesep,'Matched_Sources.mat'],'id_max','matched_alpha','matched_dec');
+save([identifydataDir,filesep,'Matched_Sources.mat'],'id_max','matched_alpha','matched_dec','matched_snr',...
+    'SrcAlpha','SrcDelta');
 %% Plotting
 metric = 'NMTC';
 methods = 'True vs Union2-xMBLT-iMBLT-identified';
