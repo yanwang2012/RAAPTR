@@ -50,11 +50,16 @@ end
 figure
 % plot(simRA,simDec,'o','MarkerEdgeColor','##D4D8D9') % plot true sources
 scatter(simRA_nm,simDec_nm,'o','MarkerEdgeColor','#D4D8D9') % use scatter to make marker size change
+
 hold on
+
 % plot(idRA,idDec,'rs') % plot identified sources
-scatter(idRA,idDec,idSNR,'rs')
+% scatter(idRA,idDec,idSNR,'rs') % with different size
+scatter(idRA,idDec,[],idSNR, 'filled') % with different color
+
 % plot(matched_alpha,matched_dec,'ob') % plot truly matched true sources
-scatter(matched_alpha,matched_dec,matched_snr,'ob')
+% scatter(matched_alpha,matched_dec,matched_snr,'ob')
+scatter(matched_alpha,matched_dec,[],matched_snr,'s')
 
 for j = 1:length(idRA)
     plot([idRA(j),matched_alpha(j)],[idDec(j),matched_dec(j)],'Color','m') % connect identified and matched sources
@@ -63,8 +68,10 @@ end
 xlabel('RA')
 ylabel('DEC')
 title('Sky Location')
+colormap turbo
+colorbar
 legend('True Sources', 'Identified Sources','Matched True Source','Line bewteen identified and turly matched source','Location','bestoutside')
-saveas(gcf,[idDataDir,filesep,'fig',filesep,'SkyLocation.png'])
-savefig([idDataDir,filesep,'fig',filesep,'SkyLocation'])
+saveas(gcf,[idDataDir,filesep,'fig',filesep,'SkyLocationC.png'])
+savefig([idDataDir,filesep,'fig',filesep,'SkyLocationC'])
 
 %END

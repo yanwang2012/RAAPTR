@@ -49,10 +49,10 @@ rho_tmp = zeros(Np,1);
 
 rho = {}; % cross-correlation coefficients matrix
 % rho_max = {};
-gamma = cell(1,2); % averaged cross-correlation coefficients
+gamma = cell(1,Nband); % averaged cross-correlation coefficients
 
 % investigations
-NestsrcBand = max(EstSrcBand.Band1,EstSrcBand.Band2);
+NestsrcBand = max(EstSrcBand);
 estSNR = zeros(Nband,NestsrcBand);
 % dif_freq = {}; % frequency difference
 % dif_ra = {};
@@ -66,20 +66,16 @@ dif_dec_max = zeros(NestsrcBand,Nband);
 
 for band = 1:Nband
     NtsrcBand = length(SrcAlpha{band}); % number of true sources in each band
-    switch band
-        case 1
-            NestsrcBand = EstSrcBand.Band1;
-        case 2
-            NestsrcBand = EstSrcBand.Band2;
-    end
+    NestsrcBand = EstSrcBand(band);
     gamma{band} = zeros(NestsrcBand,NtsrcBand); % initialize the gamma cell.
-    for src = 1:NestsrcBand
-        [snr,~] = Amp2Snr(EstSrc{band,src},simParams,yr); % get SNR for estimated source
-        estSNR(band,src) = snr;
+    % search along x-axis
+    for Esrc = 1:NestsrcBand
+        [snr,~] = Amp2Snr(EstSrc{band,Esrc},simParams,yr); % get SNR for estimated source
+        estSNR(band,Esrc) = snr;
         for tsrc = 1:NtsrcBand
-%             tmp_true = 0; % for gamma star
-%             tmp_est1 = 0;
-%             tmp2 = 0;
+            %             tmp_true = 0; % for gamma star
+            %             tmp_est1 = 0;
+            %             tmp2 = 0;
             for psr = 1:Np
                 % GW sky location in Cartesian coordinate
                 k=zeros(1,3);  % unit vector pointing from SSB to source
@@ -95,8 +91,8 @@ for band = 1:Nband
                 tmp = FullResiduals(SrcAlpha{band}(tsrc),SrcDelta{band}(tsrc),SrcOmega{band}(tsrc),SrcPhi0{band}(tsrc),phiI(psr),alphaP(psr),deltaP(psr),...
                     SrcAmp{band}(tsrc),SrcIota{band}(tsrc),SrcThetaN{band}(tsrc),theta,yr); % timing residuals for true src
                 
-                tmp_est = FullResiduals(EstSrc{band,src}.alpha,EstSrc{band,src}.delta,EstSrc{band,src}.omega,EstSrc{band,src}.phi0,EstSrc{band,src}.phiI(psr),alphaP(psr),deltaP(psr),...
-                    EstSrc{band,src}.Amp,EstSrc{band,src}.iota,EstSrc{band,src}.thetaN,theta,yr); % timing residuals for estimated source
+                tmp_est = FullResiduals(EstSrc{band,Esrc}.alpha,EstSrc{band,Esrc}.delta,EstSrc{band,Esrc}.omega,EstSrc{band,Esrc}.phi0,EstSrc{band,Esrc}.phiI(psr),alphaP(psr),deltaP(psr),...
+                    EstSrc{band,Esrc}.Amp,EstSrc{band,Esrc}.iota,EstSrc{band,Esrc}.thetaN,theta,yr); % timing residuals for estimated source
                 
                 %                 tmp_est1 = tmp_est1 + norm(tmp_est);
                 %                 tmp_true = tmp_true + norm(tmp); % for gamma star
@@ -127,11 +123,13 @@ for band = 1:Nband
             %             dif_dec{band}(src,tsrc) = abs(SrcDelta{band}(tsrc) - EstSrc{band,src}.delta);
         end
         above_threshold = sum(rho_tmp > threshold); % calculate how many CC. above the threshold.
-        [~,id_max(src,band)] = max(above_threshold);
+        [~,id_max(Esrc,band)] = max(above_threshold);
         %         gamma{band}(src,id_max(src,band)) = max(rho_tmp(:,id_max(src,band))); % Maximized CC
-        gamma{band}(src,id_max(src,band)) = sum(rho_tmp(:,id_max(src,band))) / Np; % nomalized over Np (1000) pulsars.
+        gamma{band}(Esrc,id_max(Esrc,band)) = sum(rho_tmp(:,id_max(Esrc,band))) / Np; % nomalized over Np (1000) pulsars.
         %         gamma{band}(src,id_max(src,band)) = sum(rho_tmp(:,id_max(src,band)) > threshold) / 1000;
     end
+    
+    rho_tmp = zeros(Np,1); % needs to re-init. rho_tmp when change band, since size of rho_tmp is not constant.
     rho{band} = gamma{band};
     rho_max{band} = max(rho{band},[],2); % get the maximum CC. value over true sources.
     % make id_max unique

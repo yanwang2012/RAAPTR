@@ -54,6 +54,7 @@ for band = 1:Nband
             NestSrc1 = BandSrc.NestSrc1band2;
     end
     gamma{band} = zeros(NestSrc2,NestSrc1); % initialize the gamma cell.
+    % search along y-axis
     for src1 = 1:NestSrc1
         [snr1,~] = Amp2Snr(EstSrc1{band,src1},simParams,yr); % get SNR for estimated source
         estSNR1(band,src1) = snr1;
@@ -100,8 +101,10 @@ for band = 1:Nband
         %         gamma{band}(src,id_max(src,band)) = max(rho_tmp(:,id_max(src,band))); % maximize method
         gamma{band}(id_max(src1,band),src1) = sum(rho_tmp(:,id_max(src1,band))) / Np; % nomalized over Np (1000) pulsars.
     end
-    rho{band} = max(gamma{band},[],2); % get index of true sources when rho reaches maximum
     
+    rho_tmp = zeros(Np,1); % need to re-init. rho_tmp when change band, in case the size of rho_tmp is changing
+    
+    rho{band} = max(gamma{band},[],2); % get index of true sources when rho reaches maximum
     
     %     dif_freq_max(:,band) = abs(arrayfun(@(x) EstSrc{band,x}.omega, 1:NestsrcBand) - SrcOmega{band}(id_max(:,band)')) / (365*24*3600*2*pi); % convert to Hz
     dif_freq_max(1:NestSrc1,band) = arrayfun(@(x) abs(EstSrc1{band,x}.omega - EstSrc2{band,id_max(x,band)}.omega) * 100 / EstSrc2{band,id_max(x,band)}.omega, 1:NestSrc1); % error as percentage

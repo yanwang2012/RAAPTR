@@ -87,7 +87,7 @@ for band = 1:Nband
     for k = 1:NestSrc2Band
         path_to_estimatedDataestSrc2 = [estSrc2Dir,filesep,char(estSrc2Filename((band - 1) * NestSrc2Band + k))];
         %path_to_estimatedDataestSrc1 = [estSrc1Dir,filesep,char(estSrc1Filename((band - 1) * Nestsrc2Band + k))];
-        EstSrc2{band,k} = ColSrcParams(path_to_estimatedDataestSrc2);
+        EstSrc2{band,k} = ColSrcParams(path_to_estimatedDataestSrc2,simParams.Np);
         %EstSrc1{band,k} = ColSrcParams(path_to_estimatedDataestSrc1);
     end
 end
@@ -97,12 +97,12 @@ for band = 1:Nband
         case 1
             for k = 1:NestSrc1band1
             path_to_estimatedDataestSrc1 = [estSrc1Dir,filesep,char(estSrc1Filename(k))];
-            EstSrc1{band,k} = ColSrcParams(path_to_estimatedDataestSrc1);
+            EstSrc1{band,k} = ColSrcParams(path_to_estimatedDataestSrc1,simParams.Np);
             end
         case 2
             for k = 1:NestSrc1band2
                 path_to_estimatedDataestSrc1 = [estSrc1Dir,filesep,char(estSrc1Filename(k + NestSrc1band1))];
-                EstSrc1{band,k} = ColSrcParams(path_to_estimatedDataestSrc1);
+                EstSrc1{band,k} = ColSrcParams(path_to_estimatedDataestSrc1,simParams.Np);
             end
     end
 end
@@ -134,7 +134,13 @@ for b = 1:Nband
         idsrc{b,rr} = EstSrc2{b,r{b}(rr)};
     end
 end
-save([estSrc2Dir,filesep,'IdentifiedSrc.mat'],'idsrc')
+
+NidsrcBand = zeros(Nband,1);
+for idb = 1:Nband
+    NidsrcBand(idb) = sum(~cellfun('isempty',idsrc(idb,:))); % # of identified sources in each band
+end
+
+save([estSrc2Dir,filesep,'IdentifiedSrc.mat'],'idsrc','NidsrcBand')
 
 %% Plotting
 metric = 'NMTC';

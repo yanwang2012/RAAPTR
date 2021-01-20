@@ -74,9 +74,10 @@ simSrc = struct('SrcSNR',SrcSNR,'SrcAlpha',SrcAlpha,'SrcDelta',SrcDelta,'SrcAmp'
     'SrcIota',SrcIota,'SrcOmega',SrcOmega,'SrcPhi0',SrcPhi0,'SrcThetaN',SrcThetaN); % Simulated sources parameters
 
 %% Get identified sources info
-idsrcBand1 = sum(~cellfun('isempty',idsrc(1,:))); % number of sources in a band.
-idsrcBand2 = sum(~cellfun('isempty',idsrc(2,:)));
-idsrcBand = struct('Band1',idsrcBand1,'Band2',idsrcBand2);
+% idsrcBand1 = sum(~cellfun('isempty',idsrc(1,:))); % number of sources in a band.
+% idsrcBand2 = sum(~cellfun('isempty',idsrc(2,:)));
+% idsrcBand = struct('Band1',idsrcBand1,'Band2',idsrcBand2);
+idsrcBand = NidsrcBand;
 
 %% Cross-Corelation
 
