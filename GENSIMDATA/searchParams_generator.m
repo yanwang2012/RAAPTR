@@ -10,8 +10,8 @@ bandwidth = searchParams.angular_velocity(1)/NumBands;% max frequency divided in
 FreqRange = searchParams.angular_velocity;
 for i = 1:NumBands
     searchParams.angular_velocity(1) = bandwidth*i;
-    if i ==1
-        searchParams.angular_velocity(2) = 1;
+    if i == 1
+        searchParams.angular_velocity(2) = FreqRange(2);
     else
         searchParams.angular_velocity(2) = bandwidth*(i-1);
     end

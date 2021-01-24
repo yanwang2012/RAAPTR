@@ -68,9 +68,10 @@ end
 xlabel('RA')
 ylabel('DEC')
 title('Sky Location')
-colormap turbo
-colorbar
-legend('True Sources', 'Identified Sources','Matched True Source','Line bewteen identified and turly matched source','Location','bestoutside')
+colormap autumn
+c = colorbar;
+ylabel(c,'SNR','FontSize',14)
+legend('True Sources', 'Identified Sources','Matched True Source','Matched & Identi.','Location','bestoutside')
 saveas(gcf,[idDataDir,filesep,'fig',filesep,'SkyLocationC.png'])
 savefig([idDataDir,filesep,'fig',filesep,'SkyLocationC'])
 
