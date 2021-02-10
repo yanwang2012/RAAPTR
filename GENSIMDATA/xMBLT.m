@@ -5,13 +5,16 @@
 clear;
 tic
 %% Set up
-simParamsDir = '/Users/qyq/Research/PulsarTiming/YuYang_data/searchParams';
+simParamsDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/Band_opt';
 simParamsName = 'searchParams';
 inParamsList = dir([simParamsDir,filesep,simParamsName,'*.mat']);
-simDataDir = '/Users/qyq/Research/PulsarTiming/YuYang_data/simData';
-NsimFiles = dir([simDataDir,filesep,'GWBsim*.mat']);
+simDataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Band_opt/simData';
+simFileBaseName = 'GWBsimDataSKASrlz1Nrlz3'; % change here to switch between multiple and single
+NsimFiles = dir([simDataDir,filesep,simFileBaseName,'.mat']);
+simFileNames = sort_nat({NsimFiles.name});
+[~,fileName_noExt,~] = fileparts(simFileNames);
 Nrealizations = length(NsimFiles);
-estDataDir = '/Users/qyq/Research/PulsarTiming/YuYang_data/results';
+estDataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Band_opt/results';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz';
 
 inParamNames = sort_nat({inParamsList.name});
@@ -28,7 +31,7 @@ for r = 1:Nrealizations
     
     % set regexp
     FilenameList = sort_nat({FileList.name});
-    exp = ['\d+_',inputFileName,num2str(r),'(?=_|\.mat)_?\d{0,2}.mat'];
+    exp = ['\d+_',fileName_noExt,'(?=_|\.mat)_?\d{0,2}.mat'];
     FilenameList = regexp(FilenameList,exp,'match');
     FilenameList = FilenameList(~cellfun(@isempty,FilenameList));
     
@@ -40,7 +43,7 @@ for r = 1:Nrealizations
     %num_ite = length(nFile); % since iteration starts from 0
     
     % Load the simulated source parameters.
-    load([simDataDir,filesep,inputFileName,num2str(r),'.mat']);
+    load([simDataDir,filesep,simFileNames{r}]);
     estTimRes = zeros(simParams.Np,simParams.N);
     
     %% MBLT
@@ -52,8 +55,8 @@ for r = 1:Nrealizations
     % outputfilenames = sort_nat({outputfiles.name});
     [file,Index]=rassign(estDataDir,FilenameList,NestSrc,Nband1,simParams,yr);
     % disp(["File needs to be skipped: ",file]);
-    Filename = ['GWBsimDataSKASrlz1Nrlz',num2str(r)];
-    OutputDir = [simDataDir,filesep,Filename,'_xMBLT'];
+    %     Filename = ['GWBsimDataSKASrlz1Nrlz',num2str(r)];
+    OutputDir = [simDataDir,filesep,fileName_noExt,'_xMBLT'];
     mkdir(OutputDir);
     for i = 1:Npara
         for j = 1:NestSrc
@@ -70,8 +73,8 @@ for r = 1:Nrealizations
                 end
             end
         end
-        newFile = strcat(OutputDir,filesep,num2str(i),'_',inputFileName,num2str(r),'.mat');
-        copyfile([simDataDir,filesep,inputFileName,num2str(r),'.mat'],newFile);
+        newFile = strcat(OutputDir,filesep,num2str(i),'_',simFileNames{r});
+        copyfile([simDataDir,filesep,simFileNames{r}],newFile);
         m = matfile(newFile,'Writable',true);
         m.timingResiduals = timingResiduals - estTimRes;
         estTimRes = zeros(simParams.Np,simParams.N);

@@ -3,10 +3,10 @@ clear;
 tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
-simParamsDir = '/Users/qyq/Research/PulsarTiming/YuYang_data/searchParams';
-simDataDir = '/Users/qyq/Research/PulsarTiming/YuYang_data';
-estDataDir = '/Users/qyq/Research/PulsarTiming/YuYang_data/results';
-inputFileName = 'GWBsimDataSKASrlz1Nrlz';
+simParamsDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/Band_opt';
+simDataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
+estDataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Band_opt/results';
+inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 % Load the simulated source parameters.
 simDataList = dir([simDataDir,filesep,inputFileName,'*.mat']);
 simDataList = sort_nat({simDataList.name});
@@ -76,7 +76,7 @@ for lp = 1:simFiles
         end
         % Get their frequencies in Hz
         binsrcOmega = omega(Indx);
-        y = [y binsrcOmega']; % total y for all bands
+        y = [y binsrcOmega]; % total y for all bands
         size(i) = length(binsrcOmega);
         by(i,1:size(i)) = binsrcOmega;
         %binsrcF = (binsrcOmega/(2*pi))/(24*3600*365);
@@ -85,8 +85,8 @@ for lp = 1:simFiles
         x = [x binsrcSNR]; % total x for all bands
         bx(i,1:size(i)) = binsrcSNR;
         % Get the sky location
-        sra = [sra alpha(Indx)'];
-        sdec = [sdec delta(Indx)'];
+        sra = [sra alpha(Indx)];
+        sdec = [sdec delta(Indx)];
         for j = 1:num_ite
             load([estDataDir,filesep,char(inDataNames(j + num_ite * (i-1)))],'bestRealLoc');
             disp(['File: ',char(inDataNames(j + num_ite * (i-1))),' loaded']);
@@ -157,9 +157,10 @@ for lp = 1:simFiles
     
     %% plot settings
     close all;
-    prefix = [estDataDir,filesep,'fig',filesep,simDataFileNames{lp}];
+    %     prefix = [estDataDir,filesep,'fig',filesep,simDataFileNames{lp}];
+    prefix = [estDataDir,filesep,'fig',filesep,simDataFileNames]; % for a single realization
     mkdir(prefix);
-    figname = 'YuyangSim';
+    figname = 'Band-Opt';
     
     %% Plot
     figure(1)
@@ -170,7 +171,8 @@ for lp = 1:simFiles
     %     plot(x,y,'ob',sx(b1srcid),sy(b1srcid),'sr',sx(b2srcid),sy(b2srcid),'dm');
     %     catalog sources according to band edges, compatible with "Union"
     %     results.
-    plot(x,y,'ob',sx(1:num_ite),sy(1:num_ite),'sr',sx(num_ite + 1:end),sy(num_ite + 1:end),'dm'); % catalog sources according to files loading sequence, compatible with number of sources in band 1 is the same as that in band 2.
+    % plot(x,y,'ob',sx(1:num_ite),sy(1:num_ite),'sr',sx(num_ite + 1:end),sy(num_ite + 1:end),'dm'); % catalog sources according to files loading sequence, compatible with number of sources in band 1 is the same as that in band 2.
+    plot(x,y,'ob',sx,sy,'rs') % do not separete estimated sources into different band
     %     semilogx(x,y,'o',sx,sy,'s');
     % disp(sy)
     
@@ -188,7 +190,8 @@ for lp = 1:simFiles
     xlabel('SNR');
     xlim([0 uplim]);
     ylabel('Frequency');
-    legend('True','Estimated B1','Estimated B2','Location','northeast');
+    % legend('True','Estimated B1','Estimated B2','Location','northeast');
+    legend('True','Estimated','Location','best');
     title(figname);
     saveas(gcf,[prefix,filesep,figname],'png');
     savefig([prefix,filesep,figname]);
@@ -275,7 +278,7 @@ for lp = 1:simFiles
     
     Sidx = find(sx >= SNRcut);% SNR cutoff for est. sources
     sx = sx(Sidx);
-    sx = sx .* simParams.sd(1)/(100*10^(-9)); % rescale SNR into 100 ns.
+    % sx = sx .* simParams.sd(1)/(100*10^(-9)); % rescale SNR into 100 ns.
     sy = sy(Sidx);
     ra = ra(Sidx);
     dec = dec(Sidx);
