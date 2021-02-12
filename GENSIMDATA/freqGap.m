@@ -6,7 +6,7 @@
 %% Data Dir
 clear
 
-estSrcDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Results_supNar_rand1/GWBsimDataSKASrlz1Nrlz3_xMBLT/results/Union2';
+estSrcDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Results_supNar_rand1/GWBsimDataSKASrlz1Nrlz3_xMBLT/results/Union2';
 Filename = 'GWBsimDataSKASrlz1Nrlz3';
 ext = '.mat';
 
@@ -35,12 +35,12 @@ end
 
 threshold = 0.4;
 idx = find(difreq > 0.4 & difreq < 0.9);
-bandedge = (1 + 1/2) * difreq(idx) .* estFreq(idx);
+bandedge = (1 + 1/2 * difreq(idx)) .* estFreq(idx);
 bandedge_av = bandedge * 365*24*3600*2*pi; % convert Hz to rad/year
 
 %% Generate search file
 filename = 'Nyquist.json';
-outDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/Band_opt';
+outDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/Band_opt/New';
 mkdir(outDir);
 searchParams = jsondecode(fileread(filename));
 NumBands = length(idx);%5; %10; % total number of bands
