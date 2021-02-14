@@ -3,9 +3,9 @@ clear;
 tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
-simParamsDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/Band_opt';
-simDataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
-estDataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Band_opt/results';
+simParamsDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/Band_opt/New';
+simDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
+estDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Band_opt/results_New';
 inputFileName = 'GWBsimDataSKASrlz1Nrlz3';
 % Load the simulated source parameters.
 simDataList = dir([simDataDir,filesep,inputFileName,'*.mat']);
@@ -56,7 +56,7 @@ for lp = 1:simFiles
     %% data pre-processing
     bx = zeros(N,3);
     by = zeros(N,3);
-    size = zeros(N,1);
+    binsize = zeros(N,1);
     %     esize =zeros(N,1);
     etyband = 0; % band doesn't have sources inside.
     
@@ -77,13 +77,13 @@ for lp = 1:simFiles
         % Get their frequencies in Hz
         binsrcOmega = omega(Indx);
         y = [y binsrcOmega]; % total y for all bands
-        size(i) = length(binsrcOmega);
-        by(i,1:size(i)) = binsrcOmega;
+        binsize(i) = length(binsrcOmega);
+        by(i,1:binsize(i)) = binsrcOmega;
         %binsrcF = (binsrcOmega/(2*pi))/(24*3600*365);
         % Get their SNR
         binsrcSNR = snr_chr(Indx);
         x = [x binsrcSNR]; % total x for all bands
-        bx(i,1:size(i)) = binsrcSNR;
+        bx(i,1:binsize(i)) = binsrcSNR;
         % Get the sky location
         sra = [sra alpha(Indx)];
         sdec = [sdec delta(Indx)];
@@ -200,7 +200,7 @@ for lp = 1:simFiles
     for m = 1:N
         figure(10+m)
         % add label to each est. and true sources
-        plot(bx(m,1:size(m)),by(m,1:size(m)),'ob',sx((m-1)*num_ite+1:m*num_ite),sy((m-1)*num_ite+1:m*num_ite),'sr')
+        plot(bx(m,1:binsize(m)),by(m,1:binsize(m)),'ob',sx((m-1)*num_ite+1:m*num_ite),sy((m-1)*num_ite+1:m*num_ite),'sr')
         hold on
         plot(binSNR,ybin_up(:,m),'b-');
         plot(binSNR,ybin_low(:,m),'b--');
@@ -210,8 +210,8 @@ for lp = 1:simFiles
         ylabel('Frequency');
         legend('True','Estimated','Location','northeast');
         title([figname,'-Band',num2str(m)]);
-        [sorx,id_true] = sort(bx(m,1:size(m)),'descend');
-        text(sorx+1,by(m,id_true),num2str((1:numel(bx(m,1:size(m))))'),'Color','#0072BD')
+        [sorx,id_true] = sort(bx(m,1:binsize(m)),'descend');
+        text(sorx+1,by(m,id_true),num2str((1:numel(bx(m,1:binsize(m))))'),'Color','#0072BD')
         text(sx((m-1)*num_ite+1:m*num_ite)+1,sy((m-1)*num_ite+1:m*num_ite),num2str((1:num_ite)'),'Color','#D95319')
         saveas(gcf,[prefix,filesep,figname,'Band',num2str(m)],'png');
         savefig([prefix,filesep,figname,'Band',num2str(m)]);
