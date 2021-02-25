@@ -7,11 +7,11 @@ clear;
 tic
 
 %% Dir settings
-serchParamsDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
-simdataDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
-estSrc1Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Union2_xMBLT/results';
+serchParamsDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
+simdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands';
+estSrc1Dir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Union2_xMBLT/results';
 estsrc1 = 'Union2-xMBLT';
-estSrc2Dir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Union2_xMBLT/Union2_iMBLT_after20'; 
+estSrc2Dir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Union2_xMBLT/Union2_iMBLT_after20'; 
 estsrc2 = 'Union2-xMBLT-iMBLT';
 Filename = 'GWBsimDataSKASrlz1Nrlz3';
 ext = '.mat';
@@ -140,7 +140,10 @@ for idb = 1:Nband
     NidsrcBand(idb) = sum(~cellfun('isempty',idsrc(idb,:))); % # of identified sources in each band
 end
 
-save([estSrc2Dir,filesep,'IdentifiedSrc.mat'],'idsrc','NidsrcBand')
+idMethods = ['id-',estsrc1,'-vs-',estsrc2];
+idFolder = [estSrc2Dir,filesep,idMethods];
+mkdir(idFolder);
+save([idFolder,filesep,'IdentifiedSrc.mat'],'idsrc','NidsrcBand')
 
 %% Plotting
 metric = 'NMTC';
