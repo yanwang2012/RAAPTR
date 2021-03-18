@@ -8,9 +8,9 @@ clear;
 tic
 
 %% Dir settings
-searchParamsDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
-simdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11';
-identifydataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/2bands/SuperNarrow/Union2_xMBLT/Union2_iMBLT_after20';
+searchParamsDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/Band_opt/New';
+simdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Band_opt/simData';
+identifydataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Band_opt/id-Band-opt-xMBLT-vs-Band-opt-iMBLT';
 Filename = 'GWBsimDataSKASrlz1Nrlz3';
 identifyFilename = 'identifiedSrc';
 ext = '.mat';
@@ -18,11 +18,11 @@ ext = '.mat';
 %% Files
 paraFile = dir([searchParamsDir,filesep,'searchParams*',ext]);
 simFile = [simdataDir,filesep,Filename,ext];
-idFolder = 'id-Union2-xMBLT-vs-Union2-xMBLT-iMBLT';
-idFile = [identifydataDir,filesep,idFolder,filesep,identifyFilename,ext];
+% idFolder = 'id-Union2-xMBLT-vs-Union2-xMBLT-iMBLT';
+idFile = [identifydataDir,filesep,identifyFilename,ext];
 
 paraFilename = sort_nat({paraFile.name});
-exp = 'searchParams\d.mat'; % regular expressions for desire file names
+exp = 'searchParams_Nyquist\d.mat'; % regular expressions for desire file names
 paraFilename = regexp(paraFilename,exp,'match');
 paraFilename = paraFilename(~cellfun(@isempty,paraFilename)); % get rid of empty cells
 Nband = length(paraFilename);
@@ -110,12 +110,12 @@ for band = 1:Nband
     matched_snr = [matched_snr SrcSNR{band}(id_max(id_max(:,band) ~= 0, band))];
 end
 
-save([identifydataDir,filesep,idFolder,filesep,'Matched_Sources.mat'],'id_max','matched_alpha','matched_dec','matched_snr',...
+save([identifydataDir,filesep,'Matched_Sources.mat'],'id_max','matched_alpha','matched_dec','matched_snr',...
     'SrcAlpha','SrcDelta');
 %% Plotting
 metric = 'NMTC';
 methods = 'True vs identified';
-prefix = [identifydataDir,filesep,idFolder,filesep,metric,'-',methods];
+prefix = [identifydataDir,filesep,'fig',filesep,metric,'-',methods];
 mkdir(prefix);
 
 figname1 = metric;
@@ -134,12 +134,7 @@ end
 
 figname2 = [metric,'-SNR'];
 for fig2 = 1:Nband
-    switch fig2
-        case 1
-            N = idsrcBand(1);
-        case 2
-            N = idsrcBand(2);
-    end
+    N = idsrcBand(fig2);
     figure
     plot(estSNR(fig2,1:N),rho_max{fig2},'ob')
     xlabel('Estimated SNR')

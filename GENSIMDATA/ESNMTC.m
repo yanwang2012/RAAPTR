@@ -47,11 +47,15 @@ dif_dec_max = zeros(MestSrc1Band,Nband);
 
 
 for band = 1:Nband
-    switch band
-        case 1
-            NestSrc1 = BandSrc.NestSrc1band1; % number of Est. Src1 sources in band 1
-        case 2
-            NestSrc1 = BandSrc.NestSrc1band2;
+    if BandSrc.NestSrc1band1 ~= BandSrc.NestSrc1band2
+        switch band
+            case 1
+                NestSrc1 = BandSrc.NestSrc1band1; % number of Est. Src1 sources in band 1
+            case 2
+                NestSrc1 = BandSrc.NestSrc1band2;
+        end
+    else
+        NestSrc1 = BandSrc.NestSrc1band1; % choose any band src.
     end
     gamma{band} = zeros(NestSrc2,NestSrc1); % initialize the gamma cell.
     % search along y-axis
