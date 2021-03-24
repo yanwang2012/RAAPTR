@@ -18,6 +18,10 @@ function [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(
 % yr: observation span.
 % threshold: a threshold chosen by user.
 
+% NOTE: NMTC find the best match true source for a single estimated source.
+% It searches through columns, i.e. for a single estimated source, it
+% searches all the true sources and find the best matched one.
+
 % Author: QYQ 5/24/2020
 %%
 

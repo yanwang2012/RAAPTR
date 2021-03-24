@@ -1,13 +1,15 @@
-% script to plot different parameters between identified sources and True sources.
+% script to plot identified sources vs. True sources
+% (1) 2D skymap
+% (2) 3D skymap
 
 % Author: QYQ
 % 1/7/2021
 clear;
 %% Load data
 simDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Band_opt/simData';
-idDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Band_opt/id-Band-opt-xMBLT-vs-Band-opt-iMBLT';
+idDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Band_opt/iMBLT/results';
 Filename = 'GWBsimDataSKASrlz1Nrlz3';
-identifyFilename = 'identifiedSrc';
+identifyFilename = 'SelectedSrc';
 ext = '.mat';
 
 simFile = [simDataDir,filesep,Filename,ext];
@@ -106,6 +108,7 @@ center = zeros(1,3); % center of sphere
 for src = 1:length(idRA)
 [v] = GreatCircle(center,[id_x(src),id_y(src),id_z(src)],[matched_x(src),matched_y(src),matched_z(src)],1);
 plot3(v(1,:),v(2,:),v(3,:),'m')
+pause
 end
 
 legend({'Grid','Identified Sources','True Sources','Matched True Source','Matched & Identi.'},'Location','southeast')

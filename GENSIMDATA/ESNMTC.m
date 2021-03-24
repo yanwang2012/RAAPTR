@@ -17,6 +17,10 @@ function [gamma,rho,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR1,estSNR2] 
 % yr: observation span.
 % threshold: a threshold chosen by user.
 
+% NOTE: ESNMTC find the best match src2 for src1. It searches through
+% rows, i.e. for each src1 it searches all src2 and find the best matched
+% one.
+
 % Author: QYQ 5/24/2020
 
 %% Cross-Corelation

@@ -1,15 +1,16 @@
 % Cross-Correlation Coefficients Matrix
+% for estimated sources vs. true sources
 
 % Author: QYQ
-% 05/13/2020
+% 03/24/2021
 
 clear;
 tic
 
 %% Dir settings
-searchParamsDir = '/Users/qyq/Research/PulsarTiming/YuYang_data/searchParams';
-simdataDir = '/Users/qyq/Research/PulsarTiming/YuYang_data/simData';
-estdataDir = '/Users/qyq/Research/PulsarTiming/YuYang_data/simData/xMBLT/results';
+searchParamsDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/Band_opt/New';
+simdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Band_opt/simData';
+estdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Band_opt/iMBLT/results';
 Filename = 'GWBsimDataSKASrlz1Nrlz3';
 ext = '.mat';
 
@@ -111,7 +112,7 @@ r = {}; % rows
 c = {}; % columns
 for b = 1:Nband
     [r{b},c{b},~] = find(rho{b} > t); % r is the row of rho, c is the column of rho.
-    % in gamma, rows correspond to EstSrc2, columns correspond to EstSrc1.
+    % in rho, rows correspond to EstSrc2, columns correspond to EstSrc1.
     % select the identified sources from est. sources.
     for rr = 1:length(r{b})
         idsrc{b,rr} = EstSrc{b,r{b}(rr)};
@@ -122,12 +123,26 @@ NidsrcBand = zeros(Nband,1);
 for idb = 1:Nband
     NidsrcBand(idb) = sum(~cellfun('isempty',idsrc(idb,:))); % # of identified sources in each band
 end
+% 
+save([estdataDir,filesep,'SelectedSrc.mat'],'idsrc','NidsrcBand')
 
-save([estdataDir,filesep,'IdentifiedSrc.mat'],'idsrc','NidsrcBand')
+%% Take out best matched true sources
+matched_alpha = []; % right ascension
+matched_dec = []; % declination
+matched_snr = [];
+
+for band = 1:Nband
+    matched_alpha = [matched_alpha SrcAlpha{band}(id_max(r{band},band))]; % exclude 0 elements
+    matched_dec = [matched_dec SrcDelta{band}(id_max(r{band},band))];
+    matched_snr = [matched_snr SrcSNR{band}(id_max(r{band},band))];
+end
+
+save([estdataDir,filesep,'Matched_Sources.mat'],'id_max','matched_alpha','matched_dec','matched_snr',...
+    'SrcAlpha','SrcDelta');
 
 %% Plotting
 metric = 'NMTC';
-methods = 'True vs Yuyang_xMBLT';
+methods = 'True vs Band_Opt_iMBLT';
 prefix = [estdataDir,filesep,'fig',filesep,metric,'-',methods];
 mkdir(prefix);
 
@@ -157,21 +172,21 @@ for fig2 = 1:Nband
     savefig([prefix,filesep,figname2,'Band ',num2str(fig2)]);
 end
 
-figname3 = [metric,'identified sources'];
-
-for fig = 1:Nband
-    ifreq = arrayfun(@(x) idsrc{fig,x}.omega/(2*pi*365*24*3600), 1:length(r{fig}));
-    figure
-    plot(SrcSNR{fig},SrcOmega{fig}/(2*pi*365*24*3600),'ob',estSNR(fig,r{fig}),ifreq,'sr')
-    text(SrcSNR{fig}+0.5,SrcOmega{fig}/(2*pi*365*24*3600), num2str((1:numel(SrcSNR{fig}))'), 'Color', '#0072BD')
-    text(estSNR(fig,r{fig})-2,ifreq, num2str(r{fig}), 'HorizontalAlignment','right', 'Color', '#D95319')
-    title(['Identified Sources Band ',num2str(fig)])
-    xlabel('SNR')
-    ylabel('Frequency(Hz)')
-    legend('True Source','Identified Source','Location','best')
-    saveas(gcf,[prefix,filesep,figname3,'Band ',num2str(fig)],'png');
-    savefig([prefix,filesep,figname3,'Band ',num2str(fig)]);
-end
+% figname3 = [metric,'identified sources'];
+% 
+% for fig = 1:Nband
+%     ifreq = arrayfun(@(x) idsrc{fig,x}.omega/(2*pi*365*24*3600), 1:length(r{fig}));
+%     figure
+%     plot(SrcSNR{fig},SrcOmega{fig}/(2*pi*365*24*3600),'ob',estSNR(fig,r{fig}),ifreq,'sr')
+%     text(SrcSNR{fig}+0.5,SrcOmega{fig}/(2*pi*365*24*3600), num2str((1:numel(SrcSNR{fig}))'), 'Color', '#0072BD')
+%     text(estSNR(fig,r{fig})-2,ifreq, num2str(r{fig}), 'HorizontalAlignment','right', 'Color', '#D95319')
+%     title(['Identified Sources Band ',num2str(fig)])
+%     xlabel('SNR')
+%     ylabel('Frequency(Hz)')
+%     legend('True Source','Identified Source','Location','best')
+%     saveas(gcf,[prefix,filesep,figname3,'Band ',num2str(fig)],'png');
+%     savefig([prefix,filesep,figname3,'Band ',num2str(fig)]);
+% end
 
 figname6 = [metric,'-freq'];
 
