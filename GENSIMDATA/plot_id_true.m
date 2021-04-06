@@ -48,46 +48,73 @@ for b = 1:Nband
 end
 
 %% plot
+load([idDataDir,filesep,'CondMap.mat']); % load skymap condition number
+
 figure
+% plot condition numbers
+ax1 = axes;
+imagesc(ax1,condMap.RA, condMap.Dec, condMap.cond);
+
+xlabel(ax1,'\alpha')
+ylabel(ax1,'\delta')
+title(ax1,'Sky Location')
+
 % plot(simRA,simDec,'o','MarkerEdgeColor','##D4D8D9') % plot true sources
-scatter(simRA_nm,simDec_nm,'o','MarkerEdgeColor','#D4D8D9') % use scatter to make marker size change
+ax2 = axes;
+scatter(ax2,simRA_nm,simDec_nm,'o','MarkerEdgeColor','#D4D8D9') % use scatter to make marker size change
 
 hold on
 
 % plot(idRA,idDec,'rs') % plot identified sources
 % scatter(idRA,idDec,idSNR,'rs') % with different size
-scatter(idRA,idDec,[],idSNR, 'filled') % with different color
+scatter(ax2,idRA,idDec,[],idSNR, 'filled') % with different color
 
 % pause
 
 % plot(matched_alpha,matched_dec,'ob') % plot truly matched true sources
 % scatter(matched_alpha,matched_dec,matched_snr,'ob')
-scatter(matched_alpha,matched_dec,[],matched_snr,'s')
+scatter(ax2,matched_alpha,matched_dec,[],matched_snr,'s')
 
 % pause
 
 for j = 1:length(idRA)
-    plot([idRA(j),matched_alpha(j)],[idDec(j),matched_dec(j)],'Color','m') % connect identified and matched sources
+    plot(ax2,[idRA(j),matched_alpha(j)],[idDec(j),matched_dec(j)],'Color','m') % connect identified and matched sources
 %     pause
 end
 
+xlim(ax2,[0 2*pi])
 
-xlabel('RA')
-ylabel('DEC')
-title('Sky Location')
-colormap turbo
-c = colorbar;
-ylabel(c,'SNR','FontSize',14)
-ylim([-2 inf])
-legend({'True Sources', 'Identified Sources','Matched True Source','Matched & Identi.'},'Location','southeast')
+% Link two axes together
+linkaxes([ax1,ax2])
+
+% Hide the top axis
+ax2.Visible = 'off';
+ax2.XTick = [];
+ax2.YTick = [];
+
+set([ax1,ax2],'Position',[.17 .11 .685 .815]);
+
+
+colormap(ax1)
+% cb1 = colorbar(ax1,'Location','northoutside');
+cb1 = colorbar(ax1,'Position',[.05 .11 .04 .815]);
+cb1.Label.String = 'Condition Number';
+cb1.Label.FontSize = 14;
+
+cmap = colormap(ax2,'autumn');
+colormap(ax2,flipud(cmap)); % flip 'autumn' upside down
+% cb2 = colorbar(ax2,'Location','southoutside');
+cb2 = colorbar(ax2,'Position',[.88 .11 .04 .815]);
+cb2.Label.String = 'SNR';
+cb2.Label.FontSize = 14;
+legend(ax2,{'True Sources', 'Identified Sources','Matched True Source','Matched & Identi.'},'Location','southeast')
+
 saveas(gcf,[idDataDir,filesep,'fig',filesep,'SkyLocationC.png'])
 savefig([idDataDir,filesep,'fig',filesep,'SkyLocationC'])
-
 %% 3D sphere plot
-load([idDataDir,filesep,'Acond.mat']); % load skymap condition number
+load([idDataDir,filesep,'Acond.mat']); % load skymap condition numberload([idDataDir,filesep,'Acond.mat']); % load skymap condition number
 
 [x,y,z] = sphere(300); % generate a 300 faces unit sphere
-
 % convert sources coord. to spherical
 [id_x,id_y,id_z] = sph2cart(idRA,idDec,1);
 [sim_x,sim_y,sim_z] = sph2cart(simRA_nm,simDec_nm,1);
@@ -136,7 +163,7 @@ cb2.Label.String = 'SNR';
 cb1.Label.FontSize = 14;
 cb2.Label.FontSize = 14;
 
-legend({'Grid','Identified Sources','True Sources','Matched True Source','Matched & Identi.'},'Location','southeast')
+legend(ax2,{'Identified Sources','True Sources','Matched True Source','Matched & Identi.'},'Location','southeast')
 setappdata(gcf,'StoreTheLink',hLink); % store the link so that they can rotate and zoom synchronically
 
 saveas(gcf,[idDataDir,filesep,'fig',filesep,'SkyLocation3D.png'])
