@@ -5,33 +5,33 @@
 clear;
 tic
 %% Set up
-simParamsDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/Band_opt';
-simParamsName = 'searchParams';
-inParamsList = dir([simParamsDir,filesep,simParamsName,'*.mat']);
-simDataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Band_opt/simData';
-simFileBaseName = 'GWBsimDataSKASrlz1Nrlz3'; % change here to switch between multiple and single
+searchParamsDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/searchParams/Band_opt';
+searchParamsName = 'searchParams';
+simDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData';
+simFileBaseName = 'GWBsimDataSKASrlz1Nrlz*'; % change here to switch between multiple and single
 NsimFiles = dir([simDataDir,filesep,simFileBaseName,'.mat']);
 simFileNames = sort_nat({NsimFiles.name});
 [~,fileName_noExt,~] = fileparts(simFileNames);
 Nrealizations = length(NsimFiles);
-estDataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Band_opt/results';
-inputFileName = 'GWBsimDataSKASrlz1Nrlz';
+estDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/Band_opt_results';
+inputFileName = 'GWBsimDataSKASrlz1Nrlz*';
 
-inParamNames = sort_nat({inParamsList.name});
-exp = 'searchParams_Nyquist\d.mat'; % regular expressions for desire file names
-inParamNames = regexp(inParamNames,exp,'match');
-inParamNames = inParamNames(~cellfun(@isempty,inParamNames)); % get rid of empty cells
-Npara = length(inParamNames);
 
 % use regular expression to filter file names
-FileList = dir([estDataDir,filesep,'*',inputFileName,'*.mat']); % get all file names
+FileList = dir([estDataDir,filesep,'*',inputFileName,'.mat']); % get all file names
 
-for r = 1:Nrealizations
-    
+for r = 1:4 %Nrealizations
+    % select searchParams for each realization
+    inParamsList = dir([searchParamsDir,filesep,fileName_noExt{r},filesep,searchParamsName,'*.mat']);
+    inParamNames = sort_nat({inParamsList.name});
+    exp = 'searchParams_Nyquist\d\.mat'; % regular expressions for desire file names
+    inParamNames = regexp(inParamNames,exp,'match');
+    inParamNames = inParamNames(~cellfun(@isempty,inParamNames)); % get rid of empty cells
+    Npara = length(inParamNames);
     
     % set regexp
     FilenameList = sort_nat({FileList.name});
-    exp = ['\d+_',fileName_noExt,'(?=_|\.mat)_?\d{0,2}.mat'];
+    exp = ['\d+_',fileName_noExt{r},'(?=_|\.mat)_?\d{0,2}.mat'];
     FilenameList = regexp(FilenameList,exp,'match');
     FilenameList = FilenameList(~cellfun(@isempty,FilenameList));
     
@@ -46,7 +46,7 @@ for r = 1:Nrealizations
     load([simDataDir,filesep,simFileNames{r}]);
     estTimRes = zeros(simParams.Np,simParams.N);
     
-    %% MBLT
+    %% xMBLT
     % outputfiles = dir([estDataDir,filesep,'*',inputFileName,num2str(r),'_*.mat']);
     % NestSrc = length(outputfiles);
     % Nband1 = NestSrc/2;
@@ -56,7 +56,7 @@ for r = 1:Nrealizations
     [file,Index]=rassign(estDataDir,FilenameList,NestSrc,Nband1,simParams,yr);
     % disp(["File needs to be skipped: ",file]);
     %     Filename = ['GWBsimDataSKASrlz1Nrlz',num2str(r)];
-    OutputDir = [simDataDir,filesep,fileName_noExt,'_xMBLT'];
+    OutputDir = [simDataDir,filesep,'Band_opt_xMBLT'];
     mkdir(OutputDir);
     for i = 1:Npara
         for j = 1:NestSrc
