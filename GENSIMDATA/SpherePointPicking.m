@@ -6,7 +6,7 @@ NN = n;
 u = random('uniform',0,1,1,NN);
 v = random('uniform',0,1,1,NN);
 theta = 2*pi*u;
-phi = acos(2*v-1)-pi/2;
+phi = asin(2*v-1);
 
 % x = zeros(3,1);
 % y = zeros(3,1);

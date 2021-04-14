@@ -1,4 +1,4 @@
-function []=parameters(Ns,Np,Nrlz,Nnis,outDir)
+function []=parameters(Ns,Np,Nrlz,Nsrlz,Nnis,outDir)
 % given the numer of random GW sources [Ns], the number of pulsars
 % [Np], the number of noise realizations in H1 data [Nrlz]
 % and the number of realization of noise in H0 [Nnis],outputs a
@@ -52,5 +52,5 @@ searchParamsFile = [outDir,filesep,'searchParams_GWBsimDataSKA'];
 simParamsFile = [outDir,filesep,'GWBsimDataSKAParams'];
 save(searchParamsFile,'xmaxmin'); % save the searching range of parameters
 save(simParamsFile,'xmaxmin','start','deltaT','N','Ns','Np',...
-      'Nrlz','Nnis');
+      'Nrlz','Nsrlz','Nnis');
 % end of function

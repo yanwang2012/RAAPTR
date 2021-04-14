@@ -10,13 +10,14 @@ tic;
 clear;
 Ns = 200;
 Np = 1000; % for the specific pulsar catalog
-Nrlz = 50; % number of H1 realization with same src realization
+Nrlz = 1; % number of H1 realization with different noise realizations
+Nsrlz = 4; % number of H1 realization with different src realizations
 Nnis = 3; % number of H0 realization
 %frqRng = [8.26e-8,4.130e-7];% Angular velocity is converted to Hz by divided by 2*pi*365*24*3600
-outDir = '/Users/qyq/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands';
+outDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/diff_srlz';
 mkdir(outDir);
 
-parameters(Ns,Np,Nrlz,Nnis,outDir);
+parameters(Ns,Np,Nrlz,Nsrlz,Nnis,outDir);
 % when run 'gensimdata' multiple times need to change 'Srlzs' in it, if rng
 % seed is not fixed. When rng seed is fixed, it always gives the same Srlz.
 gensimdata([outDir,filesep,'GWBsimDataSKAParams.mat'],...

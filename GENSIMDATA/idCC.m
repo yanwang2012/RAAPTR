@@ -10,9 +10,9 @@ tic
 %% Dir settings
 searchParamsDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/Band_opt/New';
 simdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Band_opt/simData';
-identifydataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Band_opt/id-Band-opt-xMBLT-vs-Band-opt-iMBLT';
+identifydataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/BANDEDGE/Band_opt/iMBLT';
 Filename = 'GWBsimDataSKASrlz1Nrlz3';
-identifyFilename = 'identifiedSrc';
+identifyFilename = 'EstSrc_SNR';
 ext = '.mat';
 
 %% Files
@@ -30,6 +30,7 @@ Nband = length(paraFilename);
 
 load(simFile);
 load(idFile);
+report_src = EstSrc_SNR;
 
 %% Seperate sources into different bands
 % Ntsrc = length(alpha); % Number of true sources.
@@ -78,7 +79,7 @@ simSrc = struct('SrcSNR',SrcSNR,'SrcAlpha',SrcAlpha,'SrcDelta',SrcDelta,'SrcAmp'
 % idsrcBand1 = sum(~cellfun('isempty',idsrc(1,:))); % number of sources in a band.
 % idsrcBand2 = sum(~cellfun('isempty',idsrc(2,:)));
 % idsrcBand = struct('Band1',idsrcBand1,'Band2',idsrcBand2);
-idsrcBand = NidsrcBand;
+idsrcBand = NrepsrcBand;
 
 %% Cross-Corelation
 
@@ -92,29 +93,60 @@ idsrcBand = NidsrcBand;
 % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MTC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr,0.85);
 
 % Normalized MTC
-[rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(Nband,idsrcBand,simSrc,idsrc,simParams,yr,0.90);
+[rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(Nband,idsrcBand,simSrc,report_src,simParams,yr,0.90);
 
 
 % Minimum distance Maximum CC.
-% [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MinDMaxC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr);
+% [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] =
+% MinDMaxC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr);
+
+%% Eliminating spurious sources
+t = 0.70; % NMTC threshold used to identify sources.
+confirm_src = {}; % identified sources.
+r = {}; % rows
+c = {}; % columns
+for b = 1:Nband
+    [r{b},c{b},~] = find(rho{b} > t); % r is the row of rho, c is the column of rho.
+    % in rho, rows correspond to EstSrc2, columns correspond to EstSrc1.
+    % select the identified sources from est. sources.
+    for rr = 1:length(r{b})
+        confirm_src{b,rr} = report_src{b,r{b}(rr)};
+    end
+end
+
+NcnfrmsrcBand = zeros(Nband,1);
+for idb = 1:Nband
+    NcnfrmsrcBand(idb) = sum(~cellfun('isempty',confirm_src(idb,:))); % # of identified sources in each band
+end
+save([identifydataDir,filesep,'Confirmed_Src'],'confirm_src','NcnfrmsrcBand');
 
 %% Save matched true sources
 % save sky locations
 matched_alpha = []; % right ascension
+matched_alpha_rep = [];
 matched_dec = []; % declination
+matched_dec_rep = [];
 matched_snr = [];
+matched_snr_rep = [];
+id_max_cnfrm = zeros(size(id_max));
 
 for band = 1:Nband
-    matched_alpha = [matched_alpha SrcAlpha{band}(id_max(id_max(:,band) ~= 0, band))]; % exclude 0 elements
-    matched_dec = [matched_dec SrcDelta{band}(id_max(id_max(:,band) ~= 0, band))];
-    matched_snr = [matched_snr SrcSNR{band}(id_max(id_max(:,band) ~= 0, band))];
+    % matching true sources to reported sources
+    matched_alpha_rep = [matched_alpha_rep SrcAlpha{band}(id_max(id_max(:,band) ~= 0, band))]; % exclude 0 elements
+    matched_dec_rep = [matched_dec_rep SrcDelta{band}(id_max(id_max(:,band) ~= 0, band))];
+    matched_snr_rep = [matched_snr_rep SrcSNR{band}(id_max(id_max(:,band) ~= 0, band))];
+    % matching true sources to confirmed source
+    matched_alpha = [matched_alpha SrcAlpha{band}(id_max(r{band},band))]; % exclude 0 elements
+    matched_dec = [matched_dec SrcDelta{band}(id_max(r{band},band))];
+    matched_snr = [matched_snr SrcSNR{band}(id_max(r{band},band))];
+    id_max_cnfrm(r{band},band) = id_max(r{band},band);
 end
 
-save([identifydataDir,filesep,'Matched_Sources.mat'],'id_max','matched_alpha','matched_dec','matched_snr',...
-    'SrcAlpha','SrcDelta');
+save([identifydataDir,filesep,'Matched_Sources_SNR.mat'],'id_max','matched_alpha','matched_dec','matched_snr',...
+    'SrcAlpha','SrcDelta','id_max_cnfrm','matched_alpha_rep','matched_dec_rep','matched_snr_rep');
 %% Plotting
 metric = 'NMTC';
-methods = 'True vs identified';
+methods = 'True vs reported_SNR';
 prefix = [identifydataDir,filesep,'fig',filesep,metric,'-',methods];
 mkdir(prefix);
 
@@ -124,7 +156,7 @@ for fig = 1:Nband
     imagesc(rho{fig});
     a = colorbar;
     xlabel('True sources')
-    ylabel('Identified sources')
+    ylabel('Reported sources')
     ylabel(a,'Corss-Correlation Coefficients')
     title(['Band ',num2str(fig)])
     saveas(gcf,[prefix,filesep,figname1,'Band ',num2str(fig)],'png');
@@ -161,7 +193,7 @@ end
 % end
 
 % figname6 = [metric,'-freq'];
-% 
+%
 % for fig = 1:Nband
 %     switch fig
 %         case 1
@@ -177,9 +209,9 @@ end
 %     saveas(gcf,[prefix,filesep,figname6,'Band ',num2str(fig)],'png');
 %     savefig([prefix,filesep,figname6,'Band ',num2str(fig)]);
 % end
-% 
+%
 % figname7 = [metric,'-RA'];
-% 
+%
 % for fig = 1:Nband
 %     switch fig
 %         case 1
@@ -195,9 +227,9 @@ end
 %     saveas(gcf,[prefix,filesep,figname7,'Band ',num2str(fig)],'png');
 %     savefig([prefix,filesep,figname7,'Band ',num2str(fig)]);
 % end
-% 
+%
 % figname8 = [metric,'-DEC'];
-% 
+%
 % for fig = 1:Nband
 %     switch fig
 %         case 1
