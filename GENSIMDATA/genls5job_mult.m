@@ -35,8 +35,8 @@ for r = 1:4 %Nreal
     ParaNames = regexp(ParaNames,exp,'match');
     ParaNames = ParaNames(~cellfun(@isempty,ParaNames));
     nParamFiles = length(ParaNames);
-    inFileList = dir([DataDir,filesep,'GWB*','.hdf5']);% original file
-    cpyFileList = dir([DataDir,filesep,'HDF5',filesep,'*GWB*','.hdf5']);% total files including duplicate files for different bands.
+    inFileList = dir([DataDir,filesep,'GWBsimDataSKASrlz*Nrlz*','.hdf5']);% for single band
+    cpyFileList = dir([DataDir,filesep,'HDF5',filesep,'*GWBsimDataSKASrlz*Nrlz*','.hdf5']);% total files including duplicate files for different bands.
     cpyFiles = length(cpyFileList); % Multiple bands
     
     if isempty(inFileList) == 1
