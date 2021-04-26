@@ -8,18 +8,19 @@ tic
 dy2yr = genptaconsts('dy2yr');
 
 % master directory for simulated data
-simDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/YuYang_data';
+simDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/YuYang_data/Old Data';
 NNs = 100; % 100 GW sources
 Nrlz = 3; % # of noise realizations
 Nnis = 3; % # of H0 data
 rng(1) % fix seed for reproducibility
 
 %% set source parameters using Yuyang's data
-sim_source = load('/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/YuYang_data/sim_source.txt');
+sim_source = load([simDataDir,filesep,'sim_source.txt']);
 Amp_tmp = 10.^sim_source(:,6)';
 alpha_tmp = sim_source(:,1)';
 delta_tmp = asin(sim_source(:,2))'; % sine uniform
-omega_tmp = 10.^sim_source(:,7)'; % log-uniform
+% omega_tmp = 10.^sim_source(:,7)'; % log-uniform
+omega_tmp = sim_source(:,7)'; % for old data
 iota_tmp = acos(sim_source(:,3))'; % cosine uniform
 thetaN_tmp = sim_source(:,4)';
 phi0_tmp = sim_source(:,5)';
@@ -32,13 +33,13 @@ if isempty(Indx) == 0
     NIndx = setdiff(1:NNs,Indx);
     disp("Now has "+num2str(length(NIndx))+" sources");
     NNs = length(NIndx);
-    Amp_tmp = Amp_tmp(NIndx)';
-    alpha_tmp = alpha_tmp(NIndx)';
-    delta_tmp = delta_tmp(NIndx)';
-    omega_tmp = omega_tmp(NIndx)';
-    iota_tmp = iota_tmp(NIndx)';
-    thetaN_tmp = thetaN_tmp(NIndx)';
-    phi0_tmp = phi0_tmp(NIndx)';
+    Amp_tmp = Amp_tmp(NIndx);
+    alpha_tmp = alpha_tmp(NIndx);
+    delta_tmp = delta_tmp(NIndx);
+    omega_tmp = omega_tmp(NIndx);
+    iota_tmp = iota_tmp(NIndx);
+    thetaN_tmp = thetaN_tmp(NIndx);
+    phi0_tmp = phi0_tmp(NIndx);
 end
 %% ==== Constructing a pulsar timing array using Np pulsars ====
 % read in the pulsar catalogue simulated for SKA
