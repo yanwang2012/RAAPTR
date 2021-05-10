@@ -6,10 +6,11 @@
 %% Data Dir
 clear
 
-UnionDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/diff_srlz_xMBLT2_results/Union';
-simDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/diff_srlz';
+UnionDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/diff_srlz_cos_xMBLT2_results/Union';
+simDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/diff_srlz_cos';
 simFileName = 'GWBsimDataSKASrlz*Nrlz1';
 outDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/searchParams';
+mkdir(outDir)
 
 simFiles = dir([simDataDir,filesep,simFileName,'*.mat']);
 simFilenames = sort_nat({simFiles.name});
@@ -23,7 +24,7 @@ for rlz = 1:Nrlzs
     Nfiles = length(estSrcFile);
     
     %% load estimated sources
-    Np = 100; %1000; % # of pulsars used in simulation
+    Np = 1000; % # of pulsars used in simulation
     estSrc = {};
     estFreq = zeros(1,Nfiles);
     
@@ -45,17 +46,18 @@ for rlz = 1:Nrlzs
 %     threshold = 0.4;
     [~,idx_tmp] = sort(difreq,'descend');
     idx = idx_tmp(2:3); % first 2 big gap, exclude the first 1;
+%     idx = idx_tmp(2); % for Yuyang's data
 %     idx = find(difreq > 0.3 & difreq < max_dif); % exclude the max difference
     bandedge = (1 + 1/2 * difreq(idx)) .* estFreq(idx);
     bandedge_av = bandedge * 365*24*3600*2*pi; % convert Hz to rad/year
-    
+    bandedge_av = sort(bandedge_av); % make sure the frequencies are in ascending order.
     %% Generate search file
     filename = 'Nyquist.json';
     searchParams = jsondecode(fileread(filename));
     NumBands = length(idx) + 1;%5; %10; % n edge splits whole band into n+1 bands
     % bandwidth = bandedge_av;
     FreqRange = searchParams.angular_velocity;
-    dest = [outDir,filesep,'Band_opt',filesep,simFile_noExt];
+    dest = [outDir,filesep,'Band_opt_cos',filesep,simFile_noExt];
     mkdir(dest);
     
     for i = 1:NumBands % i band edges can split whole band into i+1 segments
