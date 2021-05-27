@@ -2,14 +2,15 @@
 # Yiqian-Qian 9/16/2019.
 
 OBJ = Multi_PSO.o perfeval_omp.o  LLR_Mp_Av.o  maxphaseutils.o ptapso.o gslhdf5_io.o subtract.o
-CC = gcc -O3
+# change gcc to icc to switch form LS5 to Stampede2
+CC = icc -O3 #-xmic-avx512 to take adavantage of AVX 512 architecture which does NOT work with current code.
 GSLFLAGS :=  $(TACC_GSL_INC)
 GSLLIBS := $(TACC_GSL_LIB)
 HDF5FLAGS := $(TACC_HDF5_INC)
 HDF5LIBS := $(TACC_HDF5_LIB)
 
 Multi_PSO.out: $(OBJ)
-	$(CC) -fopenmp $(OBJ)  -L$(HDF5LIBS) -lhdf5 -lhdf5_hl -lz -L$(GSLLIBS) -lm -lgsl -lgslcblas -o Multi_PSO.out
+	$(CC) -fopenmp $(OBJ)  -L$(HDF5LIBS) -lhdf5 -lhdf5_hl -lz -L$(GSLLIBS) -lm -lgsl -lgslcblas -o Multi_PSO_knl.out
 
 Multi_PSO.o: Multi_PSO.c
 	$(CC) -c  -I$(HDF5FLAGS) -I$(GSLFLAGS) Multi_PSO.c
