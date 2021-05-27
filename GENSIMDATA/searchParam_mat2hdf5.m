@@ -1,18 +1,31 @@
 % A script convert searchParams file from .mat to hdf5
 clear;
-FileDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/searchParams/Band_opt';
+FileDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/searchParams/Band_opt/GWBsimDataSKASrlz6Nrlz1/New';
 folders = dir([FileDir,filesep,'GWB*']);
 foldNames = sort_nat({folders.name});
 
 Nrlzs = length(foldNames);
+if Nrlzs == 0
+    Nrlzs = 1;
+end
 
 for r = 1:Nrlzs
-    [~,baseName,~] = fileparts(foldNames{r});
-    OutDir = [FileDir,filesep,baseName,filesep,'HDF5'];
-    inFileList = dir([FileDir,filesep,baseName,filesep,'search*.mat']);
-    mkdir(OutDir);
+    if isempty(foldNames)
+        OutDir = [FileDir,filesep,'HDF5'];
+        inFileList = dir([FileDir,filesep,'search*.mat']);
+        mkdir(OutDir);
+    else
+        [~,baseName,~] = fileparts(foldNames{r});
+        OutDir = [FileDir,filesep,baseName,filesep,'HDF5'];
+        inFileList = dir([FileDir,filesep,baseName,filesep,'search*.mat']);
+        mkdir(OutDir);
+    end
     for lpc = 1:length(inFileList)
-        inFile = [FileDir,filesep,baseName,filesep,inFileList(lpc).name];
+        if isempty(foldNames)
+            inFile = [FileDir,filesep,inFileList(lpc).name];
+        else
+            inFile = [FileDir,filesep,baseName,filesep,inFileList(lpc).name];
+        end
         [~,inFileName,~] = fileparts(inFile);
         outFileName = [OutDir,filesep,inFileName,'.hdf5'];
         inFileInfo = load(inFile);
