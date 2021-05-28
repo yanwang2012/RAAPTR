@@ -74,8 +74,10 @@ for band = 1:Nband
     gamma{band} = zeros(NestsrcBand,NtsrcBand); % initialize the gamma cell.
     % search along x-axis
     for Esrc = 1:NestsrcBand
+        
         [snr,~] = Amp2Snr(EstSrc{band,Esrc},simParams,yr); % get SNR for estimated source
         estSNR(band,Esrc) = snr;
+        
         for tsrc = 1:NtsrcBand
             %             tmp_true = 0; % for gamma star
             %             tmp_est1 = 0;

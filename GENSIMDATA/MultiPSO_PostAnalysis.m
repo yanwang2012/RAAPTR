@@ -3,10 +3,10 @@ clear;
 tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
-simParamsDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/YuYang_data/searchParams/Band_opt';
-simDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/YuYang_data/simData';
-estDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/YuYang_data/results_xMBLT_opt';
-inputFileName = 'GWBsimDataSKASrlz1Nrlz1'; % change here to switch between multiple and single realizations
+simParamsDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/searchParams/Band_opt';
+simDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
+estDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_xMBLT';
+inputFileName = 'GWBsimDataSKASrlz*Nrlz1'; % change here to switch between multiple and single realizations
 % Load the simulated source parameters.
 simDataList = dir([simDataDir,filesep,inputFileName,'.mat']);
 simDataList = sort_nat({simDataList.name});
@@ -39,7 +39,8 @@ for rlz = 1:rlzs
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %% reading the files
-    inParamsList = dir([simParamsDir,filesep,simFileName,filesep,'searchParams','*.mat']); % corresponds to each realization's own searchParams
+%     inParamsList = dir([simParamsDir,filesep,'searchParams','*.mat']);
+        inParamsList = dir([simParamsDir,filesep,simFileName,filesep,'searchParams','*.mat']); % corresponds to each realization's own optimal searchParams
     inDataList = dir([estDataDir,filesep,'*',simFileName,'*.mat']);
     
     num_ite = length(nFile);
@@ -61,7 +62,8 @@ for rlz = 1:rlzs
     
     for i = 1:N
         % load bands and estimated data
-        load([simParamsDir,filesep,simFileName,filesep,char(inParamNames{i})]);
+%         load([simParamsDir,filesep,inParamNames{i}{1}]); % for initial bands
+                load([simParamsDir,filesep,simFileName,filesep,inParamNames{i}{1}]); % for optimal band
         ybin_up = [ybin_up searchParams.angular_velocity(1)];% saving the band boundary
         ybin_low = [ybin_low searchParams.angular_velocity(2)];% Find the sources with frequencies in specific band
         Indx = find(omega >= searchParams.angular_velocity(2) & ...
@@ -75,7 +77,7 @@ for rlz = 1:rlzs
         end
         % Get their frequencies in Hz
         binsrcOmega = omega(Indx);
-        y = [y binsrcOmega']; % total y for all bands, transposed for Yuyang's dataset
+        y = [y binsrcOmega]; % total y for all bands.
         binsize(i) = length(binsrcOmega);
         by(i,1:binsize(i)) = binsrcOmega;
         %binsrcF = (binsrcOmega/(2*pi))/(24*3600*365);
@@ -84,8 +86,8 @@ for rlz = 1:rlzs
         x = [x binsrcSNR]; % total x for all bands
         bx(i,1:binsize(i)) = binsrcSNR;
         % Get the sky location
-        sra = [sra alpha(Indx)']; % transposed for Yuyang's dataset
-        sdec = [sdec delta(Indx)'];
+        sra = [sra alpha(Indx)];
+        sdec = [sdec delta(Indx)];
         for j = 1:num_ite
             load([estDataDir,filesep,char(inDataNames(j + num_ite * (i-1)))],'bestRealLoc');
             disp(['File: ',char(inDataNames(j + num_ite * (i-1))),' loaded']);
@@ -158,7 +160,7 @@ for rlz = 1:rlzs
     %     prefix = [estDataDir,filesep,'fig',filesep,simDataFileNames{lp}];
     prefix = [estDataDir,filesep,'fig',filesep,simFileName]; % for a single realization
     mkdir(prefix);
-    figname = ['Band-Opt',num2str(rlz)];
+    figname = ['Srlz',num2str(rlz),'Band-opt-xMBLT'];
     
     %% Plot
     figure(1)
