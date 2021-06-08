@@ -11,11 +11,12 @@ tic
 %% Dir settings
 searchParamsDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/searchParams/Band_opt';
 simdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
-identifydataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_xMBLT';
+repdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_xMBLT';
 Filename = 'GWBsimDataSKASrlz*Nrlz1';
-
-SNR_Threshold = 20;
-identifyFilename = ['RepSrc_SNR',num2str(SNR_Threshold)];
+%% IMPORTANT:MAKE SURE THIS IS CORRECT
+SNR_Threshold = 40;
+%%
+reportFilename = ['RepSrc_SNR',num2str(SNR_Threshold)];
 ext = '.mat';
 
 %% Files
@@ -29,7 +30,7 @@ for rlz = 1:Nrlzs
     paraFile = dir([searchParamsDir,filesep,simFileName,filesep,'searchParams*',ext]);
     simFile = [simdataDir,filesep,simFileName,ext];
     % idFolder = 'id-Union2-xMBLT-vs-Union2-xMBLT-iMBLT';
-    idFile = [identifydataDir,filesep,simFileName,filesep,identifyFilename,ext];
+    repFile = [repdataDir,filesep,simFileName,filesep,reportFilename,ext];
     
     paraFilename = sort_nat({paraFile.name});
     exp = 'searchParams_Nyquist\d.mat'; % regular expressions for desire file names
@@ -39,7 +40,7 @@ for rlz = 1:Nrlzs
     
     
     load(simFile);
-    load(idFile);
+    load(repFile);
     report_src = RepSrc_SNR;
     
     %% Seperate sources into different bands
@@ -115,12 +116,21 @@ for rlz = 1:Nrlzs
     confirm_src = {}; % identified sources.
     r = {}; % rows
     c = {}; % columns
+    cnfrm_src_alpha = [];
+    cnfrm_src_dec = [];
+    cnfrm_src_snr = [];
+    cnfrm_src_freq = [];
     for b = 1:Nband
         [r{b},c{b},~] = find(rho{b} > t); % r is the row of rho, c is the column of rho.
         % in rho, rows correspond to EstSrc2, columns correspond to EstSrc1.
         % select the identified sources from est. sources.
         for rr = 1:length(r{b})
             confirm_src{b,rr} = report_src{b,r{b}(rr)};
+            cnfrm_src_alpha = [cnfrm_src_alpha report_src{b,r{b}(rr)}.alpha];
+            cnfrm_src_dec = [cnfrm_src_dec report_src{b,r{b}(rr)}.delta];
+            [cnfrm_snr,~] = Amp2Snr(report_src{b,r{b}(rr)},simParams,yr);
+            cnfrm_src_snr = [cnfrm_src_snr cnfrm_snr];
+            cnfrm_src_freq = [cnfrm_src_freq report_src{b,r{b}(rr)}.omega/(2*pi*365*24*3600)]; % convert from rad/yr to Hz
         end
     end
     
@@ -128,7 +138,8 @@ for rlz = 1:Nrlzs
     for idb = 1:Nband
         NcnfrmsrcBand(idb) = sum(~cellfun('isempty',confirm_src(idb,:))); % # of identified sources in each band
     end
-    save([identifydataDir,filesep,simFileName,filesep,'Confirmed_Src_SNR',num2str(SNR_Threshold)],'confirm_src','NcnfrmsrcBand');
+    save([repdataDir,filesep,simFileName,filesep,'Confirmed_Src_SNR',num2str(SNR_Threshold)],'confirm_src','NcnfrmsrcBand',...
+        'cnfrm_src_alpha','cnfrm_src_dec','cnfrm_src_freq','cnfrm_src_snr');
     
     %% Save matched true sources
     % save sky locations
@@ -138,6 +149,7 @@ for rlz = 1:Nrlzs
     matched_dec_rep = [];
     matched_snr = [];
     matched_snr_rep = [];
+    matched_freq = [];
     id_max_cnfrm = zeros(size(id_max));
     
     for band = 1:Nband
@@ -149,15 +161,16 @@ for rlz = 1:Nrlzs
         matched_alpha = [matched_alpha SrcAlpha{band}(id_max(r{band},band))]; % exclude 0 elements
         matched_dec = [matched_dec SrcDelta{band}(id_max(r{band},band))];
         matched_snr = [matched_snr SrcSNR{band}(id_max(r{band},band))];
+        matched_freq = [matched_freq SrcOmega{band}(id_max(r{band},band))/(2*pi*365*24*3600)]; % convert rad/yr to Hz
         id_max_cnfrm(r{band},band) = id_max(r{band},band);
     end
     
-    save([identifydataDir,filesep,simFileName,filesep,'Matched_Sources_SNR',num2str(SNR_Threshold),'.mat'],'id_max','matched_alpha','matched_dec','matched_snr',...
-        'SrcAlpha','SrcDelta','id_max_cnfrm','matched_alpha_rep','matched_dec_rep','matched_snr_rep');
+    save([repdataDir,filesep,simFileName,filesep,'Matched_Sources_SNR',num2str(SNR_Threshold),'.mat'],'id_max','matched_alpha','matched_dec','matched_snr',...
+        'matched_freq','SrcAlpha','SrcDelta','id_max_cnfrm','matched_alpha_rep','matched_dec_rep','matched_snr_rep');
     %% Plotting
     metric = 'NMTC';
     methods = ['True vs reported_SNR',num2str(SNR_Threshold)];
-    prefix = [identifydataDir,filesep,'fig',filesep,simFileName,filesep,metric,'-',methods];
+    prefix = [repdataDir,filesep,'fig',filesep,simFileName,filesep,metric,'-',methods];
     mkdir(prefix);
     
     figname1 = metric;
