@@ -6,10 +6,10 @@
 clear;
 tic
 %% Set up
-simDataDir = '/work/05884/qyqstc/lonestar/MultiPSO/Task8/BANDEDGE/2bands/superNarrow/Union2_xMBLT/results/Union2_xMBLT2/results/1_iMBLT/results/1iMBLT_after/results/2_iMBLT/results/2iMBLT_after/results/3_iMBLT/results/3iMBLT_after/results/4_iMBLT/results/4iMBLT_after/results/5_iMBLT/results/5iMBLT_after/results/6_iMBLT/results/6iMBLT_after/results/7_iMBLT/results/7iMBLT_after/results/8_iMBLT/results/8iMBLT_after/results/9_iMBLT/results/9iMBLT_after/results/10_iMBLT/results/10iMBLT_after/results/11_iMBLT/results/11iMBLT_after/results/12_iMBLT/results/12iMBLT_after/results/13_iMBLT/results/13iMBLT_after/results/14_iMBLT/results/14iMBLT_after/results/15_iMBLT/results/15iMBLT_after/results/16_iMBLT/results/16iMBLT_after/results/17_iMBLT/results/17iMBLT_after/results/18_iMBLT/results/18iMBLT_after';
-searchParamsDir = '/work2/05884/qyqstc/stampede2/MultiPSO/Final/realizations/2bands/searchParams/Band_opt';
-estDataDir = '/work2/05884/qyqstc/stampede2/MultiPSO/Final/realizations/2bands/results_diff_opt_xMBLT2/1_iMBLT/results';
-srlzDir = '/work2/05884/qyqstc/stampede2/MultiPSO/Final/realizations/2bands/simData/Band_opt_diff';
+simDataDir = '/work2/05884/qyqstc/stampede2/MultiPSO/Yuyang/results_opt_xMBLT2/1_iMBLT/results/1iMBLT_after/results/2_iMBLT/results/2iMBLT_after/results/3_iMBLT/results/3iMBLT_after/results/4_iMBLT/results/4iMBLT_after/results/5_iMBLT/results/5iMBLT_after/results/6_iMBLT/results/6iMBLT_after/results/7_iMBLT/results/7iMBLT_after/results/8_iMBLT/results/8iMBLT_after/results/9_iMBLT/results/9iMBLT_after/results/10_iMBLT/results/10iMBLT_after/results/11_iMBLT/results/11iMBLT_after/results/12_iMBLT/results/12iMBLT_after/results/13_iMBLT/results/13iMBLT_after/results/14_iMBLT/results/14iMBLT_after/results/15_iMBLT/results/15iMBLT_after/results/16_iMBLT/results/16iMBLT_after';
+searchParamsDir = '/work2/05884/qyqstc/stampede2/MultiPSO/Yuyang/searchParams/Band_opt';
+estDataDir = '/work2/05884/qyqstc/stampede2/MultiPSO/Yuyang/results_opt_xMBLT2/1_iMBLT/results/1iMBLT_after/results/2_iMBLT/results/2iMBLT_after/results/3_iMBLT/results/3iMBLT_after/results/4_iMBLT/results/4iMBLT_after/results/5_iMBLT/results/5iMBLT_after/results/6_iMBLT/results/6iMBLT_after/results/7_iMBLT/results/7iMBLT_after/results/8_iMBLT/results/8iMBLT_after/results/9_iMBLT/results/9iMBLT_after/results/10_iMBLT/results/10iMBLT_after/results/11_iMBLT/results/11iMBLT_after/results/12_iMBLT/results/12iMBLT_after/results/13_iMBLT/results/13iMBLT_after/results/14_iMBLT/results/14iMBLT_after/results/15_iMBLT/results/15iMBLT_after/results/16_iMBLT/results/16iMBLT_after/results/17_iMBLT/results';
+srlzDir = '/work2/05884/qyqstc/stampede2/MultiPSO/Yuyang/1000Psr';
 inputFileName = 'GWBsimDataSKASrlz*Nrlz1';
 ext = '.mat';
 
@@ -19,7 +19,7 @@ exp = 'GWBsimDataSKASrlz\dNrlz1.*';
 simFileNames = regexp(simFileNames,exp,'match');
 simFileNames = simFileNames(~cellfun(@isempty,simFileNames));
 Nrlzs = length(simFileNames);
-stage = 1; % stage number of iMBLT
+stage = 17; % stage number of iMBLT
 spName = 'searchParams_Nyquist*';
 
 for rlz = 1:Nrlzs
@@ -32,7 +32,7 @@ for rlz = 1:Nrlzs
         outputfiles = dir([estDataDir,filesep,num2str(i),'_',simFileBaseName,'*',ext]);
         NestSrc = length(outputfiles);
         if stage == 1
-            simDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff/Band_opt_diff_xMBLT2';
+            simDataDir = '/work2/05884/qyqstc/stampede2/MultiPSO/Final/realizations/2bands/simData/Band_opt_diff_xMBLT2';
             load([simDataDir,filesep,num2str(i),'_',simFileBaseName,ext])
         else
             load([simDataDir,filesep,num2str(i),'_',simFileBaseName,'_after_',num2str(stage-1),'iMBLT',ext]);% subtraction in iMBLT needs to base on the new inputdata generated from last subtraction, not from the original data.
