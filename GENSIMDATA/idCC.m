@@ -9,12 +9,12 @@ clear;
 tic
 
 %% Dir settings
-searchParamsDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/searchParams/Band_opt';
-simdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
-repdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_xMBLT';
-Filename = 'GWBsimDataSKASrlz*Nrlz1';
+searchParamsDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/YuYang_data/searchParams/Band_opt';
+simdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/YuYang_data';
+repdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/YuYang_data/results_iMBLT';
+Filename = 'GWBsimDataSKASrlz1Nrlz1';
 %% IMPORTANT:MAKE SURE THIS IS CORRECT
-SNR_Threshold = 40;
+SNR_Threshold = 20;
 %%
 reportFilename = ['RepSrc_SNR',num2str(SNR_Threshold)];
 ext = '.mat';
@@ -31,6 +31,7 @@ for rlz = 1:Nrlzs
     simFile = [simdataDir,filesep,simFileName,ext];
     % idFolder = 'id-Union2-xMBLT-vs-Union2-xMBLT-iMBLT';
     repFile = [repdataDir,filesep,simFileName,filesep,reportFilename,ext];
+    simSrcFile = [repdataDir,filesep,simFileName,filesep,'simSrc.mat'];
     
     paraFilename = sort_nat({paraFile.name});
     exp = 'searchParams_Nyquist\d.mat'; % regular expressions for desire file names
@@ -41,50 +42,46 @@ for rlz = 1:Nrlzs
     
     load(simFile);
     load(repFile);
+    load(simSrcFile);
     report_src = RepSrc_SNR;
     
-    %% Seperate sources into different bands
+    %% simulate source parameters
     % Ntsrc = length(alpha); % Number of true sources.
-    SrcSNR = {};
-    SrcAlpha = {};
-    SrcAmp = {};
-    SrcDelta = {};
-    SrcIota = {};
-    SrcOmega = {};
-    SrcPhi0 = {};
-    SrcThetaN = {};
+    SrcSNR = {simSrc.SrcSNR};
+    SrcAlpha = {simSrc.SrcAlpha};
+    SrcAmp = {simSrc.SrcAmp};
+    SrcDelta = {simSrc.SrcDelta};
+    SrcIota = {simSrc.SrcIota};
+    SrcOmega = {simSrc.SrcOmega};
+    SrcPhi0 = {simSrc.SrcPhi0};
+    SrcThetaN = {simSrc.SrcThetaN};
     
-    for i = 1:Nband
-        load([searchParamsDir,filesep,simFileName,filesep,paraFilename{i}{1}]);
-        Indx = find(omega >= searchParams.angular_velocity(2) & ...
-            omega <= searchParams.angular_velocity(1));
-        
-        SrcSNR{i} = snr_chr(Indx);
-        SrcAlpha{i} = alpha(Indx);
-        SrcDelta{i} = delta(Indx);
-        SrcAmp{i} = Amp(Indx);
-        SrcIota{i} = iota(Indx);
-        SrcOmega{i} = omega(Indx);
-        SrcPhi0{i} = phi0(Indx);
-        SrcThetaN{i} = thetaN(Indx);
-        
-    end
+    % create new sets which excludes sources below certain snr
+    snr_cut = 5; % excludes true sources below snr 5
+    RSrcSNR = {};
+    RSrcAlpha = {};
+    RSrcAmp = {};
+    RSrcDelta = {};
+    RSrcIota = {};
+    RSrcOmega = {};
+    RSrcPhi0 = {};
+    RSrcThetaN = {};
     
     %% Sort sources in different bands
     
     for j = 1:Nband
-        [~,id] = sort(SrcSNR{j},'descend'); % sort true sources according to SNR value
-        SrcSNR{j} = SrcSNR{j}(id);
-        SrcAlpha{j} = SrcAlpha{j}(id);
-        SrcDelta{j} = SrcDelta{j}(id);
-        SrcAmp{j} = SrcAmp{j}(id);
-        SrcIota{j} = SrcIota{j}(id);
-        SrcOmega{j} = SrcOmega{j}(id);
-        SrcPhi0{j} = SrcPhi0{j}(id);
-        SrcThetaN{j} = SrcThetaN{j}(id);
+        % Assign SNR cut to simulated sources
+        RSrcSNR{j} = SrcSNR{j}(SrcSNR{j} >= snr_cut);
+        RSrcAlpha{j} = SrcAlpha{j}(SrcSNR{j} >= snr_cut);
+        RSrcDelta{j} = SrcDelta{j}(SrcSNR{j} >= snr_cut);
+        RSrcAmp{j} = SrcAmp{j}(SrcSNR{j} >= snr_cut);
+        RSrcIota{j} = SrcIota{j}(SrcSNR{j} >= snr_cut);
+        RSrcOmega{j} = SrcOmega{j}(SrcSNR{j} >= snr_cut);
+        RSrcPhi0{j} = SrcPhi0{j}(SrcSNR{j} >= snr_cut);
+        RSrcThetaN{j} = SrcThetaN{j}(SrcSNR{j} >= snr_cut);
     end
-    simSrc = struct('SrcSNR',SrcSNR,'SrcAlpha',SrcAlpha,'SrcDelta',SrcDelta,'SrcAmp',SrcAmp,...
-        'SrcIota',SrcIota,'SrcOmega',SrcOmega,'SrcPhi0',SrcPhi0,'SrcThetaN',SrcThetaN); % Simulated sources parameters
+    RsimSrc = struct('SrcSNR',RSrcSNR,'SrcAlpha',RSrcAlpha,'SrcDelta',RSrcDelta,'SrcAmp',RSrcAmp,...
+        'SrcIota',RSrcIota,'SrcOmega',RSrcOmega,'SrcPhi0',RSrcPhi0,'SrcThetaN',RSrcThetaN); % Simulated sources parameters but exclude weaker sources
     
     %% Get identified sources info
     % idsrcBand1 = sum(~cellfun('isempty',idsrc(1,:))); % number of sources in a band.
@@ -104,7 +101,7 @@ for rlz = 1:Nrlzs
     % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MTC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr,0.85);
     
     % Normalized MTC
-    [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(Nband,idsrcBand,simSrc,report_src,simParams,yr,0.90);
+    [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(Nband,idsrcBand,simSrc,report_src,simParams,yr,0.80);
     
     
     % Minimum distance Maximum CC.
@@ -121,7 +118,7 @@ for rlz = 1:Nrlzs
     cnfrm_src_snr = [];
     cnfrm_src_freq = [];
     for b = 1:Nband
-        [r{b},c{b},~] = find(rho{b} > t); % r is the row of rho, c is the column of rho.
+        [r{b},c{b},~] = find(rho_max{b} > t); % r is the row of rho, c is the column of rho.
         % in rho, rows correspond to EstSrc2, columns correspond to EstSrc1.
         % select the identified sources from est. sources.
         for rr = 1:length(r{b})
@@ -176,7 +173,7 @@ for rlz = 1:Nrlzs
     figname1 = metric;
     for fig = 1:Nband
         figure
-        imagesc(rho{fig});
+        imagesc(rho_max{fig});
         a = colorbar;
         xlabel('True sources')
         ylabel('Reported sources')

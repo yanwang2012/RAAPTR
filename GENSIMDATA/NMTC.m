@@ -3,8 +3,10 @@ function [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(
 % threshold.
 % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,estSNR] =
 % MWC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr,threshold)
-% rho: cross-correlation coefficient matrix
-% rho_max: maximum value of rho.
+% rho: cross-correlation coefficient matrix for each estimated source over
+% all true sources.
+% rho_max: maximum value of rho. for each estimated source over all true
+% sources.
 % dif_freq_max: error in frequency.
 % dif_ra_max: error in RA.
 % dif_dec_max: error in DEC.
@@ -52,8 +54,7 @@ SrcAmp = {simSrc.SrcAmp};
 rho_tmp = zeros(Np,1);
 
 rho = {}; % cross-correlation coefficients matrix
-% rho_max = {};
-gamma = cell(1,Nband); % averaged cross-correlation coefficients
+rho_max = {};
 
 % investigations
 NestsrcBand = max(EstSrcBand);
@@ -71,7 +72,7 @@ dif_dec_max = zeros(NestsrcBand,Nband);
 for band = 1:Nband
     NtsrcBand = length(SrcAlpha{band}); % number of true sources in each band
     NestsrcBand = EstSrcBand(band);
-    gamma{band} = zeros(NestsrcBand,NtsrcBand); % initialize the gamma cell.
+    rho_max{band} = zeros(NestsrcBand,NtsrcBand); % initialize the gamma cell.
     % search along x-axis
     for Esrc = 1:NestsrcBand
         
@@ -131,13 +132,12 @@ for band = 1:Nband
         above_threshold = sum(rho_tmp > threshold); % calculate how many CC. above the threshold.
         [~,id_max(Esrc,band)] = max(above_threshold);
         %         gamma{band}(src,id_max(src,band)) = max(rho_tmp(:,id_max(src,band))); % Maximized CC
-        gamma{band}(Esrc,id_max(Esrc,band)) = sum(rho_tmp(:,id_max(Esrc,band))) / Np; % nomalized over Np (1000) pulsars.
+        rho_max{band}(Esrc,id_max(Esrc,band)) = sum(rho_tmp(:,id_max(Esrc,band))) / Np; % nomalized over Np (1000) pulsars.
         %         gamma{band}(src,id_max(src,band)) = sum(rho_tmp(:,id_max(src,band)) > threshold) / 1000;
+        rho{band}{Esrc} = rho_tmp;
     end
     
     rho_tmp = zeros(Np,1); % needs to re-init. rho_tmp when change band, since size of rho_tmp is not constant.
-    rho{band} = gamma{band};
-    rho_max{band} = max(rho{band},[],2); % get the maximum CC. value over true sources.
     % make id_max unique
     %     for src1 = 1:NestsrcBand - 1
     %         for src2 = src1+1:NestsrcBand
