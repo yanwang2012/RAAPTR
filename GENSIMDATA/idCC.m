@@ -1,5 +1,5 @@
 % Cross-Correlation Coefficients Matrix
-% True sources vs. Identified sources
+% True sources vs. Reported sources
 % Update to multi version
 
 % Author: QYQ
@@ -14,7 +14,7 @@ simdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/P
 repdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/YuYang_data/results_iMBLT';
 Filename = 'GWBsimDataSKASrlz1Nrlz1';
 %% IMPORTANT:MAKE SURE THIS IS CORRECT
-SNR_Threshold = 20;
+SNR_Threshold = 10;
 %%
 reportFilename = ['RepSrc_SNR',num2str(SNR_Threshold)];
 ext = '.mat';
@@ -56,8 +56,8 @@ for rlz = 1:Nrlzs
     SrcPhi0 = {simSrc.SrcPhi0};
     SrcThetaN = {simSrc.SrcThetaN};
     
-    % create new sets which excludes sources below certain snr
-    snr_cut = 5; % excludes true sources below snr 5
+    % create new sets which excludes sources below certain criteria
+    snr_cut = 3; % excludes true sources below snr 3
     RSrcSNR = {};
     RSrcAlpha = {};
     RSrcAmp = {};
@@ -67,18 +67,18 @@ for rlz = 1:Nrlzs
     RSrcPhi0 = {};
     RSrcThetaN = {};
     
-    %% Sort sources in different bands
-    
+    % apply snr cut off
     for j = 1:Nband
         % Assign SNR cut to simulated sources
-        RSrcSNR{j} = SrcSNR{j}(SrcSNR{j} >= snr_cut);
-        RSrcAlpha{j} = SrcAlpha{j}(SrcSNR{j} >= snr_cut);
-        RSrcDelta{j} = SrcDelta{j}(SrcSNR{j} >= snr_cut);
-        RSrcAmp{j} = SrcAmp{j}(SrcSNR{j} >= snr_cut);
-        RSrcIota{j} = SrcIota{j}(SrcSNR{j} >= snr_cut);
-        RSrcOmega{j} = SrcOmega{j}(SrcSNR{j} >= snr_cut);
-        RSrcPhi0{j} = SrcPhi0{j}(SrcSNR{j} >= snr_cut);
-        RSrcThetaN{j} = SrcThetaN{j}(SrcSNR{j} >= snr_cut);
+        id_snr = SrcSNR{j} >= snr_cut;
+        RSrcSNR{j} = SrcSNR{j}(id_snr);
+        RSrcAlpha{j} = SrcAlpha{j}(id_snr);
+        RSrcDelta{j} = SrcDelta{j}(id_snr);
+        RSrcAmp{j} = SrcAmp{j}(id_snr);
+        RSrcIota{j} = SrcIota{j}(id_snr);
+        RSrcOmega{j} = SrcOmega{j}(id_snr);
+        RSrcPhi0{j} = SrcPhi0{j}(id_snr);
+        RSrcThetaN{j} = SrcThetaN{j}(id_snr);
     end
     RsimSrc = struct('SrcSNR',RSrcSNR,'SrcAlpha',RSrcAlpha,'SrcDelta',RSrcDelta,'SrcAmp',RSrcAmp,...
         'SrcIota',RSrcIota,'SrcOmega',RSrcOmega,'SrcPhi0',RSrcPhi0,'SrcThetaN',RSrcThetaN); % Simulated sources parameters but exclude weaker sources
@@ -101,12 +101,13 @@ for rlz = 1:Nrlzs
     % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MTC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr,0.85);
     
     % Normalized MTC
-    [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(Nband,idsrcBand,simSrc,report_src,simParams,yr,0.80);
+    [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(Nband,idsrcBand,simSrc,report_src,simParams,yr,0.90);
     
     
     % Minimum distance Maximum CC.
     % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] =
     % MinDMaxC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr);
+    save([repdataDir,filesep,simFileName,filesep,'NMTC_SNR',num2str(SNR_Threshold)],'rho','rho_max');
     
     %% Eliminating spurious sources
     t = 0.70; % NMTC threshold used to identify sources.
@@ -188,7 +189,7 @@ for rlz = 1:Nrlzs
     for fig2 = 1:Nband
         N = idsrcBand(fig2);
         figure
-        plot(estSNR(fig2,1:N),rho_max{fig2},'ob')
+        plot(estSNR(fig2,1:N),max(rho_max{fig2},[],2),'ob')
         xlabel('Estimated SNR')
         ylabel(metric)
         title(['Band ',num2str(fig2)])
