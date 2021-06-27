@@ -1,4 +1,4 @@
-function [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(Nband,EstSrcBand,simSrc,EstSrc,simParams,yr,threshold)
+function [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(Nband,EstSrcBand,Src1,Src2,simParams,yr,threshold)
 % A function calculates cross-correlation coefficients above a chosen
 % threshold.
 % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,estSNR] =
@@ -43,13 +43,13 @@ alphaP = simParams.alphaP;
 kp = simParams.kp;
 distP = simParams.distP;
 
-SrcAlpha = {simSrc.SrcAlpha};
-SrcDelta = {simSrc.SrcDelta};
-SrcOmega = {simSrc.SrcOmega};
-SrcPhi0 = {simSrc.SrcPhi0};
-SrcIota = {simSrc.SrcIota};
-SrcThetaN = {simSrc.SrcThetaN};
-SrcAmp = {simSrc.SrcAmp};
+SrcAlpha = {Src1.SrcAlpha};
+SrcDelta = {Src1.SrcDelta};
+SrcOmega = {Src1.SrcOmega};
+SrcPhi0 = {Src1.SrcPhi0};
+SrcIota = {Src1.SrcIota};
+SrcThetaN = {Src1.SrcThetaN};
+SrcAmp = {Src1.SrcAmp};
 
 rho_tmp = zeros(Np,1);
 
@@ -76,7 +76,7 @@ for band = 1:Nband
     % search along x-axis
     for Esrc = 1:NestsrcBand
         
-        [snr,~] = Amp2Snr(EstSrc{band,Esrc},simParams,yr); % get SNR for estimated source
+        [snr,~] = Amp2Snr(Src2{band,Esrc},simParams,yr); % get SNR for estimated source
         estSNR(band,Esrc) = snr;
         
         for tsrc = 1:NtsrcBand
@@ -98,8 +98,8 @@ for band = 1:Nband
                 tmp = FullResiduals(SrcAlpha{band}(tsrc),SrcDelta{band}(tsrc),SrcOmega{band}(tsrc),SrcPhi0{band}(tsrc),phiI(psr),alphaP(psr),deltaP(psr),...
                     SrcAmp{band}(tsrc),SrcIota{band}(tsrc),SrcThetaN{band}(tsrc),theta,yr); % timing residuals for true src
                 
-                tmp_est = FullResiduals(EstSrc{band,Esrc}.alpha,EstSrc{band,Esrc}.delta,EstSrc{band,Esrc}.omega,EstSrc{band,Esrc}.phi0,EstSrc{band,Esrc}.phiI(psr),alphaP(psr),deltaP(psr),...
-                    EstSrc{band,Esrc}.Amp,EstSrc{band,Esrc}.iota,EstSrc{band,Esrc}.thetaN,theta,yr); % timing residuals for estimated source
+                tmp_est = FullResiduals(Src2{band,Esrc}.alpha,Src2{band,Esrc}.delta,Src2{band,Esrc}.omega,Src2{band,Esrc}.phi0,Src2{band,Esrc}.phiI(psr),alphaP(psr),deltaP(psr),...
+                    Src2{band,Esrc}.Amp,Src2{band,Esrc}.iota,Src2{band,Esrc}.thetaN,theta,yr); % timing residuals for estimated source
                 
                 %                 tmp_est1 = tmp_est1 + norm(tmp_est);
                 %                 tmp_true = tmp_true + norm(tmp); % for gamma star
@@ -150,8 +150,8 @@ for band = 1:Nband
     %     end
     
     %     dif_freq_max(:,band) = abs(arrayfun(@(x) EstSrc{band,x}.omega, 1:NestsrcBand) - SrcOmega{band}(id_max(:,band)')) / (365*24*3600*2*pi); % convert to Hz
-    dif_freq_max(1:NestsrcBand,band) = arrayfun(@(x) abs(EstSrc{band,x}.omega - SrcOmega{band}(id_max(x,band))) * 100 / SrcOmega{band}(id_max(x,band)), 1:NestsrcBand); % error as percetage
-    dif_ra_max(1:NestsrcBand,band) = arrayfun(@(x) abs(EstSrc{band,x}.alpha - SrcAlpha{band}(id_max(x,band))) * 100 / SrcAlpha{band}(id_max(x,band)), 1:NestsrcBand); % error as percentage
+    dif_freq_max(1:NestsrcBand,band) = arrayfun(@(x) abs(Src2{band,x}.omega - SrcOmega{band}(id_max(x,band))) * 100 / SrcOmega{band}(id_max(x,band)), 1:NestsrcBand); % error as percetage
+    dif_ra_max(1:NestsrcBand,band) = arrayfun(@(x) abs(Src2{band,x}.alpha - SrcAlpha{band}(id_max(x,band))) * 100 / SrcAlpha{band}(id_max(x,band)), 1:NestsrcBand); % error as percentage
     %     dif_dec_max(:,band) = abs(arrayfun(@(x) EstSrc{band,x}.delta, 1:NestsrcBand) - SrcDelta{band}(id_max(:,band)'));
-    dif_dec_max(1:NestsrcBand,band) = arrayfun(@(x) abs(EstSrc{band,x}.delta - SrcDelta{band}(id_max(x,band))) * 100 / SrcDelta{band}(id_max(x,band)), 1:NestsrcBand); % error as percentage
+    dif_dec_max(1:NestsrcBand,band) = arrayfun(@(x) abs(Src2{band,x}.delta - SrcDelta{band}(id_max(x,band))) * 100 / SrcDelta{band}(id_max(x,band)), 1:NestsrcBand); % error as percentage
 end

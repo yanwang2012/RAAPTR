@@ -10,12 +10,12 @@ clear;
 tic
 
 %% Dir settings
-simdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData';
-estSrc1Dir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/xMBLT_set1/results';
+simdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/YuYang_data';
+estSrc1Dir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/YuYang_data/results_xMBLT1';
 estsrc1 = 'supNarxMBLT';
-estSrc2Dir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/xMBLT_set2/results';
+estSrc2Dir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/YuYang_data/results_xMBLT2';
 estsrc2 = 'supNarxMBLTRand1';
-Filename = 'GWBsimDataSKASrlz1Nrlz';
+Filename = 'GWBsimDataSKASrlz*Nrlz1';
 ext = '.mat';
 
 %% Files
@@ -26,16 +26,18 @@ estSrc2Filename = sort_nat({estSrc2File.name});
 estSrc1Filename = sort_nat({estSrc1File.name});
 simFilename = sort_nat({simFile.name});
 
+Nband = 2;
 Nestsrc = length(estSrc1File);
 Nrlzs = length(simFile);
-Nite = Nestsrc/Nrlzs;
+Nite = Nestsrc/(Nband*Nrlzs);
 
-for rlz = 1:4%Nrlzs
+for rlz = 1:Nrlzs
     load([simdataDir,filesep,simFilename{rlz}]);
     %% Get estimated sources info
     EstSrc2 = {};
     EstSrc1 = {};
-    exp = ['\d+_',Filename,num2str(rlz),'(?=_|\.mat)_?\d{0,2}.mat']; % regular expression for multiple realizations
+    [~,baseName] = fileparts(simFilename{rlz});
+    exp = ['\d+_',baseName,'(?=_|\.mat)_?\d{0,2}\.mat']; % for initial band selection
     estSrc1File_tmp = regexp(estSrc1Filename,exp,'match');
     estSrc1File_tmp = estSrc1File_tmp(~cellfun(@isempty, estSrc1File_tmp));
     estSrc2File_tmp = regexp(estSrc2Filename,exp,'match');
@@ -48,7 +50,7 @@ for rlz = 1:4%Nrlzs
     end
     
     % Cross-Corelation
-    [gamma,rho,id_max,estSNR1,estSNR2] = ESNMTCW(Nite,EstSrc1,EstSrc2,simParams,yr,0.90);
+    [gamma,rho,id_max,estSNR1,estSNR2] = ESNMTCW(EstSrc1,EstSrc2,simParams,yr,0.90);
     
     
     %% find highly correlated sources
@@ -68,8 +70,7 @@ for rlz = 1:4%Nrlzs
     
     %% copy files together
     folderName = 'Union';
-    [~,simFile_noExt,~] = fileparts(simFilename{rlz});
-    NewFolder = [estSrc2Dir,filesep,folderName,filesep,simFile_noExt];
+    NewFolder = [estSrc2Dir,filesep,folderName,filesep,baseName];
     mkdir(NewFolder);
     for files = 1:Nite
         copyfile([estSrc2Dir,filesep,estSrc2File_tmp{files}{1}],NewFolder); % copy all files from est. sources 2

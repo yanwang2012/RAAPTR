@@ -3,9 +3,9 @@ clear;
 tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
-simParamsDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/searchParams/Band_opt';
+simParamsDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/Whole';
 simDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
-estDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_xMBLT';
+estDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_one';
 inputFileName = 'GWBsimDataSKASrlz*Nrlz1'; % change here to switch between multiple and single realizations
 % Load the simulated source parameters.
 simDataList = dir([simDataDir,filesep,inputFileName,'.mat']);
@@ -35,18 +35,18 @@ for rlz = 1:rlzs
     %%%%%%%%%%%%%%%%%%% DON'T FORGET %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     [~,simFileName,~] = fileparts(simDataList{rlz});
     nFile = dir([estDataDir,filesep,'1_',simFileName,'*.mat']); % count how many iterations are used. For initial PSO est.
-    %         nFile = dir([estDataDir,filesep,simFileName,'band1*.mat']); % For MBLT and other tests with irregular filename.
+%     nFile = dir([estDataDir,filesep,simFileName,'*.mat']); % For MBLT and other tests with irregular filename.
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %% reading the files
-%     inParamsList = dir([simParamsDir,filesep,'searchParams','*.mat']);
-        inParamsList = dir([simParamsDir,filesep,simFileName,filesep,'searchParams','*.mat']); % corresponds to each realization's own optimal searchParams
+    %     inParamsList = dir([simParamsDir,filesep,'searchParams','*.mat']);
+    inParamsList = dir([simParamsDir,filesep,simFileName,filesep,'searchParams','*.mat']); % corresponds to each realization's own optimal searchParams
     inDataList = dir([estDataDir,filesep,'*',simFileName,'*.mat']);
     
     num_ite = length(nFile);
     
     inParamNames = sort_nat({inParamsList.name});
-    exp = 'searchParams_Nyquist\d.mat'; % regular expressions for desire file names
+    exp = 'searchParams\d.mat'; % regular expressions for desire file names
     inParamNames = regexp(inParamNames,exp,'match');
     inParamNames = inParamNames(~cellfun(@isempty,inParamNames)); % get rid of empty cells
     N = length(inParamNames);% number of bands
@@ -62,8 +62,8 @@ for rlz = 1:rlzs
     
     for i = 1:N
         % load bands and estimated data
-%         load([simParamsDir,filesep,inParamNames{i}{1}]); % for initial bands
-                load([simParamsDir,filesep,simFileName,filesep,inParamNames{i}{1}]); % for optimal band
+        %         load([simParamsDir,filesep,inParamNames{i}{1}]); % for initial bands
+        load([simParamsDir,filesep,simFileName,filesep,inParamNames{i}{1}]); % for optimal band
         ybin_up = [ybin_up searchParams.angular_velocity(1)];% saving the band boundary
         ybin_low = [ybin_low searchParams.angular_velocity(2)];% Find the sources with frequencies in specific band
         Indx = find(omega >= searchParams.angular_velocity(2) & ...
@@ -160,7 +160,7 @@ for rlz = 1:rlzs
     %     prefix = [estDataDir,filesep,'fig',filesep,simDataFileNames{lp}];
     prefix = [estDataDir,filesep,'fig',filesep,simFileName]; % for a single realization
     mkdir(prefix);
-    figname = ['Srlz',num2str(rlz),'Band-opt-xMBLT'];
+    figname = [simFileName,'-Band-One'];
     
     %% Plot
     figure(1)
