@@ -43,6 +43,7 @@ for rlz = 1:Nrlzs
     repDec = [];
     cnfrmSNR = [];
     repSNR = [];
+    repFreq = [];
     Nband = length(NcnfrmsrcBand);
     % idBandSrc = zeros(Nband,1);
     
@@ -68,14 +69,16 @@ for rlz = 1:Nrlzs
             repDec = [repDec RepSrc_SNR{b,j}.delta];
             [repSNR_tmp,~] = Amp2Snr(RepSrc_SNR{b,j},simParams,yr);
             repSNR = [repSNR repSNR_tmp];
+            repFreq = [repFreq RepSrc_SNR{b,j}.omega / (24*365*3600*2*pi)];
         end
         simRA_nm = [simRA_nm SrcAlpha{b}(idx)];
         simDec_nm = [simDec_nm SrcDelta{b}(idx)];
     end
     save([idDataDir,filesep,simFileName,filesep,'simSrc_nm_sky',num2str(SNR_Threshold)],'simRA_nm','simDec_nm');
-    save([idDataDir,filesep,simFileName,filesep,'matSrc_sky',num2str(SNR_Threshold)],'matched_alpha_rep','matched_dec_rep','matched_snr_rep');
+    save([idDataDir,filesep,simFileName,filesep,'matSrc_sky',num2str(SNR_Threshold)],'matched_alpha_rep','matched_dec_rep','matched_snr_rep',...,
+        'matched_freq_rep');
     save([idDataDir,filesep,simFileName,filesep,'cnfrmSrc_sky',num2str(SNR_Threshold)],'cnfrmRA','cnfrmDec','cnfrmSNR');
-    save([idDataDir,filesep,simFileName,filesep,'repSrc_sky',num2str(SNR_Threshold)],'repRA','repDec','repSNR');
+    save([idDataDir,filesep,simFileName,filesep,'repSrc_sky',num2str(SNR_Threshold)],'repRA','repDec','repSNR','repSrcFreq');
     
     %% plot
     load('/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/GENSIMDATA/Acond for SKA/CondMap.mat'); % load skymap condition number
@@ -121,10 +124,10 @@ for rlz = 1:Nrlzs
     
     xlim(ax2,[0 2*pi])
     
-%     Link two axes together
+    %     Link two axes together
     linkaxes([ax1,ax2])
     
-%     Hide the top axis
+    %     Hide the top axis
     ax2.Visible = 'off';
     ax2.XTick = [];
     ax2.YTick = [];
@@ -139,12 +142,12 @@ for rlz = 1:Nrlzs
     
     cmap = colormap(ax2,'autumn');
     colormap(ax2,flipud(cmap)); % flip 'autumn' upside down
-%     cb2 = colorbar(ax2,'Location','southoutside');
+    %     cb2 = colorbar(ax2,'Location','southoutside');
     cb2 = colorbar(ax2,'Position',[.90 .11 .04 .815]);
     cb2.Label.String = 'SNR';
     cb2.Label.FontSize = 14;
-%     ylabel(ax2,'\delta');
-%     xlabel(ax2,'\alpha');
+    %     ylabel(ax2,'\delta');
+    %     xlabel(ax2,'\alpha');
     legend(ax2,{'True Srcs', 'Reported Srcs', 'Confirmed Srcs','Matched True Srcs','Matched & Report.'},'Location','best')
     
     saveas(gcf,[idDataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_SNR',num2str(SNR_Threshold),'.png'])

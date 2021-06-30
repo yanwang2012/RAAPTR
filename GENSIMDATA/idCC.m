@@ -87,7 +87,7 @@ for rlz = 1:Nrlzs
     % idsrcBand1 = sum(~cellfun('isempty',idsrc(1,:))); % number of sources in a band.
     % idsrcBand2 = sum(~cellfun('isempty',idsrc(2,:)));
     % idsrcBand = struct('Band1',idsrcBand1,'Band2',idsrcBand2);
-    idsrcBand = NrepsrcBand;
+    % idsrcBand = NrepsrcBand;
     
     %% Cross-Corelation
     
@@ -101,7 +101,7 @@ for rlz = 1:Nrlzs
     % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MTC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr,0.85);
     
     % Normalized MTC
-    [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(Nband,idsrcBand,simSrc,report_src,simParams,yr,0.90);
+    [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(Nband,NrepsrcBand,simSrc,report_src,simParams,yr,0.90);
     
     
     % Minimum distance Maximum CC.
@@ -148,6 +148,7 @@ for rlz = 1:Nrlzs
     matched_snr = [];
     matched_snr_rep = [];
     matched_freq = [];
+    matched_freq_rep = [];
     id_max_cnfrm = zeros(size(id_max));
     
     for band = 1:Nband
@@ -155,6 +156,7 @@ for rlz = 1:Nrlzs
         matched_alpha_rep = [matched_alpha_rep SrcAlpha{band}(id_max(id_max(:,band) ~= 0, band))]; % exclude 0 elements
         matched_dec_rep = [matched_dec_rep SrcDelta{band}(id_max(id_max(:,band) ~= 0, band))];
         matched_snr_rep = [matched_snr_rep SrcSNR{band}(id_max(id_max(:,band) ~= 0, band))];
+        matched_freq_rep = [matched_freq_rep SrcOmega{band}(id_max(id_max(:,band) ~= 0, band)) / (2*pi*24*365*3600)];
         % matching true sources to confirmed source
         matched_alpha = [matched_alpha SrcAlpha{band}(id_max(r{band},band))]; % exclude 0 elements
         matched_dec = [matched_dec SrcDelta{band}(id_max(r{band},band))];
@@ -164,7 +166,7 @@ for rlz = 1:Nrlzs
     end
     
     save([repdataDir,filesep,simFileName,filesep,'Matched_Sources_SNR',num2str(SNR_Threshold),'.mat'],'id_max','matched_alpha','matched_dec','matched_snr',...
-        'matched_freq','SrcAlpha','SrcDelta','id_max_cnfrm','matched_alpha_rep','matched_dec_rep','matched_snr_rep');
+        'matched_freq','SrcAlpha','SrcDelta','id_max_cnfrm','matched_alpha_rep','matched_dec_rep','matched_snr_rep','matched_freq_rep');
     %% Plotting
     metric = 'NMTC';
     methods = ['True vs reported_SNR',num2str(SNR_Threshold)];
@@ -187,7 +189,7 @@ for rlz = 1:Nrlzs
     
     figname2 = [metric,'-SNR'];
     for fig2 = 1:Nband
-        N = idsrcBand(fig2);
+        N = NrepsrcBand(fig2);
         figure
         plot(estSNR(fig2,1:N),max(rho_max{fig2},[],2),'ob')
         xlabel('Estimated SNR')

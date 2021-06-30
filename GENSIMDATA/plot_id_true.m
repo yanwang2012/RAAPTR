@@ -10,9 +10,10 @@ simDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/P
 DataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_xMBLT';
 Filename = 'GWBsimDataSKASrlz*Nrlz1';
 %%
-confirmFilename = 'Confirmed_Src_Est';
-idtyFilename = 'Identified_Src';
-matchedFilename = 'Matched_Sources_Est';
+SNR_threshold = 20;
+confirmFilename = ['Confirmed_Src_Est_SNR',num2str(SNR_threshold)];
+idtyFilename = ['Identified_Src_SNR',num2str(SNR_threshold)];
+matchedFilename = ['Matched_Sources_Est_SNR',num2str(SNR_threshold)];
 ext = '.mat';
 
 %% Files
@@ -42,7 +43,9 @@ for rlz = 1:Nrlzs
     cnfrmSNR = [];
     idSNR = [];
     Nband = length(NidsrcBand);
-    NcnfrmsrcBand = length(confirm_src);
+    confirm_src = CnfrmSrc_SNR;
+    cnfrmFreq = [];
+    % NcnfrmsrcBand = length(confirm_src);
     % idBandSrc = zeros(Nband,1);
     
     % get # of confirmed sources in each band
@@ -59,6 +62,7 @@ for rlz = 1:Nrlzs
             cnfrmDec = [cnfrmDec confirm_src{b,i}.delta];
             [SNR_tmp,~] = Amp2Snr(confirm_src{b,i},simParams,yr);
             cnfrmSNR = [cnfrmSNR SNR_tmp];
+            cnfrmFreq = [cnfrmFreq confirm_src{b,i}.omega / (2*pi*24*365*3600)];
         end
         
         for j = 1: NidsrcBand(b)
@@ -70,10 +74,11 @@ for rlz = 1:Nrlzs
         simRA_nm = [simRA_nm SrcAlpha{b}(idx)];
         simDec_nm = [simDec_nm SrcDelta{b}(idx)];
     end
-    save([DataDir,filesep,simFileName,filesep,'simSrc_nm_sky_Est'],'simRA_nm','simDec_nm');
-    save([DataDir,filesep,simFileName,filesep,'matSrc_sky_Est'],'matched_alpha_cnfrm','matched_dec_cnfrm','matched_snr_cnfrm');
-    save([DataDir,filesep,simFileName,filesep,'cnfrmSrc_sky_Est'],'cnfrmRA','cnfrmDec','cnfrmSNR');
-    save([DataDir,filesep,simFileName,filesep,'idSrc_sky_Est'],'idRA','idDec','idSNR');
+    save([DataDir,filesep,simFileName,filesep,'simSrc_nm_sky_Est_SNR',num2str(SNR_threshold)],'simRA_nm','simDec_nm');
+    save([DataDir,filesep,simFileName,filesep,'matSrc_sky_Est_SNR',num2str(SNR_threshold)],'matched_alpha_cnfrm','matched_dec_cnfrm','matched_snr_cnfrm', ...,
+        'matched_freq_cnfrm');
+    save([DataDir,filesep,simFileName,filesep,'cnfrmSrc_sky_Est_SNR',num2str(SNR_threshold)],'cnfrmRA','cnfrmDec','cnfrmSNR','cnfrmFreq');
+    save([DataDir,filesep,simFileName,filesep,'idSrc_sky_Est_SNR',num2str(SNR_threshold)],'idRA','idDec','idSNR');
     
     %% plot
     load('/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/GENSIMDATA/Acond for SKA/CondMap.mat'); % load skymap condition number
@@ -119,10 +124,10 @@ for rlz = 1:Nrlzs
     
     xlim(ax2,[0 2*pi])
     
-%     Link two axes together
+    %     Link two axes together
     linkaxes([ax1,ax2])
     
-%     Hide the top axis
+    %     Hide the top axis
     ax2.Visible = 'off';
     ax2.XTick = [];
     ax2.YTick = [];
@@ -137,16 +142,16 @@ for rlz = 1:Nrlzs
     
     cmap = colormap(ax2,'autumn');
     colormap(ax2,flipud(cmap)); % flip 'autumn' upside down
-%     cb2 = colorbar(ax2,'Location','southoutside');
+    %     cb2 = colorbar(ax2,'Location','southoutside');
     cb2 = colorbar(ax2,'Position',[.90 .11 .04 .815]);
     cb2.Label.String = 'SNR';
     cb2.Label.FontSize = 14;
-%     ylabel(ax2,'\delta');
-%     xlabel(ax2,'\alpha');
+    %     ylabel(ax2,'\delta');
+    %     xlabel(ax2,'\alpha');
     legend(ax2,{'True Srcs', 'Identified Srcs', 'Confirmed Srcs','Matched True Srcs','Matched & Confrm.'},'Location','best')
     
-    saveas(gcf,[DataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_Est','.png'])
-    savefig([DataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_Est'])
+    saveas(gcf,[DataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_Est_SNR',num2str(SNR_threshold),'.png'])
+    savefig([DataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_Est_SNR',num2str(SNR_threshold)])
     close all
 end
 

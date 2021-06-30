@@ -31,7 +31,7 @@ Nrlzs = length(simFile);
 Nite1 = Nestsrc1/Nrlzs;
 
 
-for rlz = 3% 1:Nrlzs
+for rlz = 1:Nrlzs
     load([simdataDir,filesep,simFilename{rlz}]);
     %% Get estimated sources info
     EstSrc2 = {};
@@ -58,29 +58,28 @@ for rlz = 3% 1:Nrlzs
     %% Eliminating spurious sources
     t = 0.70; % NMTC threshold used to identify sources.
     confirm_src = {}; % identified sources
-    cnfrm_src_alpha = [];
-    cnfrm_src_dec = [];
-    cnfrm_src_snr = [];
-    cnfrm_src_freq = [];
     
     [r,c,~] = find(gamma > t); % r is the row of rho, c is the column of gamma.
     % in gamma, rows correspond to EstSrc1, columns correspond to EstSrc2.
     % select the identified sources from est. sources.
     for rr = 1:length(r)
         confirm_src{rr} = EstSrc2{c(rr)};
-        cnfrm_src_alpha = [cnfrm_src_alpha EstSrc2{c(rr)}.alpha];
-        cnfrm_src_dec = [cnfrm_src_dec EstSrc2{c(rr)}.delta];
-        [cnfrm_snr,~] = Amp2Snr(EstSrc2{c(rr)},simParams,yr);
-        cnfrm_src_snr = [cnfrm_src_snr cnfrm_snr];
-        cnfrm_src_freq = [cnfrm_src_freq EstSrc2{c(rr)}.omega/(2*pi*365*24*3600)]; % convert from rad/yr to Hz
     end
     
-    NcnfrmsrcBand = zeros(Nband,1);
-    for idb = 1:Nband
-        NcnfrmsrcBand(idb) = sum(~cellfun('isempty',confirm_src(idb,:))); % # of identified sources in each band
-    end
-    save([estSrc2Dir,filesep,baseName,filesep,'Confirmed_Src_Est'],'confirm_src','NcnfrmsrcBand',...
-        'cnfrm_src_alpha','cnfrm_src_dec','cnfrm_src_freq','cnfrm_src_snr');
+    % select confirmed sources using SNR threshold
+    snr_trs = 20; % set SNR threshold
+    logits = cnfrm_src_snr > snr_trs;
+    CnfrmSrc_SNR_tmp = cell(size(confirm_src)); % reported sources
+    CnfrmSrc_SNR = cell(size(confirm_src));
+    CnfrmSrc_SNR_tmp(logits) = confirm_src(logits);
+    idx = ~cellfun('isempty',CnfrmSrc_SNR_tmp);
+    NcnfrmsrcBand = sum(idx,2);
+    % remove the empty cells in each row
+    
+    CnfrmSrc_SNR(1:NcnfrmsrcBand) = CnfrmSrc_SNR_tmp(idx);
+    CnfrmSrc_SNR = CnfrmSrc_SNR(~cellfun('isempty',CnfrmSrc_SNR)); % remove trailing blank cells
+    
+    save([estSrc2Dir,filesep,baseName,filesep,'Confirmed_Src_Est_SNR',num2str(snr_trs)],'NcnfrmsrcBand','CnfrmSrc_SNR');
     
 end
 
