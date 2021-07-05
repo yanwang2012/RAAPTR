@@ -1,4 +1,6 @@
-% script to plot identified sources vs. True sources
+% script to plot confirmed sources vs. True sources
+% Confirmed sources are carried out by cross correlating reported sources
+% with true sources.
 % (1) 2D skymap
 % (2) 3D skymap
 
@@ -43,6 +45,7 @@ for rlz = 1:Nrlzs
     repDec = [];
     cnfrmSNR = [];
     repSNR = [];
+    cnfrmFreq = [];
     repFreq = [];
     Nband = length(NcnfrmsrcBand);
     % idBandSrc = zeros(Nband,1);
@@ -62,6 +65,7 @@ for rlz = 1:Nrlzs
             cnfrmDec = [cnfrmDec confirm_src{b,i}.delta];
             [idSNR_tmp,~] = Amp2Snr(confirm_src{b,i},simParams,yr);
             cnfrmSNR = [cnfrmSNR idSNR_tmp];
+            cnfrmFreq = [cnfrmFreq confirm_src{b,i}.omega/(2*pi*24*365*3600)];
         end
         
         for j = 1: NrepsrcBand(b)
@@ -69,16 +73,16 @@ for rlz = 1:Nrlzs
             repDec = [repDec RepSrc_SNR{b,j}.delta];
             [repSNR_tmp,~] = Amp2Snr(RepSrc_SNR{b,j},simParams,yr);
             repSNR = [repSNR repSNR_tmp];
-            repFreq = [repFreq RepSrc_SNR{b,j}.omega / (24*365*3600*2*pi)];
+            repFreq = [repFreq RepSrc_SNR{b,j}.omega/(24*365*3600*2*pi)];
         end
         simRA_nm = [simRA_nm SrcAlpha{b}(idx)];
         simDec_nm = [simDec_nm SrcDelta{b}(idx)];
     end
     save([idDataDir,filesep,simFileName,filesep,'simSrc_nm_sky',num2str(SNR_Threshold)],'simRA_nm','simDec_nm');
     save([idDataDir,filesep,simFileName,filesep,'matSrc_sky',num2str(SNR_Threshold)],'matched_alpha_rep','matched_dec_rep','matched_snr_rep',...,
-        'matched_freq_rep');
-    save([idDataDir,filesep,simFileName,filesep,'cnfrmSrc_sky',num2str(SNR_Threshold)],'cnfrmRA','cnfrmDec','cnfrmSNR');
-    save([idDataDir,filesep,simFileName,filesep,'repSrc_sky',num2str(SNR_Threshold)],'repRA','repDec','repSNR','repSrcFreq');
+        'matched_freq_rep','matched_alpha','matched_dec','matched_snr','matched_freq');
+    save([idDataDir,filesep,simFileName,filesep,'cnfrmSrc_sky',num2str(SNR_Threshold)],'cnfrmRA','cnfrmDec','cnfrmSNR','cnfrmFreq');
+    save([idDataDir,filesep,simFileName,filesep,'repSrc_sky',num2str(SNR_Threshold)],'repRA','repDec','repSNR','repFreq');
     
     %% plot
     load('/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/GENSIMDATA/Acond for SKA/CondMap.mat'); % load skymap condition number
