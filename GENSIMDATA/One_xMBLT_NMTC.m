@@ -79,7 +79,7 @@ for rlz = 1:Nrlzs
     CnfrmSrc_SNR(1:NcnfrmsrcBand) = CnfrmSrc_SNR_tmp(idx);
     CnfrmSrc_SNR = CnfrmSrc_SNR(~cellfun('isempty',CnfrmSrc_SNR)); % remove trailing blank cells
     
-    save([estSrc2Dir,filesep,baseName,filesep,'Confirmed_Src_Est_SNR',num2str(snr_trs)],'NcnfrmsrcBand','CnfrmSrc_SNR');
+    save([estSrc2Dir,filesep,baseName,filesep,'Confirmed_Src_Est_SNR',num2str(snr_trs)],'NcnfrmsrcBand','CnfrmSrc_SNR','snr_trs');
     
 end
 
