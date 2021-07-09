@@ -120,26 +120,16 @@ for rlz = 1:Nrlzs
     % idsrcBand = length(confirm_src);
     
     %% Cross-Corelation
-    
-    % Max Weighted CC
-    % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MWC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,SrcSNR,EstSrc,simParams,yr,'snr');
-    
-    % Max Weighted Ave. CC
-    % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MWAC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,SrcSNR,EstSrc,simParams,yr,'snr');
-    
-    % Max over Threshold CC
-    % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MTC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr,0.85);
-    
     % Normalized MTC
-    psr_t = 0.6; % NMTC value threshold per-pulsar
-    [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(Nband,NcnfrmsrcBand,RsimSrc,confirm_src,simParams,yr,psr_t);
+    psr_t = 0.9; % NMTC value threshold per-pulsar
+    [rho,rho_max,id_max,estSNR] = NMTC(Nband,NcnfrmsrcBand,RsimSrc,confirm_src,simParams,yr,psr_t);
     
     
     % Minimum distance Maximum CC.
     % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] =
     % MinDMaxC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr);
     %     save([cnfrmdataDir,filesep,simFileName,filesep,'NMTC_Est_SNR',num2str(SNR_threshold)],'rho','rho_max');
-    save([cnfrmdataDir,filesep,simFileName,filesep,'NMTC_Est_SNR',num2str(SNR_threshold),'tSNR_',num2str(snr_cut),'_psrT_',num2str(psr_t)],'rho','rho_max');
+    save([cnfrmdataDir,filesep,simFileName,filesep,'NMTC_Est_SNR',num2str(SNR_threshold),'tSNR_',num2str(snr_cut),'_psrT_',num2str(psr_t),ext],'rho','rho_max');
     
     %% Eliminating spurious sources
     t = 0.70; % NMTC threshold used to identify sources.
@@ -172,7 +162,7 @@ for rlz = 1:Nrlzs
 %         'id_src_alpha','id_src_dec','id_src_freq','id_src_snr');
     save([cnfrmdataDir,filesep,simFileName,filesep,'Identified_Src_SNR',num2str(SNR_threshold),'tSNR_',num2str(snr_cut),'_psrT_',num2str(psr_t),ext],'id_src','NidsrcBand',...
         'id_src_alpha','id_src_dec','id_src_freq','id_src_snr','snr_cut','psr_t');
-
+    
     %% Save matched true sources
     % save sky locations
     matched_alpha = []; % right ascension
@@ -184,6 +174,7 @@ for rlz = 1:Nrlzs
     matched_freq = [];
     matched_freq_cnfrm = [];
     id_max_idty = zeros(size(id_max));
+    cnfrm_src_nm = []; % confirm sources which don't find a true match
     
     for band = 1:Nband
         % matching true sources to confirmed sources
@@ -197,12 +188,13 @@ for rlz = 1:Nrlzs
         matched_snr = [matched_snr SrcSNR{band}(id_max(r{band},band))];
         matched_freq = [matched_freq SrcOmega{band}(id_max(r{band},band))/(2*pi*365*24*3600)]; % convert rad/yr to Hz
         id_max_idty(r{band},band) = id_max(r{band},band);
+        cnfrm_src_nm = [cnfrm_src_nm confirm_src{id_max(:,band) == 0}]; 
     end
     
     %     save([cnfrmdataDir,filesep,simFileName,filesep,'Matched_Sources_Est_SNR',num2str(SNR_threshold),ext],'id_max','matched_alpha','matched_dec','matched_snr',...
     %         'matched_freq','SrcAlpha','SrcSNR','SrcDelta','id_max_idty','matched_alpha_cnfrm','matched_dec_cnfrm','matched_snr_cnfrm','matched_freq_cnfrm');
     save([cnfrmdataDir,filesep,simFileName,filesep,'Matched_Sources_Est_SNR',num2str(SNR_threshold),'tSNR_',num2str(snr_cut),'_psrT_',num2str(psr_t),ext],'id_max','matched_alpha','matched_dec','matched_snr',...
-        'matched_freq','SrcAlpha','SrcSNR','SrcDelta','id_max_idty','matched_alpha_cnfrm','matched_dec_cnfrm','matched_snr_cnfrm','matched_freq_cnfrm');
+        'matched_freq','SrcAlpha','SrcSNR','SrcDelta','id_max_idty','matched_alpha_cnfrm','matched_dec_cnfrm','matched_snr_cnfrm','matched_freq_cnfrm', 'cnfrm_src_nm');
     %% Plotting
     metric = 'NMTC';
     methods = 'Confimred vs True';
@@ -235,75 +227,6 @@ for rlz = 1:Nrlzs
         savefig([prefix,filesep,figname2,'Band ',num2str(fig2)]);
     end
     
-    % figname3 = [metric,'identified sources'];
-    %
-    % for fig = 1:Nband
-    %     ifreq = arrayfun(@(x) isrc{fig,x}.omega/(2*pi*365*24*3600), 1:length(r{fig}));
-    %     figure
-    %     plot(SrcSNR{fig},SrcOmega{fig}/(2*pi*365*24*3600),'ob',estSNR(fig,r{fig}),ifreq,'sr')
-    %     text(SrcSNR{fig}+0.5,SrcOmega{fig}/(2*pi*365*24*3600), num2str((1:numel(SrcSNR{fig}))'), 'Color', '#0072BD')
-    %     text(estSNR(fig,r{fig})-2,ifreq, num2str(r{fig}), 'HorizontalAlignment','right', 'Color', '#D95319')
-    %     title(['Identified Sources Band ',num2str(fig)])
-    %     xlabel('SNR')
-    %     ylabel('Frequency(Hz)')
-    %     legend('True Source','Identified Source')
-    %     saveas(gcf,[prefix,filesep,figname3,'Band ',num2str(fig)],'png');
-    %     savefig([prefix,filesep,figname3,'Band ',num2str(fig)]);
-    % end
-    
-    % figname6 = [metric,'-freq'];
-    %
-    % for fig = 1:Nband
-    %     switch fig
-    %         case 1
-    %             N = idsrcBand1;
-    %         case 2
-    %             N = idsrcBand2;
-    %     end
-    %     figure
-    %     plot(dif_freq_max(1:N,fig),rho_max{fig},'ob')
-    %     xlabel('Difference of Freq. Percentage (%)')
-    %     ylabel(metric)
-    %     title(['Band ',num2str(fig)])
-    %     saveas(gcf,[prefix,filesep,figname6,'Band ',num2str(fig)],'png');
-    %     savefig([prefix,filesep,figname6,'Band ',num2str(fig)]);
-    % end
-    %
-    % figname7 = [metric,'-RA'];
-    %
-    % for fig = 1:Nband
-    %     switch fig
-    %         case 1
-    %             N = idsrcBand1;
-    %         case 2
-    %             N = idsrcBand2;
-    %     end
-    %     figure
-    %     plot(dif_ra_max(1:N,fig),rho_max{fig},'ob')
-    %     xlabel('Difference of RA Percentage (%)')
-    %     ylabel(metric)
-    %     title(['Band ',num2str(fig)])
-    %     saveas(gcf,[prefix,filesep,figname7,'Band ',num2str(fig)],'png');
-    %     savefig([prefix,filesep,figname7,'Band ',num2str(fig)]);
-    % end
-    %
-    % figname8 = [metric,'-DEC'];
-    %
-    % for fig = 1:Nband
-    %     switch fig
-    %         case 1
-    %             N = idsrcBand1;
-    %         case 2
-    %             N = idsrcBand2;
-    %     end
-    %     figure
-    %     plot(dif_dec_max(1:N,fig),rho_max{fig},'ob')
-    %     xlabel('Difference of DEC Percentage (%)')
-    %     ylabel(metric)
-    %     title(['Band ',num2str(fig)])
-    %     saveas(gcf,[prefix,filesep,figname8,'Band ',num2str(fig)],'png');
-    %     savefig([prefix,filesep,figname8,'Band ',num2str(fig)]);
-    % end
     close all
 end
 

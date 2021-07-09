@@ -1,4 +1,4 @@
-function [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(Nband,EstSrcBand,Src1,Src2,simParams,yr,threshold)
+function [rho,rho_max,id_max,estSNR] = NMTC(Nband,EstSrcBand,Src1,Src2,simParams,yr,threshold)
 % A function calculates cross-correlation coefficients above a chosen
 % threshold.
 % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,estSNR] =
@@ -7,9 +7,6 @@ function [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(
 % all true sources.
 % rho_max: maximum value of rho. for each estimated source over all true
 % sources.
-% dif_freq_max: error in frequency.
-% dif_ra_max: error in RA.
-% dif_dec_max: error in DEC.
 % id_max: index of sources which reach the maximum of coefficients.
 % estSNR: SNR value for estimated sources.
 % Nband: number of band.
@@ -130,28 +127,20 @@ for band = 1:Nband
             %             dif_dec{band}(src,tsrc) = abs(SrcDelta{band}(tsrc) - EstSrc{band,src}.delta);
         end
         above_threshold = sum(rho_tmp > threshold); % calculate how many CC. above the threshold.
-        [~,id_max(Esrc,band)] = max(above_threshold);
-        %         gamma{band}(src,id_max(src,band)) = max(rho_tmp(:,id_max(src,band))); % Maximized CC
-        rho_max{band}(Esrc,id_max(Esrc,band)) = sum(rho_tmp(:,id_max(Esrc,band))) / Np; % nomalized over Np (1000) pulsars.
+        [val,id_max(Esrc,band)] = max(above_threshold);
+        % fix the bug when max(above_threshold) is 0, it automatically maps
+        % estimated source to the first true source.
+        if val == 0
+            id_max(Esrc,band) = 0;
+            continue
+        else
+            %         gamma{band}(src,id_max(src,band)) = max(rho_tmp(:,id_max(src,band))); % Maximized CC
+            rho_max{band}(Esrc,id_max(Esrc,band)) = sum(rho_tmp(:,id_max(Esrc,band))) / Np; % nomalized over Np (1000) pulsars.
+        end
         %         gamma{band}(src,id_max(src,band)) = sum(rho_tmp(:,id_max(src,band)) > threshold) / 1000;
         rho{band}{Esrc} = rho_tmp;
     end
     
     rho_tmp = zeros(Np,1); % needs to re-init. rho_tmp when change band, since size of rho_tmp is not constant.
-    % make id_max unique
-    %     for src1 = 1:NestsrcBand - 1
-    %         for src2 = src1+1:NestsrcBand
-    %             if id_max(src1,band) == id_max(src2,band)
-    %                 [~,I] = sort(rho{band}(src2,:),'descend');
-    %                 id_max(src2,band) = I(2); % take the index of second maximum.
-    %                 rho_max{band}(src2) = rho{band}(src2,id_max(src2,band));
-    %             end
-    %         end
-    %     end
-    
-    %     dif_freq_max(:,band) = abs(arrayfun(@(x) EstSrc{band,x}.omega, 1:NestsrcBand) - SrcOmega{band}(id_max(:,band)')) / (365*24*3600*2*pi); % convert to Hz
-    dif_freq_max(1:NestsrcBand,band) = arrayfun(@(x) abs(Src2{band,x}.omega - SrcOmega{band}(id_max(x,band))) * 100 / SrcOmega{band}(id_max(x,band)), 1:NestsrcBand); % error as percetage
-    dif_ra_max(1:NestsrcBand,band) = arrayfun(@(x) abs(Src2{band,x}.alpha - SrcAlpha{band}(id_max(x,band))) * 100 / SrcAlpha{band}(id_max(x,band)), 1:NestsrcBand); % error as percentage
-    %     dif_dec_max(:,band) = abs(arrayfun(@(x) EstSrc{band,x}.delta, 1:NestsrcBand) - SrcDelta{band}(id_max(:,band)'));
-    dif_dec_max(1:NestsrcBand,band) = arrayfun(@(x) abs(Src2{band,x}.delta - SrcDelta{band}(id_max(x,band))) * 100 / SrcDelta{band}(id_max(x,band)), 1:NestsrcBand); % error as percentage
+
 end

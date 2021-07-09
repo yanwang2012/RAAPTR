@@ -14,7 +14,7 @@ Filename = 'GWBsimDataSKASrlz*Nrlz1';
 %%
 SNR_threshold = 20;
 tSNR_cut = 5;
-psr_t = 0.6;
+psr_t = 0.9;
 
 confirmFilename = ['Confirmed_Src_Est_SNR',num2str(SNR_threshold)];
 % Use all true sources
@@ -137,9 +137,9 @@ for rlz = 1:Nrlzs
     %     %     pause
     % end
     
-    % connect reported sources with true sources
-    for j = 1:length(cnfrmRA)
-        plot(ax2,[cnfrmRA(j),matched_alpha_cnfrm(j)],[cnfrmDec(j),matched_dec_cnfrm(j)],'Color','m') % connect identified and matched sources
+    % connect identified sources with true sources
+    for j = 1:length(idRA)
+        plot(ax2,[idRA(j),matched_alpha(j)],[idDec(j),matched_dec(j)],'Color','m') % connect identified and matched sources
         %     pause
     end
     
