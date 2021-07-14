@@ -16,7 +16,10 @@ cnfrmdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research
 Filename = 'GWBsimDataSKASrlz*Nrlz1';
 
 SNR_threshold = 20;
-cnfrmFilename = ['Confirmed_Src_Est_SNR',num2str(SNR_threshold)];
+dataset = 'xMBLT';
+% Confirmed_Src_Est_SNR_xxx: one band results + xMBLT results
+% Confirmed_Src_xMBLT_SNR_xxx: xMBLT results + iMBLT results
+cnfrmFilename = ['Confirmed_Src_',dataset,'_SNR',num2str(SNR_threshold)];
 ext = '.mat';
 
 %% Files
@@ -84,7 +87,7 @@ for rlz = 1:Nrlzs
     end
     simSrc = struct('SrcSNR',SrcSNR,'SrcAlpha',SrcAlpha,'SrcDelta',SrcDelta,'SrcAmp',SrcAmp,...
         'SrcIota',SrcIota,'SrcOmega',SrcOmega,'SrcPhi0',SrcPhi0,'SrcThetaN',SrcThetaN); % Simulated sources parameters
-    save([cnfrmdataDir,filesep,simFileName,filesep,'simSrc_Est'],'simSrc');
+    save([cnfrmdataDir,filesep,simFileName,filesep,'simSrc_',dataset],'simSrc');
     % create new sets which excludes sources below certain criteria
     snr_cut = 5; % excludes true sources below snr 3
     RSrcSNR = {};
@@ -111,7 +114,7 @@ for rlz = 1:Nrlzs
     end
     RsimSrc = struct('SrcSNR',RSrcSNR,'SrcAlpha',RSrcAlpha,'SrcDelta',RSrcDelta,'SrcAmp',RSrcAmp,...
         'SrcIota',RSrcIota,'SrcOmega',RSrcOmega,'SrcPhi0',RSrcPhi0,'SrcThetaN',RSrcThetaN); % Simulated sources parameters but exclude weaker sources
-    save([cnfrmdataDir,filesep,simFileName,filesep,'RsimSrc_Est'],'RsimSrc');
+    save([cnfrmdataDir,filesep,simFileName,filesep,'RsimSrc_',dataset],'RsimSrc');
    
     %% Get identified sources info
     % idsrcBand1 = sum(~cellfun('isempty',idsrc(1,:))); % number of sources in a band.
@@ -129,7 +132,7 @@ for rlz = 1:Nrlzs
     % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] =
     % MinDMaxC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr);
     %     save([cnfrmdataDir,filesep,simFileName,filesep,'NMTC_Est_SNR',num2str(SNR_threshold)],'rho','rho_max');
-    save([cnfrmdataDir,filesep,simFileName,filesep,'NMTC_Est_SNR',num2str(SNR_threshold),'tSNR_',num2str(snr_cut),'_psrT_',num2str(psr_t),ext],'rho','rho_max');
+    save([cnfrmdataDir,filesep,simFileName,filesep,'NMTC_',dataset,'_SNR',num2str(SNR_threshold),'tSNR_',num2str(snr_cut),'_psrT_',num2str(psr_t),ext],'rho','rho_max');
     
     %% Eliminating spurious sources
     t = 0.70; % NMTC threshold used to identify sources.
@@ -160,7 +163,7 @@ for rlz = 1:Nrlzs
     end
 %     save([cnfrmdataDir,filesep,simFileName,filesep,'Identified_Src_SNR',num2str(SNR_threshold)],'id_src','NidsrcBand',...
 %         'id_src_alpha','id_src_dec','id_src_freq','id_src_snr');
-    save([cnfrmdataDir,filesep,simFileName,filesep,'Identified_Src_SNR',num2str(SNR_threshold),'tSNR_',num2str(snr_cut),'_psrT_',num2str(psr_t),ext],'id_src','NidsrcBand',...
+    save([cnfrmdataDir,filesep,simFileName,filesep,'Identified_Src_SNR_xMBLT',num2str(SNR_threshold),'tSNR_',num2str(snr_cut),'_psrT_',num2str(psr_t),ext],'id_src','NidsrcBand',...
         'id_src_alpha','id_src_dec','id_src_freq','id_src_snr','snr_cut','psr_t');
     
     %% Save matched true sources
@@ -193,12 +196,12 @@ for rlz = 1:Nrlzs
     
     %     save([cnfrmdataDir,filesep,simFileName,filesep,'Matched_Sources_Est_SNR',num2str(SNR_threshold),ext],'id_max','matched_alpha','matched_dec','matched_snr',...
     %         'matched_freq','SrcAlpha','SrcSNR','SrcDelta','id_max_idty','matched_alpha_cnfrm','matched_dec_cnfrm','matched_snr_cnfrm','matched_freq_cnfrm');
-    save([cnfrmdataDir,filesep,simFileName,filesep,'Matched_Sources_Est_SNR',num2str(SNR_threshold),'tSNR_',num2str(snr_cut),'_psrT_',num2str(psr_t),ext],'id_max','matched_alpha','matched_dec','matched_snr',...
+    save([cnfrmdataDir,filesep,simFileName,filesep,'Matched_Sources_',dataset,'_SNR',num2str(SNR_threshold),'tSNR_',num2str(snr_cut),'_psrT_',num2str(psr_t),ext],'id_max','matched_alpha','matched_dec','matched_snr',...
         'matched_freq','SrcAlpha','SrcSNR','SrcDelta','id_max_idty','matched_alpha_cnfrm','matched_dec_cnfrm','matched_snr_cnfrm','matched_freq_cnfrm', 'cnfrm_src_nm');
     %% Plotting
     metric = 'NMTC';
     methods = 'Confimred vs True';
-    prefix = [cnfrmdataDir,filesep,'fig',filesep,simFileName,filesep,metric,'-',methods,'_SNR',num2str(SNR_threshold),'tSNR_',num2str(snr_cut),'_psrT_',num2str(psr_t)];
+    prefix = [cnfrmdataDir,filesep,'fig',filesep,simFileName,filesep,metric,'-',methods,dataset,'_SNR',num2str(SNR_threshold),'tSNR_',num2str(snr_cut),'_psrT_',num2str(psr_t)];
     mkdir(prefix);
     
     figname1 = metric;

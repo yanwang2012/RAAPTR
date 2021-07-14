@@ -1,8 +1,6 @@
 % script to plot identified sources vs. True sources
 % Identified sources are carried out by cross correlating confirmed sources
 % with true sources.
-% (1) 2D skymap
-% (2) 3D skymap
 
 % Author: QYQ
 % 1/7/2021
@@ -15,14 +13,15 @@ Filename = 'GWBsimDataSKASrlz*Nrlz1';
 SNR_threshold = 20;
 tSNR_cut = 5;
 psr_t = 0.9;
+dataset = 'xMBLT';
 
-confirmFilename = ['Confirmed_Src_Est_SNR',num2str(SNR_threshold)];
+confirmFilename = ['Confirmed_Src_',dataset,'_SNR',num2str(SNR_threshold)];
 % Use all true sources
 % idtyFilename = ['Identified_Src_SNR',num2str(SNR_threshold)];
 % matchedFilename = ['Matched_Sources_Est_SNR',num2str(SNR_threshold)];
 % Use filtered true sources
-idtyFilename = ['Identified_Src_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t)];
-matchedFilename = ['Matched_Sources_Est_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t)];
+idtyFilename = ['Identified_Src_SNR_xMBLT',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t)];
+matchedFilename = ['Matched_Sources_',dataset,'_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t)];
 ext = '.mat';
 
 %% Files
@@ -95,11 +94,11 @@ for rlz = 1:Nrlzs
     %     save([DataDir,filesep,simFileName,filesep,'idSrc_sky_Est_SNR',num2str(SNR_threshold)],'idRA','idDec','idSNR','idFreq');
     
     % Use filtered true sources
-    save([DataDir,filesep,simFileName,filesep,'simSrc_nm_sky_Est_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),ext],'simRA_nm','simDec_nm','simSNR_nm');
-    save([DataDir,filesep,simFileName,filesep,'matSrc_sky_Est_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),ext],'matched_alpha_cnfrm','matched_dec_cnfrm','matched_snr_cnfrm', ...,
+    save([DataDir,filesep,simFileName,filesep,'simSrc_nm_sky_',dataset,'_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),ext],'simRA_nm','simDec_nm','simSNR_nm');
+    save([DataDir,filesep,simFileName,filesep,'matSrc_sky_',dataset,'_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),ext],'matched_alpha_cnfrm','matched_dec_cnfrm','matched_snr_cnfrm', ...,
         'matched_freq_cnfrm','matched_alpha','matched_dec','matched_snr','matched_freq');
-    save([DataDir,filesep,simFileName,filesep,'cnfrmSrc_sky_Est_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),ext],'cnfrmRA','cnfrmDec','cnfrmSNR','cnfrmFreq');
-    save([DataDir,filesep,simFileName,filesep,'idSrc_sky_Est_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),ext],'idRA','idDec','idSNR','idFreq');
+    save([DataDir,filesep,simFileName,filesep,'cnfrmSrc_sky_',dataset,'_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),ext],'cnfrmRA','cnfrmDec','cnfrmSNR','cnfrmFreq');
+    save([DataDir,filesep,simFileName,filesep,'idSrc_sky_',dataset,'_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),ext],'idRA','idDec','idSNR','idFreq');
     
     %% plot
     load('/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/GENSIMDATA/Acond for SKA/CondMap.mat'); % load skymap condition number
@@ -171,8 +170,8 @@ for rlz = 1:Nrlzs
     %     xlabel(ax2,'\alpha');
     legend(ax2,{'True Srcs', 'Identified Srcs', 'Confirmed Srcs','Matched True Srcs','Matched & Confrm.'},'Location','best')
     
-    saveas(gcf,[DataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_Est_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),'.png'])
-    savefig([DataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_Est_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),'.fig'])
+    saveas(gcf,[DataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_',dataset,'_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),'.png'])
+    savefig([DataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_',dataset,'_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),'.fig'])
     close all
 end
 

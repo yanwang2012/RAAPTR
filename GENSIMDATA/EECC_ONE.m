@@ -9,8 +9,8 @@ tic
 
 %% Dir settings
 simdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
-estSrc1Dir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_one';
-estsrc1 = 'OneBand';
+estSrc1Dir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_xMBLT';
+estsrc1 = 'xMBLT';
 estSrc2Dir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_iMBLT';
 estsrc2 = 'iMBLT';
 Filename = 'GWBsimDataSKASrlz*Nrlz1';
@@ -79,7 +79,8 @@ for rlz = 1:Nrlzs
     CnfrmSrc_SNR = CnfrmSrc_SNR(~cellfun('isempty',CnfrmSrc_SNR)); % remove trailing blank cells
     
     mkdir([estSrc2Dir,filesep,baseName]);
-    save([estSrc2Dir,filesep,baseName,filesep,'Confirmed_Src_Est_SNR',num2str(snr_trs)],'NcnfrmsrcBand','CnfrmSrc_SNR','snr_trs');
+    methods = 'xMBLT'; % use 'Est' for one band + xMBLT, while 'xMBLT' for xMBLT + iMBLT
+    save([estSrc2Dir,filesep,baseName,filesep,'Confirmed_Src_xMBLT_SNR',num2str(snr_trs)],'NcnfrmsrcBand','CnfrmSrc_SNR','snr_trs');
     
 end
 
