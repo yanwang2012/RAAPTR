@@ -101,7 +101,7 @@ for rlz = 1:Nrlzs
     % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = MTC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr,0.85);
     
     % Normalized MTC
-    [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] = NMTC(Nband,NrepsrcBand,RsimSrc,report_src,simParams,yr,0.90);
+    [rho,rho_max,id_max,estSNR] = NMTC(Nband,NrepsrcBand,RsimSrc,report_src,simParams,yr,0.90);
     
     
     % Minimum distance Maximum CC.
