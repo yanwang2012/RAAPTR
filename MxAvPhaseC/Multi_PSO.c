@@ -34,7 +34,8 @@ defining the search interval along a particular parameter for PSO.
 See the documentation for the simulation data generation code.
 */
 
-struct fitFuncParams *file2ffparam(char *); //decleration
+struct fitFuncParams *
+file2ffparam(char *); //decleration
 int main(int argc, char *argv[])
 {
 	/* General purpose variables */
@@ -211,7 +212,8 @@ int main(int argc, char *argv[])
 			printf("Error closing new input file %s \n", newinputfile);
 		}
 		status = H5Fclose(inFile);
-		if (status < 0){
+		if (status < 0)
+		{
 			printf("Error closing input file %s \n", inputFileName);
 		}
 
