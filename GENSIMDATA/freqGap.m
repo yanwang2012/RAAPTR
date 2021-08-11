@@ -6,10 +6,10 @@
 %% Data Dir
 clear
 
-UnionDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/diff_srlz_cos_xMBLT2_results/Union';
-simDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/diff_srlz_cos';
+UnionDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/diff_srlz_cos_xMBLT2_results/Union';
+simDataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/diff_srlz_cos';
 simFileName = 'GWBsimDataSKASrlz*Nrlz1';
-outDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/searchParams';
+outDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/searchParams';
 mkdir(outDir)
 
 simFiles = dir([simDataDir,filesep,simFileName,'*.mat']);
@@ -63,11 +63,11 @@ for rlz = 1:Nrlzs
     for i = 1:NumBands % i band edges can split whole band into i+1 segments
         if i == NumBands
             searchParams.angular_velocity(1) = FreqRange(1);
-            save([dest,filesep,'searchParams_Nyquist',num2str(i),'.mat'],'searchParams','NumBands','FreqRange');
+            save([dest,filesep,'searchParams_Nyquist_New',num2str(i),'.mat'],'searchParams','NumBands','FreqRange');
         else
             searchParams.angular_velocity(1) = bandedge_av(i); % update upper limit
             searchParams.band_num = i;
-            save([dest,filesep,'searchParams_Nyquist',num2str(i),'.mat'],'searchParams','NumBands','FreqRange');
+            save([dest,filesep,'searchParams_Nyquist_New',num2str(i),'.mat'],'searchParams','NumBands','FreqRange');
             tmp = searchParams.angular_velocity(1); % save upper limit for prev. band
             searchParams.angular_velocity(2) = tmp; % update lower limit
         end
@@ -82,8 +82,8 @@ for rlz = 1:Nrlzs
     xlabel('Frequency [Hz]')
     ylabel('Relative Freq. Diff')
     title('Frequency Gap')
-    saveas(gcf,[saveDir,filesep,'FreqGap.png'])
-    savefig([saveDir,filesep,'FreqGap'])
+    saveas(gcf,[saveDir,filesep,'FreqGap_New.png'])
+    savefig([saveDir,filesep,'FreqGap_New'])
 end
 
 %END

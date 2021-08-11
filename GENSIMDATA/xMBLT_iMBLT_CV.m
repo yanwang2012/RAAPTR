@@ -40,13 +40,13 @@ for Srlz = 1:NSrlz
     figure
     ax1 = subplot(1,3,1);
     plot(xMBLT_SNR,xMBLT_Freq,'o')
-    title('xMBLT')
+    title('xBSE')
     xlabel('SNR');
     ylabel('Frequency [Hz]')
     
     ax2 = subplot(1,3,2);
     plot(iMBLT_SNR,iMBLT_Freq,'o')
-    title('iMBLT')
+    title('iBSE')
     xlabel('SNR')
     ylabel('Frequency [Hz]')
     

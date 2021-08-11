@@ -10,10 +10,10 @@ clear;
 tic
 
 %% Dir settings
-simdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/YuYang_data';
-estSrc1Dir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/YuYang_data/results_xMBLT1';
+simdataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/diff_srlz_cos';
+estSrc1Dir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/diff_srlz_cos_xMBLT1_results';
 estsrc1 = 'supNarxMBLT';
-estSrc2Dir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/YuYang_data/results_xMBLT2';
+estSrc2Dir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/diff_srlz_cos_xMBLT2_results';
 estsrc2 = 'supNarxMBLTRand1';
 Filename = 'GWBsimDataSKASrlz*Nrlz1';
 ext = '.mat';
@@ -26,10 +26,10 @@ estSrc2Filename = sort_nat({estSrc2File.name});
 estSrc1Filename = sort_nat({estSrc1File.name});
 simFilename = sort_nat({simFile.name});
 
-Nband = 2;
+%Nband = 2;
 Nestsrc = length(estSrc1File);
 Nrlzs = length(simFile);
-Nite = Nestsrc/(Nband*Nrlzs);
+Nite = Nestsrc/Nrlzs;%(Nband*Nrlzs);
 
 for rlz = 1:Nrlzs
     load([simdataDir,filesep,simFilename{rlz}]);
