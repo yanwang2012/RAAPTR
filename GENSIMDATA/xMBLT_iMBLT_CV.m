@@ -38,23 +38,24 @@ for Srlz = 1:NSrlz
     end
     % figure
     figure
-    subplot(1,3,1)
+    ax1 = subplot(1,3,1);
     plot(xMBLT_SNR,xMBLT_Freq,'o')
     title('xMBLT')
     xlabel('SNR');
     ylabel('Frequency [Hz]')
     
-    subplot(1,3,2)
-    plot(iMBLT_SNR,iMBLT_Freq,'^')
+    ax2 = subplot(1,3,2);
+    plot(iMBLT_SNR,iMBLT_Freq,'o')
     title('iMBLT')
     xlabel('SNR')
     ylabel('Frequency [Hz]')
     
-    subplot(1,3,3)
-    plot(CV_SNR,CV_Freq,'s')
+    ax3 = subplot(1,3,3);
+    plot(CV_SNR,CV_Freq,'o')
     title('CV')
     xlabel('SNR')
     ylabel('Frequency [Hz]')
+    linkaxes([ax1,ax2,ax3],'xy')
     
     saveas(gcf,[iMBLTDir,filesep,'fig',filesep,folderNames{Srlz}{1},filesep,'Together.png'])
     savefig([iMBLTDir,filesep,'fig',filesep,folderNames{Srlz}{1},filesep,'Together'])
