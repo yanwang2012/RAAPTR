@@ -39,13 +39,18 @@ for Srlz = 1:NSrlz
     % figure
     figure
     ax1 = subplot(1,3,1);
-    plot(xMBLT_SNR,xMBLT_Freq,'o')
+    plot(xMBLT_SNR(xMBLT_SNR>20),xMBLT_Freq(xMBLT_SNR>20),'.','MarkerSize',15)
+    hold on
+    plot(xMBLT_SNR(xMBLT_SNR<=20), xMBLT_Freq(xMBLT_SNR<=20),'o')
+    hold off
     title('xBSE')
     xlabel('SNR');
     ylabel('Frequency [Hz]')
     
     ax2 = subplot(1,3,2);
-    plot(iMBLT_SNR,iMBLT_Freq,'o')
+    plot(iMBLT_SNR(iMBLT_SNR>20),iMBLT_Freq(iMBLT_SNR>20),'.','MarkerSize',15)
+    hold on
+    plot(iMBLT_SNR(iMBLT_SNR<=20), iMBLT_Freq(iMBLT_SNR<=20),'o')
     title('iBSE')
     xlabel('SNR')
     ylabel('Frequency [Hz]')
