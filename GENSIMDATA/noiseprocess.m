@@ -6,8 +6,8 @@
 % num_ite and num_bands for noise should match the one used for H1 data.
 
 %% Setting up
-estNoiseDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/noise/results';
-simNoiseDir = '~/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/noise';
+estNoiseDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/noise/results';
+simNoiseDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/noise';
 num_ite = 20;
 num_bands = 1;
 
@@ -27,7 +27,7 @@ for m = 1:numSimNoise
     for n = 1:num_ite
         for k = 1:num_bands
             pth_estNoise_file = [estNoiseDir,filesep,char(estNoiseName((m-1)*10+n,k))];
-            noiseParams = ColSrcParams(pth_estNoise_file);
+            noiseParams = ColSrcParams(pth_estNoise_file, noise.simParams.Np);
             [noiseSNR,~] = Amp2Snr(noiseParams,noise.simParams,noise.yr);
             noise_tmp = noise_tmp + noiseSNR;
         end
