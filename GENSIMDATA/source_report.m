@@ -8,9 +8,9 @@ clear;
 tic
 
 %% Dir settings
-searchParamsDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/Whole';
-simdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
-estdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_one';
+searchParamsDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/searchParams/Band_opt';
+simdataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
+estdataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_iMBLT';
 Filename = 'GWBsimDataSKASrlz*Nrlz1';
 ext = '.mat';
 
@@ -27,7 +27,7 @@ for rlz = 1:Nrlzs
     Nestsrc = length(estFile);
     
     paraFilename = sort_nat({paraFile.name});
-    exp = 'searchParams\d.mat'; % regular expressions for desire file names
+    exp = 'searchParams_Nyquist\d.mat'; % regular expressions for desire file names
     paraFilename = regexp(paraFilename,exp,'match');
     paraFilename = paraFilename(~cellfun(@isempty,paraFilename)); % get rid of empty cells
     Nband = length(paraFilename);

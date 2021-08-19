@@ -8,15 +8,16 @@
 % 1/7/2021
 clear;
 %% Load data
-simDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
-idDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_one';
+simDataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
+idDataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_xMBLT';
 Filename = 'GWBsimDataSKASrlz*Nrlz1';
 %% IMPORTANT:MAKE SURE THIS IS CORRECT
 SNR_Threshold = 20;
+tSNR = 5; % True sources SNR threshold
 %%
-confirmFilename = ['Confirmed_Src_SNR',num2str(SNR_Threshold)];
+confirmFilename = ['Confirmed_Src_SNR',num2str(SNR_Threshold),'tSNR_',num2str(tSNR)];
 repFileName = ['RepSrc_SNR',num2str(SNR_Threshold)];
-matchedFileName = ['Matched_Sources_SNR',num2str(SNR_Threshold)];
+matchedFileName = ['Matched_Sources_SNR',num2str(SNR_Threshold),'tSNR_',num2str(tSNR)];
 ext = '.mat';
 
 %% Files
@@ -78,14 +79,22 @@ for rlz = 1:Nrlzs
         simRA_nm = [simRA_nm SrcAlpha{b}(idx)];
         simDec_nm = [simDec_nm SrcDelta{b}(idx)];
     end
-    save([idDataDir,filesep,simFileName,filesep,'simSrc_nm_sky',num2str(SNR_Threshold)],'simRA_nm','simDec_nm');
-    save([idDataDir,filesep,simFileName,filesep,'matSrc_sky',num2str(SNR_Threshold)],'matched_alpha_rep','matched_dec_rep','matched_snr_rep',...,
+    % Use all true sources
+    %     save([idDataDir,filesep,simFileName,filesep,'simSrc_nm_sky',num2str(SNR_Threshold)],'simRA_nm','simDec_nm');
+    %     save([idDataDir,filesep,simFileName,filesep,'matSrc_sky',num2str(SNR_Threshold)],'matched_alpha_rep','matched_dec_rep','matched_snr_rep',...,
+    %         'matched_freq_rep','matched_alpha','matched_dec','matched_snr','matched_freq');
+    %     save([idDataDir,filesep,simFileName,filesep,'cnfrmSrc_sky',num2str(SNR_Threshold)],'cnfrmRA','cnfrmDec','cnfrmSNR','cnfrmFreq');
+    %     save([idDataDir,filesep,simFileName,filesep,'repSrc_sky',num2str(SNR_Threshold)],'repRA','repDec','repSNR','repFreq');
+    
+    % Use filtered true sources
+    save([idDataDir,filesep,simFileName,filesep,'simSrc_nm_sky',num2str(SNR_Threshold),'tSNR_',num2str(tSNR)],'simRA_nm','simDec_nm');
+    save([idDataDir,filesep,simFileName,filesep,'matSrc_sky',num2str(SNR_Threshold),'tSNR_',num2str(tSNR)],'matched_alpha_rep','matched_dec_rep','matched_snr_rep',...,
         'matched_freq_rep','matched_alpha','matched_dec','matched_snr','matched_freq');
-    save([idDataDir,filesep,simFileName,filesep,'cnfrmSrc_sky',num2str(SNR_Threshold)],'cnfrmRA','cnfrmDec','cnfrmSNR','cnfrmFreq');
-    save([idDataDir,filesep,simFileName,filesep,'repSrc_sky',num2str(SNR_Threshold)],'repRA','repDec','repSNR','repFreq');
+    save([idDataDir,filesep,simFileName,filesep,'cnfrmSrc_sky',num2str(SNR_Threshold),'tSNR_',num2str(tSNR)],'cnfrmRA','cnfrmDec','cnfrmSNR','cnfrmFreq');
+    save([idDataDir,filesep,simFileName,filesep,'repSrc_sky',num2str(SNR_Threshold),'tSNR_',num2str(tSNR)],'repRA','repDec','repSNR','repFreq');
     
     %% plot
-    load('/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/GENSIMDATA/Acond for SKA/CondMap.mat'); % load skymap condition number
+    load('/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/GENSIMDATA/Acond for SKA/CondMap.mat'); % load skymap condition number
     
     figure
     % plot condition numbers
@@ -111,7 +120,7 @@ for rlz = 1:Nrlzs
     
     % plot(matched_alpha,matched_dec,'ob') % plot truly matched true sources
     % scatter(matched_alpha,matched_dec,matched_snr,'ob')
-    scatter(ax2,matched_alpha_rep,matched_dec_rep,[],matched_snr_rep,'s')
+    scatter(ax2,matched_alpha,matched_dec,[],matched_snr,'s')
     
     % pause
     % connect confirmed sources with true sources
@@ -121,8 +130,8 @@ for rlz = 1:Nrlzs
     % end
     
     % connect reported sources with true sources
-    for j = 1:length(repRA)
-        plot(ax2,[repRA(j),matched_alpha_rep(j)],[repDec(j),matched_dec_rep(j)],'Color','m') % connect identified and matched sources
+    for j = 1:length(cnfrmRA)
+        plot(ax2,[cnfrmRA(j),matched_alpha(j)],[cnfrmDec(j),matched_dec(j)],'Color','m') % connect identified and matched sources
         %     pause
     end
     
@@ -160,35 +169,35 @@ for rlz = 1:Nrlzs
 end
 
 %% 3D sphere plot
-[x,y,z] = sphere;
-[cfr_x,cfr_y,cfr_z] = sph2cart(cnfrmRA,cnfrmDec,1);
-[sim_x,sim_y,sim_z] = sph2cart(simRA_nm,simDec_nm,1);
-[rep_x,rep_y,rep_z] = sph2cart(repRA,repDec,1);
-[mat_x_rep,mat_y_rep,mat_z_rep] = sph2cart(matched_alpha_rep,matched_dec_rep,1);
-
-figure
-surf(x,y,z,'LineStyle','--','FaceColor','w','EdgeColor','k')
-
-hold on
-
-scatter3(cfr_x,cfr_y,cfr_z,40,cnfrmSNR,'filled');
-scatter3(sim_x,sim_y,sim_z,'o','MarkerEdgeColor','#888E8F')
-scatter3(rep_x,rep_y,rep_z,'^')
-scatter3(mat_x_rep,mat_y_rep,mat_z_rep,[],matched_snr_rep,'s');
-
-center = zeros(1,3); % center of sphere
-for src = 1:length(repRA)
-    [v] = GreatCircle(center,[rep_x(src),rep_y(src),rep_z(src)],[mat_x_rep(src),mat_y_rep(src),mat_z_rep(src)],1);
-    plot3(v(1,:),v(2,:),v(3,:),'m')
-    % pause
-end
-hold off
-axis equal
-
-title('3D Skymap')
-legend({'Grid','Confirmed Source','True Source','Reported Source','Matched True','Report to Matched'},'location','best')
-saveas(gcf,[idDataDir,filesep,'fig',filesep,'Skymap3D.png'])
-savefig([idDataDir,filesep,'fig',filesep,'Skymap3D'])
+% [x,y,z] = sphere;
+% [cfr_x,cfr_y,cfr_z] = sph2cart(cnfrmRA,cnfrmDec,1);
+% [sim_x,sim_y,sim_z] = sph2cart(simRA_nm,simDec_nm,1);
+% [rep_x,rep_y,rep_z] = sph2cart(repRA,repDec,1);
+% [mat_x_rep,mat_y_rep,mat_z_rep] = sph2cart(matched_alpha_rep,matched_dec_rep,1);
+% 
+% figure
+% surf(x,y,z,'LineStyle','--','FaceColor','w','EdgeColor','k')
+% 
+% hold on
+% 
+% scatter3(cfr_x,cfr_y,cfr_z,40,cnfrmSNR,'filled');
+% scatter3(sim_x,sim_y,sim_z,'o','MarkerEdgeColor','#888E8F')
+% scatter3(rep_x,rep_y,rep_z,'^')
+% scatter3(mat_x_rep,mat_y_rep,mat_z_rep,[],matched_snr_rep,'s');
+% 
+% center = zeros(1,3); % center of sphere
+% for src = 1:length(repRA)
+%     [v] = GreatCircle(center,[rep_x(src),rep_y(src),rep_z(src)],[mat_x_rep(src),mat_y_rep(src),mat_z_rep(src)],1);
+%     plot3(v(1,:),v(2,:),v(3,:),'m')
+%     % pause
+% end
+% hold off
+% axis equal
+% 
+% title('3D Skymap')
+% legend({'Grid','Confirmed Source','True Source','Reported Source','Matched True','Report to Matched'},'location','best')
+% saveas(gcf,[idDataDir,filesep,'fig',filesep,'Skymap3D.png'])
+% savefig([idDataDir,filesep,'fig',filesep,'Skymap3D'])
 
 %% 3D sphere plot with Condition number
 % load([idDataDir,filesep,'Acond.mat']); % load skymap condition numberload([idDataDir,filesep,'Acond.mat']); % load skymap condition number

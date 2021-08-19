@@ -69,7 +69,7 @@ dif_dec_max = zeros(NestsrcBand,Nband);
 for band = 1:Nband
     NtsrcBand = length(SrcAlpha{band}); % number of true sources in each band
     NestsrcBand = EstSrcBand(band);
-    rho_max{band} = zeros(NestsrcBand,NtsrcBand); % initialize the gamma cell.
+    rho_max{band} = zeros(NestsrcBand,NtsrcBand); % initialize the gamma cell, Src 1 is column, Src 2 is row.
     % search along x-axis
     for Esrc = 1:NestsrcBand
         
@@ -128,19 +128,18 @@ for band = 1:Nband
         end
         above_threshold = sum(rho_tmp > threshold); % calculate how many CC. above the threshold.
         [val,id_max(Esrc,band)] = max(above_threshold);
+        threshold_tmp = threshold;
         % fix the bug when max(above_threshold) is 0, it automatically maps
         % estimated source to the first true source.
-        if val == 0
-            id_max(Esrc,band) = 0;
-            continue
-        else
-            %         gamma{band}(src,id_max(src,band)) = max(rho_tmp(:,id_max(src,band))); % Maximized CC
-            rho_max{band}(Esrc,id_max(Esrc,band)) = sum(rho_tmp(:,id_max(Esrc,band))) / Np; % nomalized over Np (1000) pulsars.
+        while val == 0
+            threshold_tmp = threshold_tmp - 0.1;
+            above_threshold = sum(rho_tmp > threshold_tmp);
+            [val,id_max(Esrc,band)] = max(above_threshold);
         end
-        %         gamma{band}(src,id_max(src,band)) = sum(rho_tmp(:,id_max(src,band)) > threshold) / 1000;
+        rho_max{band}(Esrc,id_max(Esrc,band)) = sum(rho_tmp(:,id_max(Esrc,band))) / Np; % nomalized over Np (1000) pulsars.
         rho{band}{Esrc} = rho_tmp;
+        rho_tmp = zeros(Np,1); % needs to re-init. rho_tmp when change band, since size of rho_tmp is not constant.
     end
-    
-    rho_tmp = zeros(Np,1); % needs to re-init. rho_tmp when change band, since size of rho_tmp is not constant.
-
 end
+
+% EOF

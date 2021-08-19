@@ -9,9 +9,9 @@ clear;
 tic
 
 %% Dir settings
-searchParamsDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/Whole';
-simdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
-repdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_one';
+searchParamsDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/searchParams/Band_opt';
+simdataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
+repdataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_xMBLT';
 Filename = 'GWBsimDataSKASrlz*Nrlz1';
 %% IMPORTANT:MAKE SURE THIS IS CORRECT
 SNR_Threshold = 20;
@@ -34,7 +34,7 @@ for rlz = 1:Nrlzs
     simSrcFile = [repdataDir,filesep,simFileName,filesep,'simSrc.mat'];
     
     paraFilename = sort_nat({paraFile.name});
-    exp = 'searchParams\d.mat'; % regular expressions for desire file names
+    exp = 'searchParams_Nyquist\d.mat'; % regular expressions for desire file names
     paraFilename = regexp(paraFilename,exp,'match');
     paraFilename = paraFilename(~cellfun(@isempty,paraFilename)); % get rid of empty cells
     Nband = length(paraFilename);
@@ -108,7 +108,7 @@ for rlz = 1:Nrlzs
     % [rho,rho_max,dif_freq_max,dif_ra_max,dif_dec_max,id_max,estSNR] =
     % MinDMaxC(Nband,NestsrcBand,SrcAlpha,SrcDelta,SrcOmega,SrcPhi0,SrcIota,SrcThetaN,SrcAmp,EstSrc,simParams,yr);
     %     save([repdataDir,filesep,simFileName,filesep,'NMTC_SNR',num2str(SNR_Threshold)],'rho','rho_max');
-    save([repdataDir,filesep,simFileName,filesep,'NMTC_SNR',num2str(SNR_Threshold)],'tSNR_',num2str(snr_cut),'rho','rho_max'); % use filtered true sources, i.e. RsimSrc
+    save([repdataDir,filesep,simFileName,filesep,'NMTC_SNR',num2str(SNR_Threshold),'tSNR_',num2str(snr_cut)],'rho','rho_max','id_max'); % use filtered true sources, i.e. RsimSrc
     
     %% Eliminating spurious sources
     t = 0.70; % NMTC threshold used to identify sources.
