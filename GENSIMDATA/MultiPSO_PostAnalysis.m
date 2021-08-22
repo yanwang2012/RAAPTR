@@ -3,9 +3,9 @@ clear;
 tic
 %% Extract parameters of sources in frequency bin X (Mauritius Poster)
 % Load the frequency bin edges from the search parameter file for bin X.
-simParamsDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/Whole';
+simParamsDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/searchParams/Band_opt';
 simDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
-estDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_one';
+estDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_iMBLT';
 inputFileName = 'GWBsimDataSKASrlz*Nrlz1'; % change here to switch between multiple and single realizations
 % Load the simulated source parameters.
 simDataList = dir([simDataDir,filesep,inputFileName,'.mat']);
@@ -46,7 +46,7 @@ for rlz = 1:rlzs
     num_ite = length(nFile);
     
     inParamNames = sort_nat({inParamsList.name});
-    exp = 'searchParams\d.mat'; % regular expressions for desire file names
+    exp = 'searchParams_Nyquist\d.mat'; % regular expressions for desire file names
     inParamNames = regexp(inParamNames,exp,'match');
     inParamNames = inParamNames(~cellfun(@isempty,inParamNames)); % get rid of empty cells
     N = length(inParamNames);% number of bands
@@ -86,8 +86,8 @@ for rlz = 1:rlzs
         x = [x binsrcSNR]; % total x for all bands
         bx(i,1:binsize(i)) = binsrcSNR;
         % Get the sky location
-        sra = [sra alpha(Indx)];
-        sdec = [sdec delta(Indx)];
+        sra = [sra alpha(Indx)]; % simulated RA
+        sdec = [sdec delta(Indx)]; % simulated Dec
         for j = 1:num_ite
             load([estDataDir,filesep,char(inDataNames(j + num_ite * (i-1)))],'bestRealLoc');
             disp(['File: ',char(inDataNames(j + num_ite * (i-1))),' loaded']);
@@ -99,8 +99,8 @@ for rlz = 1:rlzs
             estFreq = bestRealLoc(3)/(2*pi*365*24*3600);% convert unit from yr-1 to Hz
             [sourceParams]=ColSrcParams(path_to_estimatedData, simParams.Np);
             [estSNR,estTimRes] = Amp2Snr(sourceParams,simParams,yr);
-            sy = [sy estFreq];
-            sx = [sx estSNR];
+            sy = [sy estFreq]; % estimated frequency
+            sx = [sx estSNR]; % estimated SNR
             %             esize(i) = length(sx);
             ra = [ra bestRealLoc(1)];
             dec = [dec bestRealLoc(2)];
@@ -155,12 +155,14 @@ for rlz = 1:rlzs
     %noisefile = [simNoiseDir,filesep,'noise.mat'];
     %load(noisefile);
     
+    % Save Estimated Sources Info
+    save([estDataDir,filesep,simFileName,filesep,'EstSrc'],'sx','sy','ra','dec');
     
     %% plot settings
     %     prefix = [estDataDir,filesep,'fig',filesep,simDataFileNames{lp}];
     prefix = [estDataDir,filesep,'fig',filesep,simFileName]; % for a single realization
     mkdir(prefix);
-    figname = [simFileName,'-Band-One'];
+    figname = [simFileName,'-iMBLT'];
     
     %% Plot
     figure(1)
@@ -268,6 +270,26 @@ for rlz = 1:rlzs
     saveas(gcf,[prefix,filesep,figname,' DEC'],'png')
     savefig([prefix,filesep,figname,' DEC']);
     
+    % Serial SNR plots
+    figure
+    plot(sx,'o')
+    title('Serial SNR')
+    xlabel('Serial Number')
+    ylabel('SNR')
+    saveas(gcf,[prefix,filesep,figname,'Serial_SNR'],'png')
+    savefig([prefix,filesep,figname,'Serial_SNR'])
+    
+    % consecutive SNR diff
+    figure
+    plot(diff(sx),'o')
+    hold on
+    plot([0,length(sx)],[0,0],'r') % plot diff 0 line
+    hold off
+    title('Serial SNR Diff')
+    xlabel('Serial Number')
+    ylabel('SNR Diff')
+    saveas(gcf,[prefix,filesep,figname,'Serial_SNR_Diff'],'png')
+    savefig([prefix,filesep,figname,'Serial_SNR_Diff'])
     %% set up cutoff
     SNRcut = 50;
     Idx = find(x >= SNRcut);% set SNR cutoff for simulated sources

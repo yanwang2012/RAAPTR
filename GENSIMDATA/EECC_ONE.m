@@ -8,10 +8,10 @@ clear;
 tic
 
 %% Dir settings
-simdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
-estSrc1Dir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_xMBLT';
+simdataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
+estSrc1Dir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_xMBLT';
 estsrc1 = 'xMBLT';
-estSrc2Dir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_iMBLT';
+estSrc2Dir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_iMBLT';
 estsrc2 = 'iMBLT';
 Filename = 'GWBsimDataSKASrlz*Nrlz1';
 ext = '.mat';
@@ -68,8 +68,8 @@ for rlz = 1:Nrlzs
     % select confirmed sources using SNR threshold
     snr_trs = 20; % set SNR threshold
     logits = cnfrm_src_snr > snr_trs;
-    CnfrmSrc_SNR_tmp = cell(size(confirm_src)); % reported sources
-    CnfrmSrc_SNR = cell(size(confirm_src));
+    CnfrmSrc_SNR_tmp = cell(size(confirm_src));
+    CnfrmSrc_SNR = cell(size(confirm_src)); % reported sources filltered by snr_trs. 
     CnfrmSrc_SNR_tmp(logits) = confirm_src(logits);
     idx = ~cellfun('isempty',CnfrmSrc_SNR_tmp);
     NcnfrmsrcBand = sum(idx,2);
@@ -80,7 +80,7 @@ for rlz = 1:Nrlzs
     
     mkdir([estSrc2Dir,filesep,baseName]);
     methods = 'xMBLT'; % use 'Est' for one band + xMBLT, while 'xMBLT' for xMBLT + iMBLT
-    save([estSrc2Dir,filesep,baseName,filesep,'Confirmed_Src_xMBLT_SNR',num2str(snr_trs)],'NcnfrmsrcBand','CnfrmSrc_SNR','snr_trs');
+    save([estSrc2Dir,filesep,baseName,filesep,'Confirmed_Src_',methods,'_SNR',num2str(snr_trs)],'NcnfrmsrcBand','CnfrmSrc_SNR','snr_trs','confirm_src');
     
 end
 

@@ -100,7 +100,7 @@ for rlz = 1:Nrlzs
         end
     end
     
-    save([folderName,filesep,'estSrc'],'EstSrc','EstSNR');
+    save([folderName,filesep,'EstSrc_Rep'],'EstSrc','EstSNR');
     
     % report sources using SNR scheme
     snr_trs = 20; % set SNR threshold

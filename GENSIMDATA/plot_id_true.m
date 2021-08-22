@@ -19,9 +19,14 @@ confirmFilename = ['Confirmed_Src_',dataset,'_SNR',num2str(SNR_threshold)];
 % Use all true sources
 % idtyFilename = ['Identified_Src_SNR',num2str(SNR_threshold)];
 % matchedFilename = ['Matched_Sources_Est_SNR',num2str(SNR_threshold)];
-% Use filtered true sources
+
+% Use filtered true sources and filetered confirmed sources
 idtyFilename = ['Identified_Src_SNR_',dataset,num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t)];
 matchedFilename = ['Matched_Sources_',dataset,'_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t)];
+
+% Use flitered true sources + all confirmed sources
+idtyFilename = ['Identified_Src_',dataset,'_tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t)];
+matchedFilename = ['Matched_Sources_',dataset,'_tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t)];
 ext = '.mat';
 
 %% Files
@@ -67,7 +72,7 @@ for rlz = 1:Nrlzs
         %     idx = setdiff(1:length(SrcAlpha{b}),id_max_cnfrm(:,b)); % get the
         %     index of not matched true sources corresponds to confirmed sources
         idx = setdiff(1:length(SrcAlpha{b}),id_max_idty(:,b)); % .......... corresponds to identified sources.
-        for i = 1:NcnfrmsrcBand(b)
+        for i = 1:length(confirm_src)% NcnfrmsrcBand(b) % number of confirmed sources above SNR threshold
             cnfrmRA = [cnfrmRA confirm_src{b,i}.alpha];
             cnfrmDec = [cnfrmDec confirm_src{b,i}.delta];
             [SNR_tmp,~] = Amp2Snr(confirm_src{b,i},simParams,yr);
