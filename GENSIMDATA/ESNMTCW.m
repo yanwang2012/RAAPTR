@@ -90,7 +90,15 @@ for src1 = 1:Nestsrc1
         
     end
     above_threshold = sum(rho_tmp > threshold);
-    [~,id_max(src1)] = max(above_threshold);
+    [val,id_max(src1)] = max(above_threshold);
+    threshold_tmp = threshold;
+        % fix the bug when max(above_threshold) is 0, it automatically maps
+        % estimated source to the first true source.
+        while val == 0
+            threshold_tmp = threshold_tmp - 0.1;
+            above_threshold = sum(rho_tmp > threshold_tmp);
+            [val,id_max(src1)] = max(above_threshold);
+        end
     
     %         gamma{band}(src,id_max(src,band)) = max(rho_tmp(:,id_max(src,band))); % maximize method
     gamma(src1,id_max(src1)) = sum(rho_tmp(:,id_max(src1))) / Np; % nomalized over Np (1000) pulsars.

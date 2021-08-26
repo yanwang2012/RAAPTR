@@ -8,10 +8,10 @@ clear;
 tic
 
 %% Dir settings
-simdataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
-estSrc1Dir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_xMBLT';
+simdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
+estSrc1Dir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_xMBLT';
 estsrc1 = 'xMBLT';
-estSrc2Dir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_iMBLT';
+estSrc2Dir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_iMBLT';
 estsrc2 = 'iMBLT';
 Filename = 'GWBsimDataSKASrlz*Nrlz1';
 ext = '.mat';
@@ -31,6 +31,8 @@ for rlz = 1:Nrlzs
     %% Get estimated sources info
     EstSrc2 = {};
     EstSrc1 = {};
+    EstSrc1_SNR = [];
+    EstSrc2_SNR=[];
     [~,baseName] = fileparts(simFilename{rlz});
     exp1 = ['\d+_',baseName,'(?=_|\.mat)_?\d{0,2}\.mat']; % for initial band selection
     estSrc1File_tmp = regexp(estSrc1Filename,exp1,'match');
@@ -43,12 +45,23 @@ for rlz = 1:Nrlzs
     for k = 1:Nite1
         path_to_estimatedDataestSrc1 = [estSrc1Dir,filesep,estSrc1File_tmp{k}{1}];
         EstSrc1{k} = ColSrcParams(path_to_estimatedDataestSrc1, simParams.Np);
+        [SNR1_tmp,~] = Amp2Snr(EstSrc1{k},simParams,yr);
+        EstSrc1_SNR = [EstSrc1_SNR SNR1_tmp];
     end
     
     for j = 1:Nite2
         path_to_estimatedDataestSrc2 = [estSrc2Dir,filesep,estSrc2File_tmp{j}{1}];
         EstSrc2{j} = ColSrcParams(path_to_estimatedDataestSrc2, simParams.Np);
+        [SNR2_tmp,~] = Amp2Snr(EstSrc2{j},simParams,yr);
+        EstSrc2_SNR = [EstSrc2_SNR SNR2_tmp];
     end
+    
+    % Filter estimated sources
+    eSNR = 8; % filter estimated sources below eSNR.
+    logits1 = EstSrc1_SNR > eSNR;
+    EstSrc1 = EstSrc1(logits1);
+    logits2 = EstSrc2_SNR > eSNR;
+    EstSrc2 = EstSrc2(logits2);
     % Cross-Corelation
     [gamma,rho,id_max,estSNR1,estSNR2] = ESNMTCW(EstSrc1,EstSrc2,simParams,yr,0.90);
     
@@ -68,19 +81,21 @@ for rlz = 1:Nrlzs
     % select confirmed sources using SNR threshold
     snr_trs = 20; % set SNR threshold
     logits = cnfrm_src_snr > snr_trs;
-    CnfrmSrc_SNR_tmp = cell(size(confirm_src));
-    CnfrmSrc_SNR = cell(size(confirm_src)); % reported sources filltered by snr_trs. 
-    CnfrmSrc_SNR_tmp(logits) = confirm_src(logits);
-    idx = ~cellfun('isempty',CnfrmSrc_SNR_tmp);
-    NcnfrmsrcBand = sum(idx,2);
-    % remove the empty cells in each row
-    
-    CnfrmSrc_SNR(1:NcnfrmsrcBand) = CnfrmSrc_SNR_tmp(idx);
-    CnfrmSrc_SNR = CnfrmSrc_SNR(~cellfun('isempty',CnfrmSrc_SNR)); % remove trailing blank cells
+    CnfrmSrc_SNR = confirm_src(logits);
+    NcnfrmsrcBand = sum(logits);
+%     CnfrmSrc_SNR_tmp = cell(size(confirm_src));
+%     CnfrmSrc_SNR = cell(size(confirm_src)); % reported sources filltered by snr_trs. 
+%     CnfrmSrc_SNR_tmp(logits) = confirm_src(logits);
+%     idx = ~cellfun('isempty',CnfrmSrc_SNR_tmp);
+%     NcnfrmsrcBand = sum(idx,2);
+%     % remove the empty cells in each row
+%     
+%     CnfrmSrc_SNR(1:NcnfrmsrcBand) = CnfrmSrc_SNR_tmp(idx);
+%     CnfrmSrc_SNR = CnfrmSrc_SNR(~cellfun('isempty',CnfrmSrc_SNR)); % remove trailing blank cells
     
     mkdir([estSrc2Dir,filesep,baseName]);
     methods = 'xMBLT'; % use 'Est' for one band + xMBLT, while 'xMBLT' for xMBLT + iMBLT
-    save([estSrc2Dir,filesep,baseName,filesep,'Confirmed_Src_',methods,'_SNR',num2str(snr_trs)],'NcnfrmsrcBand','CnfrmSrc_SNR','snr_trs','confirm_src');
+    save([estSrc2Dir,filesep,baseName,filesep,'Confirmed_Src_',methods,'_SNR',num2str(snr_trs),'_eSNR',num2str(eSNR)],'NcnfrmsrcBand','CnfrmSrc_SNR','snr_trs','confirm_src');
     
 end
 
