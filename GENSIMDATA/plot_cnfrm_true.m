@@ -9,15 +9,16 @@
 clear;
 %% Load data
 simDataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
-idDataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_xMBLT';
+idDataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_iMBLT';
 Filename = 'GWBsimDataSKASrlz*Nrlz1';
 %% IMPORTANT:MAKE SURE THIS IS CORRECT
-SNR_Threshold = 20;
+SNR_Threshold = 7;
+NMTC_t = 0.65;
 tSNR = 5; % True sources SNR threshold
 %%
-confirmFilename = ['Confirmed_Src_SNR',num2str(SNR_Threshold),'tSNR_',num2str(tSNR)];
+confirmFilename = ['Confirmed_Src_SNR',num2str(SNR_Threshold),'tSNR_',num2str(tSNR),'_NMTC',num2str(NMTC_t)];
 repFileName = ['RepSrc_SNR',num2str(SNR_Threshold)];
-matchedFileName = ['Matched_Sources_SNR',num2str(SNR_Threshold),'tSNR_',num2str(tSNR)];
+matchedFileName = ['Matched_Sources_SNR',num2str(SNR_Threshold),'tSNR_',num2str(tSNR),'_NMTC',num2str(NMTC_t)];
 ext = '.mat';
 
 %% Files
@@ -87,11 +88,11 @@ for rlz = 1:Nrlzs
     %     save([idDataDir,filesep,simFileName,filesep,'repSrc_sky',num2str(SNR_Threshold)],'repRA','repDec','repSNR','repFreq');
     
     % Use filtered true sources
-    save([idDataDir,filesep,simFileName,filesep,'simSrc_nm_sky',num2str(SNR_Threshold),'tSNR_',num2str(tSNR)],'simRA_nm','simDec_nm');
-    save([idDataDir,filesep,simFileName,filesep,'matSrc_sky',num2str(SNR_Threshold),'tSNR_',num2str(tSNR)],'matched_alpha_rep','matched_dec_rep','matched_snr_rep',...,
+    save([idDataDir,filesep,simFileName,filesep,'simSrc_nm_sky',num2str(SNR_Threshold),'tSNR_',num2str(tSNR),'_NMTC',num2str(NMTC_t),'.mat'],'simRA_nm','simDec_nm');
+    save([idDataDir,filesep,simFileName,filesep,'matSrc_sky',num2str(SNR_Threshold),'tSNR_',num2str(tSNR),'_NMTC',num2str(NMTC_t),'.mat'],'matched_alpha_rep','matched_dec_rep','matched_snr_rep',...,
         'matched_freq_rep','matched_alpha','matched_dec','matched_snr','matched_freq');
-    save([idDataDir,filesep,simFileName,filesep,'cnfrmSrc_sky',num2str(SNR_Threshold),'tSNR_',num2str(tSNR)],'cnfrmRA','cnfrmDec','cnfrmSNR','cnfrmFreq');
-    save([idDataDir,filesep,simFileName,filesep,'repSrc_sky',num2str(SNR_Threshold),'tSNR_',num2str(tSNR)],'repRA','repDec','repSNR','repFreq');
+    save([idDataDir,filesep,simFileName,filesep,'cnfrmSrc_sky',num2str(SNR_Threshold),'tSNR_',num2str(tSNR),'_NMTC',num2str(NMTC_t),'.mat'],'cnfrmRA','cnfrmDec','cnfrmSNR','cnfrmFreq');
+    save([idDataDir,filesep,simFileName,filesep,'repSrc_sky',num2str(SNR_Threshold),'tSNR_',num2str(tSNR),'_NMTC',num2str(NMTC_t),'.mat'],'repRA','repDec','repSNR','repFreq');
     
     %% plot
     load('/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/GENSIMDATA/Acond for SKA/CondMap.mat'); % load skymap condition number
@@ -163,8 +164,8 @@ for rlz = 1:Nrlzs
     %     xlabel(ax2,'\alpha');
     legend(ax2,{'True Srcs', 'Reported Srcs', 'Confirmed Srcs','Matched True Srcs','Matched & Report.'},'Location','best')
     
-    saveas(gcf,[idDataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_SNR',num2str(SNR_Threshold),'.png'])
-    savefig([idDataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_SNR',num2str(SNR_Threshold)])
+    saveas(gcf,[idDataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_SNR',num2str(SNR_Threshold),'_NMTC',num2str(NMTC_t),'.png'])
+    savefig([idDataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_SNR',num2str(SNR_Threshold),'_NMTC',num2str(NMTC_t),'.fig'])
     close all
 end
 

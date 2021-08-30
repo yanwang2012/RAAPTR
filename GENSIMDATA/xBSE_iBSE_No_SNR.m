@@ -4,13 +4,13 @@
 clear;
 
 %% Config
-DataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_iMBLT';
-simDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
-CVfileName = 'Confirmed_Src_xMBLT_SNR20.mat';
+DataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_iMBLT';
+simDataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
+CVfileName = 'Confirmed_Src_xMBLT_SNR20_eSNR7.mat';
 % get the source realizations
 files = dir(simDataDir);
 folderNames = sort_nat({files.name});
-exp = '^GWBsimData.*';
+exp = '^GWBsimDataSKASrlz[1-6].*';
 folderNames = regexp(folderNames,exp,'match');
 folderNames = folderNames(~cellfun(@isempty,folderNames));
 NSrlz = length(folderNames);
@@ -32,7 +32,7 @@ for rlz = 1:NSrlz
        CV_Freq = [CV_Freq confirm_src{src}.omega/(2*pi*24*365*3600)];
     end
     axes(ha(rlz))
-    plot(snr_chr,omega/(2*pi*24*365*3600),'bo')
+    plot(snr_chr,omega/(2*pi*24*365*3600),'bo','MarkerSize',5)
     hold on
     plot(CV_SNR,CV_Freq,'r.','MarkerSize',10)
     hold off

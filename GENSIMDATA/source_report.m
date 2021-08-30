@@ -103,7 +103,7 @@ for rlz = 1:Nrlzs
     save([folderName,filesep,'EstSrc_Rep'],'EstSrc','EstSNR');
     
     % report sources using SNR scheme
-    snr_trs = 20; % set SNR threshold
+    snr_trs = 7; % set SNR threshold
     logits = EstSNR > snr_trs;
     RepSrc_SNR_tmp = cell(size(EstSrc)); % reported sources
     RepSrc_SNR = cell(size(EstSrc));
