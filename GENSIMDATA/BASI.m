@@ -3,12 +3,12 @@
 % 08/09/2021
 %% load data
 clear;
-xMBLT1Data = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/diff_srlz_cos_xMBLT1_results';
-xMBLT2Data = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/diff_srlz_cos_xMBLT2_results';
-UnionData = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/diff_srlz_cos_xMBLT2_results/Union';
+xMBLT1Data = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/diff_srlz_xMBLT1_results';
+xMBLT2Data = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/diff_srlz_xMBLT2_results';
+UnionData = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/diff_srlz_xMBLT2_results/Union';
 searchParamsDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/2bands/superNarrow';
-BandOptDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/searchParams/Band_opt_cos';
-simDataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/diff_srlz_cos';
+BandOptDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/searchParams/Band_opt';
+simDataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/diff_srlz';
 FileName = 'GWBsimDataSKASrlz*Nrlz1';
 simFiles = dir([simDataDir,filesep,FileName,'.mat']);
 simFileNames = sort_nat({simFiles.name});
@@ -94,43 +94,44 @@ for rlz=1:Nrlz
     
     %% Plot
     figure
-    ax1 = subplot(1,3,1);
+    ha = tight_subplot(1,3,[0.1 0.03],0.1, 0.1);
+    axes(ha(1))
     plot(snr1,freq1,'o')
     hold on
     for band = 1:nband
         plot([0, max(cat(2,snr1,snr2,snrU))],[Band1(band), Band1(band)],'r')
     end
     hold off
-    title('Band set 1')
+%     title('Band set 1')
     xlabel('SNR')
     ylabel('Frequency [Hz]')
     xlim([0 max(cat(2,snr1,snr2,snrU))])
     
-    ax2 = subplot(1,3,2);
+    axes(ha(2))
     plot(snr2,freq2,'o')
     hold on
     for band = 1:nband
         plot([0, max(cat(2,snr1,snr2,snrU))],[Band2(band), Band2(band)],'r')
     end
     hold off
-    title('Band set 2')
+%     title('Band set 2')
     xlabel('SNR')
-    ylabel('Frequency [Hz]')
+%     ylabel('Frequency [Hz]')
     xlim([0 max(cat(2,snr1,snr2,snrU))])
     
-    ax3 = subplot(1,3,3);
+    axes(ha(3))
     plot(snrU,freqU,'o')
     hold on
     for band = 1:nBandU
         plot([0, max(cat(2,snr1,snr2,snrU))],[BandU(band), BandU(band)],'r')
     end
     hold off
-    title('Union')
+%     title('Union')
     xlabel('SNR')
-    ylabel('Frequency [Hz]')
+%     ylabel('Frequency [Hz]')
     xlim([0 max(cat(2,snr1,snr2,snrU))])
-    
-    linkaxes([ax1,ax2,ax3],'xy')
+    set(ha(2:3),'YTicklabels','')
+    linkaxes(ha,'xy')
     
     mkdir([UnionData,filesep,'fig'])
     saveas(gcf,[UnionData,filesep,'fig',filesep,'BASI-',num2str(rlz),'.png'])
