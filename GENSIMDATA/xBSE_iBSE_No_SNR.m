@@ -4,8 +4,8 @@
 clear;
 
 %% Config
-DataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_iMBLT';
-simDataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
+DataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_iMBLT';
+simDataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
 CVfileName = 'Confirmed_Src_xMBLT_SNR20_eSNR7.mat';
 % get the source realizations
 files = dir(simDataDir);
@@ -27,14 +27,15 @@ for rlz = 1:NSrlz
     CV_SNR = [];
     Nsrc = length(confirm_src);
     for src = 1:Nsrc
-       [CV_SNR_tmp,~] = Amp2Snr(confirm_src{src},simParams,yr); 
-       CV_SNR = [CV_SNR CV_SNR_tmp];
-       CV_Freq = [CV_Freq confirm_src{src}.omega/(2*pi*24*365*3600)];
+        [CV_SNR_tmp,~] = Amp2Snr(confirm_src{src},simParams,yr);
+        CV_SNR = [CV_SNR CV_SNR_tmp];
+        CV_Freq = [CV_Freq confirm_src{src}.omega/(2*pi*24*365*3600)];
     end
     axes(ha(rlz))
     plot(snr_chr,omega/(2*pi*24*365*3600),'bo','MarkerSize',5)
     hold on
     plot(CV_SNR,CV_Freq,'r.','MarkerSize',10)
+    text(ha(rlz),.9,.9,num2str(rlz),'Units','normalized')
     hold off
     xlabel('SNR')
 end
