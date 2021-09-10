@@ -35,7 +35,7 @@ for rlz = 1:NSrlz
     plot(snr_chr,omega/(2*pi*24*365*3600),'bo','MarkerSize',5)
     hold on
     plot(CV_SNR,CV_Freq,'r.','MarkerSize',10)
-    text(ha(rlz),.9,.9,num2str(rlz),'Units','normalized')
+    text(ha(rlz),.9,.9,['(',num2str(rlz),')'],'Units','normalized')
     hold off
     xlabel('SNR')
 end
