@@ -10,13 +10,14 @@ clear;
 tic
 
 %% Dir settings
-searchParamsDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/Whole';
-simdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
-cnfrmdataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_iMBLT';
+% TODO: Taking band edges from user.
+searchParamsDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Test11/searchParams/Whole';
+simdataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/simData/Band_opt_diff';
+cnfrmdataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/MultiSource/Investigation/Final/realizations/2bands/results_diff_opt_iMBLT';
 Filename = 'GWBsimDataSKASrlz*Nrlz1';
 
 SNR_threshold = 20;
-eSNR = 8;
+eSNR = 7;
 dataset = 'xMBLT';
 % Confirmed_Src_Est_SNR_xxx: one band results + xMBLT results
 % Confirmed_Src_xMBLT_SNR_xxx: xMBLT results + iMBLT results
@@ -45,6 +46,7 @@ for rlz = 1:Nrlzs
     load(simFile);
     load(cnfrmFile);
     % confirm_src = CnfrmSrc_SNR; % comment this to use all confirmed sources
+    % TODO: DON'T USE THIS COMMENT, USE ONLY ONE SET CONFIRMED SOURCE
     
     %% Seperate sources into different bands
     % Ntsrc = length(alpha); % Number of true sources.
@@ -90,7 +92,7 @@ for rlz = 1:Nrlzs
         'SrcIota',SrcIota,'SrcOmega',SrcOmega,'SrcPhi0',SrcPhi0,'SrcThetaN',SrcThetaN); % Simulated sources parameters
     save([cnfrmdataDir,filesep,simFileName,filesep,'simSrc_',dataset],'simSrc');
     % create new sets which excludes sources below certain criteria
-    snr_cut = 5; % excludes true sources below snr 3
+    snr_cut = 5; % excludes true sources below snr_cut
     RSrcSNR = {};
     RSrcAlpha = {};
     RSrcAmp = {};
@@ -128,12 +130,13 @@ for rlz = 1:Nrlzs
     psr_t = 0.9; % NMTC value threshold per-pulsar
     %     [rho,rho_max,id_max,estSNR] = NMTC(Nband,NcnfrmsrcBand,RsimSrc,confirm_src,simParams,yr,psr_t);
     [rho,rho_max,id_max,estSNR] = NMTC(Nband,length(confirm_src),RsimSrc,confirm_src,simParams,yr,psr_t);
+    % TODO: Unify NMTC and ESNMTCW.
     
     %     save([cnfrmdataDir,filesep,simFileName,filesep,'NMTC_',dataset,'_SNR',num2str(SNR_threshold),'tSNR_',num2str(snr_cut),'_psrT_',num2str(psr_t),ext],'rho','rho_max'); % use confirmed sources above SNR_threshold
     save([cnfrmdataDir,filesep,simFileName,filesep,'NMTC_',dataset,'tSNR_',num2str(snr_cut),'_eSNR',num2str(eSNR),'_psrT_',num2str(psr_t),ext],'rho','rho_max'); % use all confirmed sources
     
     %% Eliminating spurious sources
-    t = 0.65; % NMTC threshold used to identify sources.
+    t = 0.70; % NMTC threshold used to identify sources.
     id_src = {}; % identified sources.
     r = {}; % rows
     c = {}; % columns
@@ -166,6 +169,7 @@ for rlz = 1:Nrlzs
         'id_src_alpha','id_src_dec','id_src_freq','id_src_snr','snr_cut','psr_t');
     
     %% Save matched true sources
+    % TODO: Try to make a sanity check for this part.
     % save sky locations
     matched_alpha = []; % right ascension
     matched_alpha_cnfrm = [];
@@ -180,6 +184,7 @@ for rlz = 1:Nrlzs
     
     for band = 1:Nband
         % matching true sources to confirmed sources
+        % TODO: replace repeating indexing with a single variable.
         matched_alpha_cnfrm = [matched_alpha_cnfrm SrcAlpha{band}(id_max(id_max(:,band) ~= 0, band))]; % exclude 0 elements
         matched_dec_cnfrm = [matched_dec_cnfrm SrcDelta{band}(id_max(id_max(:,band) ~= 0, band))];
         matched_snr_cnfrm = [matched_snr_cnfrm SrcSNR{band}(id_max(id_max(:,band) ~= 0, band))];
