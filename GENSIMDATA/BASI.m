@@ -134,8 +134,8 @@ for rlz=1:Nrlz
     linkaxes(ha,'xy')
     
     mkdir([UnionData,filesep,'fig'])
-    saveas(gcf,[UnionData,filesep,'fig',filesep,'BASI-',num2str(rlz),'.png'])
-    save([UnionData,filesep,'fig',filesep,'BASI-',num2str(rlz)])
+    saveas(gcf,[UnionData,filesep,'fig',filesep,'BASI-',num2str(rlz),'.eps'],'epsc') % colored eps file
+    savefig([UnionData,filesep,'fig',filesep,'BASI-',num2str(rlz)])
     
     close all
     
