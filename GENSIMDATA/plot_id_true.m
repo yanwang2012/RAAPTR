@@ -12,9 +12,9 @@ Filename = 'GWBsimDataSKASrlz*Nrlz1';
 %%
 SNR_threshold = 20;
 tSNR_cut = 5;
-eSNR = 8;
+eSNR = 7;
 psr_t = 0.9;
-NMTC_t = 0.65;
+NMTC_t = 0.70; % confirmation NMTC cut
 dataset = 'xMBLT'; % Use 'xMBLT' for xMBLT + iMBLT, 'Est' for one band + xMBLT
 
 confirmFilename = ['Confirmed_Src_',dataset,'_SNR',num2str(SNR_threshold),'_eSNR',num2str(eSNR)];
@@ -35,8 +35,10 @@ ext = '.mat';
 simFile = dir([simDataDir,filesep,Filename,ext]);
 Nrlzs = length(simFile);
 simFileNames = sort_nat({simFile.name});
+% figures
+[fh,~] = tight_subplot(2,3,[.1 .05],[.1 .1], [.1 .05]);
 
-for rlz = 1:Nrlzs
+for rlz = 1:6 %Nrlzs
     [~,simFileName,~] = fileparts(simFileNames{rlz});
     simFile = [simDataDir,filesep,simFileName,ext];
     cfFile = [DataDir,filesep,simFileName,filesep,confirmFilename,ext];
@@ -51,6 +53,7 @@ for rlz = 1:Nrlzs
     simRA_nm = []; % not matched true sources
     simDec_nm = [];
     simSNR_nm = [];
+    simOmega_nm = [];
     
     cnfrmRA = [];
     idRA = [];
@@ -92,6 +95,7 @@ for rlz = 1:Nrlzs
         simRA_nm = [simRA_nm SrcAlpha{b}(idx)];
         simDec_nm = [simDec_nm SrcDelta{b}(idx)];
         simSNR_nm = [simSNR_nm SrcSNR{b}(idx)];
+        simOmega_nm = [simOmega_nm SrcOmega{b}(idx)];
     end
     % Use all true sources
     %     save([DataDir,filesep,simFileName,filesep,'simSrc_nm_sky_Est_SNR',num2str(SNR_threshold)],'simRA_nm','simDec_nm','simSNR_nm');
@@ -108,89 +112,104 @@ for rlz = 1:Nrlzs
 %     save([DataDir,filesep,simFileName,filesep,'idSrc_sky_',dataset,'_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),ext],'idRA','idDec','idSNR','idFreq');
     
     % Use filtered true sources and all identified sources
-    save([DataDir,filesep,simFileName,filesep,'simSrc_nm_sky_',dataset,'tSNR_',num2str(tSNR_cut),'_eSNR',num2str(eSNR),'_psrT_',num2str(psr_t),'_',num2str(NMTC_t),ext],'simRA_nm','simDec_nm','simSNR_nm');
+    save([DataDir,filesep,simFileName,filesep,'simSrc_nm_sky_',dataset,'tSNR_',num2str(tSNR_cut),'_eSNR',num2str(eSNR),'_psrT_',num2str(psr_t),'_',num2str(NMTC_t),ext],'simRA_nm','simDec_nm','simSNR_nm','simOmega_nm');
     save([DataDir,filesep,simFileName,filesep,'matSrc_sky_',dataset,'tSNR_',num2str(tSNR_cut),'_eSNR',num2str(eSNR),'_psrT_',num2str(psr_t),'_',num2str(NMTC_t),ext],'matched_alpha_cnfrm','matched_dec_cnfrm','matched_snr_cnfrm', ...,
         'matched_freq_cnfrm','matched_alpha','matched_dec','matched_snr','matched_freq');
     save([DataDir,filesep,simFileName,filesep,'cnfrmSrc_sky_',dataset,'tSNR_',num2str(tSNR_cut),'_eSNR',num2str(eSNR),'_psrT_',num2str(psr_t),'_',num2str(NMTC_t),ext],'cnfrmRA','cnfrmDec','cnfrmSNR','cnfrmFreq');
     save([DataDir,filesep,simFileName,filesep,'idSrc_sky_',dataset,'tSNR_',num2str(tSNR_cut),'_eSNR',num2str(eSNR),'_psrT_',num2str(psr_t),'_',num2str(NMTC_t),ext],'idRA','idDec','idSNR','idFreq');
     
-    %% plot
-    load('/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/GENSIMDATA/Acond for SKA/CondMap.mat'); % load skymap condition number
-    
-    figure
-    % plot condition numbers
-    ax1 = axes;
-    imagesc(ax1,condMap.RA, condMap.Dec, condMap.cond);
-    
-    xlabel(ax1,'\alpha')
-    ylabel(ax1,'\delta')
-    title(ax1,'Sky Location')
-    
-    % plot(simRA,simDec,'o','MarkerEdgeColor','##D4D8D9') % plot true sources
-    ax2 = axes;
-    scatter(ax2,simRA_nm,simDec_nm,'o','MarkerEdgeColor','#D4D8D9') % use scatter to make marker size change
-    
-    hold on
-    
-    % plot(idRA,idDec,'rs') % plot identified sources
-    % scatter(idRA,idDec,idSNR,'rs') % with different size
-    scatter(ax2,idRA,idDec,[],'^')
-    scatter(ax2,cnfrmRA,cnfrmDec,[],cnfrmSNR, 'filled') % with different color
-    
-    % pause
-    
-    % plot(matched_alpha,matched_dec,'ob') % plot truly matched true sources
-    % scatter(matched_alpha,matched_dec,matched_snr,'ob')
-    scatter(ax2,matched_alpha_cnfrm,matched_dec_cnfrm,[],matched_snr_cnfrm,'s')
-    
-    % pause
-    % connect confirmed sources with true sources
-    % for j = 1:length(idRA)
-    %     plot(ax2,[idRA(j),matched_alpha(j)],[idDec(j),matched_dec(j)],'Color','m') % connect identified and matched sources
-    %     %     pause
-    % end
-    
-    % connect identified sources with true sources
-    for j = 1:length(idRA)
-        plot(ax2,[idRA(j),matched_alpha(j)],[idDec(j),matched_dec(j)],'Color','m') % connect identified and matched sources
-        %     pause
-    end
-    
-    xlim(ax2,[0 2*pi])
-    
-    %     Link two axes together
-    linkaxes([ax1,ax2])
-    
-    %     Hide the top axis
-    ax2.Visible = 'off';
-    ax2.XTick = [];
-    ax2.YTick = [];
-    set([ax1,ax2],'Position',[.17 .11 .685 .815]);
-    
-    
-    colormap(ax1)
-    % cb1 = colorbar(ax1,'Location','northoutside');
-    cb1 = colorbar(ax1,'Position',[.05 .11 .04 .815]);
-    cb1.Label.String = 'Condition Number';
-    cb1.Label.FontSize = 14;
-    
-    cmap = colormap(ax2,'autumn');
-    colormap(ax2,flipud(cmap)); % flip 'autumn' upside down
-    %     cb2 = colorbar(ax2,'Location','southoutside');
-    cb2 = colorbar(ax2,'Position',[.90 .11 .04 .815]);
-    cb2.Label.String = 'SNR';
-    cb2.Label.FontSize = 14;
-    %     ylabel(ax2,'\delta');
-    %     xlabel(ax2,'\alpha');
-    legend(ax2,{'True Srcs', 'Identified Srcs', 'Confirmed Srcs','Matched True Srcs','Matched & Confrm.'},'Location','best')
-    
-    
-%     saveas(gcf,[DataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_',dataset,'_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),'.png'])
-%     savefig([DataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_',dataset,'_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),'.fig'])
-    
-    saveas(gcf,[DataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_',dataset,'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),'_',num2str(NMTC_t),'.png'])
-    savefig([DataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_',dataset,'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),'_',num2str(NMTC_t),'.fig'])
-    close all
+    %% plot condition number along with confirmed sources
+%     load('/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/GENSIMDATA/Acond for SKA/CondMap.mat'); % load skymap condition number
+%     
+%     figure
+%     % plot condition numbers
+%     ax1 = axes;
+%     imagesc(ax1,condMap.RA, condMap.Dec, condMap.cond);
+%     
+%     xlabel(ax1,'\alpha')
+%     ylabel(ax1,'\delta')
+%     title(ax1,'Sky Location')
+%     
+%     % plot(simRA,simDec,'o','MarkerEdgeColor','##D4D8D9') % plot true sources
+%     ax2 = axes;
+%     scatter(ax2,simRA_nm,simDec_nm,'o','MarkerEdgeColor','#D4D8D9') % use scatter to make marker size change
+%     
+%     hold on
+%     
+%     % plot(idRA,idDec,'rs') % plot identified sources
+%     % scatter(idRA,idDec,idSNR,'rs') % with different size
+%     scatter(ax2,idRA,idDec,[],'^')
+%     scatter(ax2,cnfrmRA,cnfrmDec,[],cnfrmSNR, 'filled') % with different color
+%     
+%     % pause
+%     
+%     % plot(matched_alpha,matched_dec,'ob') % plot truly matched true sources
+%     % scatter(matched_alpha,matched_dec,matched_snr,'ob')
+%     scatter(ax2,matched_alpha_cnfrm,matched_dec_cnfrm,[],matched_snr_cnfrm,'s')
+%     
+%     % pause
+%     % connect confirmed sources with true sources
+%     % for j = 1:length(idRA)
+%     %     plot(ax2,[idRA(j),matched_alpha(j)],[idDec(j),matched_dec(j)],'Color','m') % connect identified and matched sources
+%     %     %     pause
+%     % end
+%     
+%     % connect identified sources with true sources
+%     for j = 1:length(idRA)
+%         plot(ax2,[idRA(j),matched_alpha(j)],[idDec(j),matched_dec(j)],'Color','m') % connect identified and matched sources
+%         %     pause
+%     end
+%     
+%     xlim(ax2,[0 2*pi])
+%     
+%     %     Link two axes together
+%     linkaxes([ax1,ax2])
+%     
+%     %     Hide the top axis
+%     ax2.Visible = 'off';
+%     ax2.XTick = [];
+%     ax2.YTick = [];
+%     set([ax1,ax2],'Position',[.17 .11 .685 .815]);
+%     
+%     
+%     colormap(ax1)
+%     % cb1 = colorbar(ax1,'Location','northoutside');
+%     cb1 = colorbar(ax1,'Position',[.05 .11 .04 .815]);
+%     cb1.Label.String = 'Condition Number';
+%     cb1.Label.FontSize = 14;
+%     
+%     cmap = colormap(ax2,'autumn');
+%     colormap(ax2,flipud(cmap)); % flip 'autumn' upside down
+%     %     cb2 = colorbar(ax2,'Location','southoutside');
+%     cb2 = colorbar(ax2,'Position',[.90 .11 .04 .815]);
+%     cb2.Label.String = 'SNR';
+%     cb2.Label.FontSize = 14;
+%     %     ylabel(ax2,'\delta');
+%     %     xlabel(ax2,'\alpha');
+%     legend(ax2,{'True Srcs', 'Identified Srcs', 'Confirmed Srcs','Matched True Srcs','Matched & Confrm.'},'Location','best')
+%     
+%     
+% %     saveas(gcf,[DataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_',dataset,'_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),'.png'])
+% %     savefig([DataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_',dataset,'_SNR',num2str(SNR_threshold),'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),'.fig'])
+%     
+%     saveas(gcf,[DataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_',dataset,'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),'_',num2str(NMTC_t),'.png'])
+%     savefig([DataDir,filesep,'fig',filesep,simFileName,filesep,'SkyLocationC_',dataset,'tSNR_',num2str(tSNR_cut),'_psrT_',num2str(psr_t),'_',num2str(NMTC_t),'.fig'])
+%     close all
+
+    %% Plot missed true sources whose SNR are higher than lowest confirmed source SNR
+
+    axes(fh(rlz))
+    plot(simSNR_nm(simSNR_nm > min(cnfrmSNR)), simOmega_nm(simSNR_nm > min(cnfrmSNR))/(2*pi*365*24*3600),'ob')
+    text(fh(rlz),.9,.9,['(',num2str(rlz),')'],'Units','normalized')
+    xlabel('SNR')
+    ylim([0 4e-7])
 end
+%
+% only retain the outer ticks
+yticklabels(fh([2,3,5,6]),'')
+ylabel(fh([1,4]),'Frequency [Hz]')
+savefig('missed_source_above_lowest_cnfrmSNR')
+saveas(gcf,'missed_source_above_lowest_cnfrmSNR.pdf')
+
 
 %END
