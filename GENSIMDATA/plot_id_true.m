@@ -38,9 +38,14 @@ simFileNames = sort_nat({simFile.name});
 % figures
 [fh,~] = tight_subplot(2,3,[.1 .05],[.1 .1], [.1 .05]);
 SNR_max_list = [];
-SNR_th_list = [20,30,50]; % a set of SNR threshold used to filter sources.
+SNR_th_list = [30,50]; % a set of SNR threshold used to filter sources.
+simSNR_nm_cell = {};
+simOmega_nm_cell = {};
 
-for snr_i = 1:3 % for 3 SNR threshold
+
+for snr_i = 1:2 % for 3 SNR threshold
+    simSNR_nm_list = []; % collect all 6 src realizations missed sources above SNR threshold
+    simOmega_nm_list = [];
     for rlz = 1:6 %Nrlzs
         [~,simFileName,~] = fileparts(simFileNames{rlz});
         simFile = [simDataDir,filesep,simFileName,ext];
@@ -207,6 +212,8 @@ for snr_i = 1:3 % for 3 SNR threshold
 
         %% Plot missed true sources whose SNR are higher than lowest confirmed source SNR
         idx = simSNR_nm > min(cnfrmSNR) & simSNR_nm > SNR_th_list(snr_i);
+        simSNR_nm_list = [simSNR_nm_list simSNR_nm(idx)];
+        simOmega_nm_list = [simOmega_nm_list simOmega_nm(idx)/(2*pi*365*24*3600)];
         axes(fh(rlz))
         plot(simSNR_nm(idx), simOmega_nm(idx)/(2*pi*365*24*3600),'ob')
         text(fh(rlz),.9,.9,['(',num2str(rlz),')'],'Units','normalized')
@@ -218,9 +225,18 @@ for snr_i = 1:3 % for 3 SNR threshold
         savefig(['missed_source_above_lowest_cnfrmSNR_above_SNR',num2str(SNR_th_list(snr_i))])
         saveas(gcf,['missed_source_above_lowest_cnfrmSNR_above_SNR',num2str(SNR_th_list(snr_i)),'.png'])
     end
+    simSNR_nm_cell{snr_i} = simSNR_nm_list;
+    simOmega_nm_cell{snr_i} = simOmega_nm_list;
 end
 %
-
-
-
+figure
+plot(simSNR_nm_cell{1},simOmega_nm_cell{1},'ob')
+hold on
+plot(simSNR_nm_cell{2}, simOmega_nm_cell{2},'r.')
+hold off
+xlabel('SNR')
+ylabel('Frequency [Hz]')
+legend('above SNR 30','above SNR 50')
+save('missed_sources_together')
+saveas(gcf,'missed_sources_together.png')
 %END
