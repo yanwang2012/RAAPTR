@@ -29,7 +29,8 @@ rng(1) % for repeatable works.
 for srlz = 1:Nsrlz
     [AmpOut,alphaOut,deltaOut,fgwOut,iotaOut,thetaNOut,phi0Out,r]=GenerateRandomGWSource(Ns);
     % put check for frequency above Nyquist freq
-    Nyquist_freq = 81.8345/(2*pi*24*365*3600); % Nyquist frequency
+    cadence = 14; % biweekly;
+    Nyquist_freq = 1/2 * 1/(cadence*24*3600); % Nyquist frequency (Hz)
     
     % setting up the freq filter
     if nargin == 3
@@ -39,17 +40,22 @@ for srlz = 1:Nsrlz
             disp("Will exclude all sources above Nyquist frequency")
         end
         Index = (fgwOut <= Nyquist_freq);
+        % disp(['Index is: ', num2str(Index)]);
+        if sum(Index) == 0
+            disp('There is no source');
+            continue
+        elseif sum(Index) > 0
         Amp_tmp = AmpOut(Index);
         alpha_tmp = alphaOut(Index);
         delta_tmp = deltaOut(Index);
         iota_tmp = iotaOut(Index);
         thetaN_tmp = thetaNOut(Index);
         phi0_tmp = phi0Out(Index);
-        omega_tmp = fgwOut(Index)*2*pi*24*365*3600; % convert sec^-1 (Hz) to yr^-1
+        omega_tmp = fgwOut(Index)*2*pi*24*365*3600; % convert sec^-1 (Hz) to rad yr^-1
         NNs = sum(Index);
         %     disp("The number of sources is:" + NNs)
-        
-    elseif nargin == 4
+        end
+     elseif nargin == 4
         fgwl = frqRng(1);
         fgwh = frqRng(2);
         disp("The lower limit is:" + fgwl);
@@ -63,7 +69,8 @@ for srlz = 1:Nsrlz
         thetaN_tmp = thetaNOut(Index);
         phi0_tmp = phi0Out(Index);
         NNs = sum(Index);
-    end
+     end
+
     disp("The number of sources is: " + NNs);
     disp("The size of Amp_tmp is: " + length(Amp_tmp));
     %disp("m is:" + m);
@@ -102,7 +109,10 @@ for srlz = 1:Nsrlz
         
         alphaP(i)=OutList(1,1);  % in rad
         deltaP(i)=OutList(1,2);  % in rad
-        distP(i)=skamsp.D(I(i));  %0.28*kilo*pc2ly;  % in ly
+        % convert kpc to ly
+        kilo=1000;
+        pc2ly=3.26;
+        distP(i)=skamsp.D(I(i))*kilo*pc2ly; % in ly
         sd(i)=1.0*10^(-7);  % 100 ns
         
     end
