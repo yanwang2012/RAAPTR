@@ -1,0 +1,23 @@
+# Makefile to run test for new data structure in hdf5
+# Yiqian-Qian 2022/09/08
+
+OBJ = gslhdf5_io.o H5IOTEST.o 
+
+CC = gcc -o0 -g # -o0 turn off optimization, -g enable debugging
+
+CXXFLAGS = /opt/local/include
+CXXLIBS = /opt/local/lib
+
+H5IOTEST: $(OBJ)
+	$(CC) $(OBJ) -L$(CXXLIBS) -I$(CXXFLAGS) -lhdf5 -lhdf5_hl -lgsl -lgslcblas -o TESTH5IO/H5IOTEST
+
+gslhdf5_io.o: gslhdf5_io.c
+	gcc -c -I$(CXXFLAGS) -L$(CXXLIBS) gslhdf5_io.c
+
+H5IOTEST.o: H5IOTEST.c
+	gcc -c -I$(CXXFLAGS) -L$(CXXLIBS) H5IOTEST.c	
+
+.PHONY:clean
+clean:
+	rm -f *.o	
+	echo Done!
