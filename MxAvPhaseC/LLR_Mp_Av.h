@@ -31,6 +31,27 @@ struct llr_pso_params{
 
 };
 
+struct  llr_pso_params_real
+{
+	/*! number of pulsars in the timing array */
+	unsigned int Np;
+	/*! number of observations, jagged array */
+	double *N;
+	/*! GW signal, jagged array */
+	double *s;
+	/*! standard deviation of noise for different pulsar, jagged array */
+	double *sd;
+	/*! (Np,1), right ascension, in radian */
+	double *alphaP;
+	/*!  (Np,1), declination, in radian */
+	double *deltaP;
+	/*! observation epoch, in year, jagged array */
+	double *yr;
+	/*! Estimated phases (1, Np) */
+	double *phiI;
+};
+
+
 /*! MISSING DOCUMENTATION */
 struct cfunc_OUTPUT
 {
