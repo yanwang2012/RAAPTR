@@ -38,15 +38,15 @@ struct  llr_pso_params_real
 	/*! number of observations, jagged array */
 	double *N;
 	/*! GW signal, jagged array */
-	double *s;
+	double **s;
 	/*! standard deviation of noise for different pulsar, jagged array */
-	double *sd;
+	double **sd;
 	/*! (Np,1), right ascension, in radian */
 	double *alphaP;
 	/*!  (Np,1), declination, in radian */
 	double *deltaP;
 	/*! observation epoch, in year, jagged array */
-	double *yr;
+	double **yr;
 	/*! Estimated phases (1, Np) */
 	double *phiI;
 };
@@ -108,6 +108,10 @@ void cfunc(unsigned int, double , double , double,  double, double,
 				   
 
 struct llr_pso_params * llrparam_alloc(unsigned int, unsigned int);
+
+struct llr_pso_params_real * llrparam_alloc_real(unsigned int);
+
+struct llr_pso_params_real * loadfile2llrparam_real(hid_t, const char **);
 				   
 void llrparam_free(struct llr_pso_params *);
 

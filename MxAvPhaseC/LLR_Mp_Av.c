@@ -10,6 +10,8 @@ coordinates before calling LogLikelihoodRatioMP5().
  */
 #include "maxphase.h"
 #include "LLR_Mp_Av.h"
+#include "hdf5_hl.h"
+#include "gslhdf5_io.h"
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_poly.h>
@@ -1228,6 +1230,69 @@ struct llr_pso_params *llrparam_alloc(unsigned int N, unsigned int Np)
   llp->s = s;
 
   return llp;
+}
+
+struct llr_pso_params_real *llrparam_alloc_real(unsigned int Np){
+  struct llr_pso_params_real *llp = (struct llr_pso_params_real *)malloc(sizeof(struct llr_pso_params_real));
+  llp->Np = Np;
+  llp->N = (double *)malloc(Np * sizeof(double));
+  llp->sd = (double **)malloc(Np * sizeof(double *));
+  llp->alphaP = (double *)malloc(Np * sizeof(double));
+  llp->deltaP = (double *)malloc(Np * sizeof(double));
+  llp->phiI = (double *)malloc(Np * sizeof(double));
+  llp->yr = (double **)malloc(Np * sizeof(double *));
+  llp->s = (double **)malloc(Np * sizeof(double *));
+
+  return llp;
+}
+
+struct llr_pso_params_real *loadfile2llrparam_real(hid_t inFile, const char **psrNames)
+{
+	// size_t Np = (size_t)hdf52dscalar(inFile, "Np");
+	size_t Np = 2; // for testing
+	struct llr_pso_params_real *llp = llrparam_alloc_real((unsigned int)Np);
+
+	for (int psr = 0; psr < Np; psr++)
+	{
+		hid_t inGroup = H5Gopen(inFile, psrNames[psr], H5P_DEFAULT);
+		// read out the data
+		double N = hdf52dscalar(inGroup, "N");
+		gsl_vector *yr_Pr = hdf52gslvector(inGroup, "yr");
+		gsl_vector *trPr = hdf52gslvector(inGroup, "timingResiduals");
+		gsl_vector *sd_Pr = hdf52gslvector(inGroup, "sd");
+		gsl_vector *alphaP_Pr = hdf52gslvector(inGroup, "alphaP");
+		gsl_vector *deltaP_Pr = hdf52gslvector(inGroup, "deltaP");
+
+		// Dynamically allocate memory
+		llp->sd[psr] = (double *)malloc(N * sizeof(double));
+		llp->s[psr] = (double *)malloc(N * sizeof(double));
+		llp->yr[psr] = (double *)malloc(N * sizeof(double));
+
+		// signing data
+		llp->Np = Np;
+		llp->N[psr] = N;
+		for (int i = 0; i < N; i++)
+		{
+			llp->sd[psr][i] = gsl_vector_get(sd_Pr, i);
+			llp->s[psr][i] = gsl_vector_get(trPr, i);
+			llp->yr[psr][i] = gsl_vector_get(yr_Pr, i);
+		}
+
+		// Wrap up
+		gsl_vector_free(yr_Pr);
+		gsl_vector_free(trPr);
+		gsl_vector_free(sd_Pr);
+		gsl_vector_free(alphaP_Pr);
+		gsl_vector_free(deltaP_Pr);
+
+		// Close group
+		herr_t status = H5Gclose(inGroup);
+		if (status < 0)
+		{
+			printf("Error closing group %s)", psrNames[psr]);
+		}
+	}
+	return llp;
 }
 
 /*! Deallocate special parameter structure specific to LLR_PSO fitness function.
