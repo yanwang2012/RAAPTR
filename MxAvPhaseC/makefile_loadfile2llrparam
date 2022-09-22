@@ -1,7 +1,7 @@
 # Makefile to run test for function loadfile2llrparams_real
 # Yiqian-Qian 2022/09/19
 
-OBJ = gslhdf5_io.o LLR_Mp_Av.o test_loadfile2llrparamsreal.o 
+OBJ = gslhdf5_io.o loadrealdata.o test_loadfile2llrparamsreal.o 
 
 CC = gcc -o0 -g # -o0 turn off optimization, -g enable debugging
 
@@ -14,8 +14,8 @@ test_loadfile2llrparamsreal: $(OBJ)
 gslhdf5_io.o: gslhdf5_io.c
 	gcc -c -I$(CXXFLAGS) gslhdf5_io.c
 
-LLR_Mp_Av.o: LLR_Mp_Av.c	
-	gcc -c -I$(CXXFLAGS) LLR_Mp_Av.c	
+loadrealdata.o: loadrealdata.c	
+	gcc -c -I$(CXXFLAGS) loadrealdata.c	
 
 test_loadfile2llrparamsreal.o: test_loadfile2llrparamsreal.c	
 	gcc -c -I$(CXXFLAGS) test_loadfile2llrparamsreal.c	
@@ -24,3 +24,4 @@ test_loadfile2llrparamsreal.o: test_loadfile2llrparamsreal.c
 clean:
 	rm -f *.o	
 	echo Done!
+

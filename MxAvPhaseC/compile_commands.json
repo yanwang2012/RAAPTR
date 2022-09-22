@@ -1,0 +1,32 @@
+[
+  {
+    "arguments": [
+      "/opt/local/bin/gcc",
+      "-c",
+      "-I/opt/local/include",
+      "gslhdf5_io.c"
+    ],
+    "directory": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC",
+    "file": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC/gslhdf5_io.c"
+  },
+  {
+    "arguments": [
+      "/opt/local/bin/gcc",
+      "-c",
+      "-I/opt/local/include",
+      "loadrealdata.c"
+    ],
+    "directory": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC",
+    "file": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC/loadrealdata.c"
+  },
+  {
+    "arguments": [
+      "/opt/local/bin/gcc",
+      "-c",
+      "-I/opt/local/include",
+      "test_loadfile2llrparamsreal.c"
+    ],
+    "directory": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC",
+    "file": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC/test_loadfile2llrparamsreal.c"
+  }
+]
