@@ -3,8 +3,8 @@
  * @Description: test file for func loadfile2llrparam_real
  * @Date: 2022-09-19 19:05:41
  * @LastEditors: Yiqian Qian
- * @LastEditTime: 2022-09-21 15:23:10
- * @FilePath: /MxAvPhaseC/TEST_LoadFile2LLRParamsReal.c
+ * @LastEditTime: 2022-09-22 12:04:01
+ * @FilePath: /MxAvPhaseC/test_loadfile2llrparamsreal.c
  */
 #include "gslhdf5_io.h"
 #include "hdf5_hl.h"
@@ -16,7 +16,7 @@
 #include <string.h>
 #include <time.h>
 
-void readpsrnames(char *, const char **);
+void readpsrnames(const char *, char **, size_t);
 
 void main(int argc, char *argv[])
 {
@@ -32,14 +32,16 @@ void main(int argc, char *argv[])
   // printf("String length is %d\n", strlen(psrnames[0]));
 
   hid_t inFile = H5Fopen(inputFile, H5F_ACC_RDONLY, H5P_DEFAULT);
-  if (inFile < 0) {
+  if (inFile < 0)
+  {
     printf("Error: cannot open file %s", inputFile);
     abort();
   }
   // printf("inFile is %d\n", inFile);
   size_t Np = (size_t)hdf52dscalar(inFile, "Np");
-  const char **psrnames = (const char **)malloc(Np * sizeof(const char *)); // jagged array to store pulsar names
-  readpsrnames(psrfile, psrnames);
+  //size_t Np = 2;
+  char **psrnames = (char **)malloc(Np * sizeof(char *)); // jagged array to store pulsar names
+  readpsrnames(psrfile, psrnames, Np);
   // printf("Pulsar names are %s\n", psrnames[0]);
 
   struct real_data *llp;
@@ -77,6 +79,7 @@ void main(int argc, char *argv[])
     free(llp->yr[i]);
     free(llp->sd[i]);
     free(llp->s[i]);
+    // free(psrnames[i]);
   }
 
   free(llp->yr);
@@ -85,9 +88,10 @@ void main(int argc, char *argv[])
   free(llp->alphaP);
   free(llp->deltaP);
   free(llp);
+  // free(psrnames);
 }
 
-void readpsrnames(char *filename, const char **psrNames)
+void readpsrnames(const char *filename, char **psrNames, size_t Np)
 {
   FILE *fptr = fopen(filename, "r");
   FILE *fptr2 = fopen("PulsarNames.txt", "w");
@@ -95,14 +99,24 @@ void readpsrnames(char *filename, const char **psrNames)
   size_t len = 0;
   ssize_t read;
   int i = 0;
-  while ((read = getline(&line, &len, fptr)) != -1)
+
+  while ((read = getline(&line, &len, fptr)) != -1) // getline will store the newline character as part of the string.
   {
-    psrNames[i] = (char *)malloc((strlen(line) + 1) * sizeof(char));
+    psrNames[i] = (char *)malloc((strlen(line)+1) * sizeof(char));
+    // printf("The length of %s is %d\n", line, strlen(line));
     strcpy(psrNames[i], line);
+    if (i != Np - 1) // the last line does not have a newline character
+      psrNames[i][strlen(line)-1] = '\0'; // change the last character to '\0'
     printf("Read pulsar %s\n", psrNames[i]);
-    fprintf(fptr2, "%s", psrNames[i]);
+    fprintf(fptr2, "%s loaded.\n", psrNames[i]);
     i++;
   }
+
+  /*for (int i = 0; i < Np; i++ ){
+     psrNames[i] = (char *)malloc(buffersize * sizeof(char));
+     getline(&psrNames[i], &buffersize, fptr);
+     fprintf(fptr2, "%s", psrNames[i]);
+  }*/
   fclose(fptr);
   fclose(fptr2);
 }
