@@ -11,11 +11,10 @@
 */
 #if !defined(REALDATA)
 #define REALDATA
-#include "hdf5_hl.h"
 #include "hdf5.h"
+#include "hdf5_hl.h"
 
-
-struct real_data {
+struct RAAPTR_data {
   /*! number of pulsars in the timing array */
   unsigned int Np;
   /*! number of observations, jagged array */
@@ -34,7 +33,7 @@ struct real_data {
   double *phiI;
 };
 
-struct real_data *loadfile2llrparam_real(hid_t, const char **, size_t);
+struct RAAPTR_data *loadRAAPTR2llrparams(hid_t, const char **, size_t);
 
-struct real_data *llrparam_alloc_real(unsigned int);
+struct RAAPTR_data *llrRAAPTR_alloc(unsigned int);
 #endif

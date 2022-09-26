@@ -1,24 +1,24 @@
-# Makefile to run test for function loadfile2llrparams_real
+# Makefile to run test for function loadRAAPTR2llrparams.
 # Yiqian-Qian 2022/09/19
 
-OBJ = gslhdf5_io.o loadrealdata.o test_loadfile2llrparamsreal.o 
+OBJ = gslhdf5_io.o loadRAAPTR.o test_loadRAAPTR2llrparams.o 
 
 CC = gcc -o0 -g # -o0 turn off optimization, -g enable debugging
 
 CXXFLAGS = /opt/local/include
 CXXLIBS = /opt/local/lib
 
-test_loadfile2llrparamsreal: $(OBJ)
-	$(CC) $(OBJ) -L$(CXXLIBS) -I$(CXXFLAGS) -lhdf5 -lhdf5_hl -lgsl -lgslcblas -lz -lm -o TESTH5IO/test_loadfile2llrparamsreal
+test_loadRAAPTR2llrparams: $(OBJ)
+	$(CC) $(OBJ) -L$(CXXLIBS) -I$(CXXFLAGS) -lhdf5 -lhdf5_hl -lgsl -lgslcblas -lz -lm -o TESTH5IO/test_loadRAAPTR2llrparams
 
 gslhdf5_io.o: gslhdf5_io.c
 	gcc -c -I$(CXXFLAGS) gslhdf5_io.c
 
-loadrealdata.o: loadrealdata.c	
-	gcc -c -I$(CXXFLAGS) loadrealdata.c	
+loadRAAPTR.o: loadRAAPTR.c	
+	gcc -c -I$(CXXFLAGS) loadRAAPTR.c	
 
-test_loadfile2llrparamsreal.o: test_loadfile2llrparamsreal.c	
-	gcc -c -I$(CXXFLAGS) test_loadfile2llrparamsreal.c	
+test_loadRAAPTR2llrparams.o: test_loadRAAPTR2llrparams.c	
+	gcc -c -I$(CXXFLAGS) test_loadRAAPTR2llrparams.c	
 
 .PHONY:clean
 clean:

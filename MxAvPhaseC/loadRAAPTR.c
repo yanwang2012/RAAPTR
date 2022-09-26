@@ -6,15 +6,16 @@
  * @LastEditTime: 2022-09-21 14:41:25
  * @FilePath: /MxAvPhaseC/loadrealdata.c
  */
-#include "loadrealdata.h"
+#include "loadRAAPTR.h"
 #include "gslhdf5_io.h"
 #include "hdf5_hl.h"
 #include <gsl/gsl_vector.h>
 #include <stdio.h>
 #include <string.h>
 
-struct real_data *llrparam_alloc_real(unsigned int Np) {
-  struct real_data *llp = (struct real_data *)malloc(sizeof(struct real_data));
+struct RAAPTR_data *llrparam_alloc_RAAPTR(unsigned int Np) {
+  struct RAAPTR_data *llp =
+      (struct RAAPTR_data *)malloc(sizeof(struct RAAPTR_data));
   llp->Np = Np;
   llp->N = (double *)malloc(Np * sizeof(double));
   llp->sd = (double **)malloc(Np * sizeof(double *));
@@ -27,9 +28,10 @@ struct real_data *llrparam_alloc_real(unsigned int Np) {
   return llp;
 }
 
-struct real_data *loadfile2llrparam_real(hid_t inFile, const char **psrNames, size_t Np) {
+struct RAAPTR_data *loadRAAPTR2llrparams(hid_t inFile, const char **psrNames,
+                                         size_t Np) {
 
-  struct real_data *llp = llrparam_alloc_real((unsigned int)Np);
+  struct RAAPTR_data *llp = llrparam_alloc_RAAPTR((unsigned int)Np);
 
   for (int psr = 0; psr < Np; psr++) {
     hid_t inGroup = H5Gopen(inFile, psrNames[psr], H5P_DEFAULT);
