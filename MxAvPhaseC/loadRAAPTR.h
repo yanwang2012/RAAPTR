@@ -3,14 +3,14 @@
  * @Description: Header file for loadrealdata.c
  * @Date: 2022-09-20 14:35:43
  * @LastEditors: Yiqian Qian
- * @LastEditTime: 2022-09-21 14:42:05
- * @FilePath: /MxAvPhaseC/loadrealdata.h
+ * @LastEditTime: 2022-09-29 21:49:51
+ * @FilePath: /MxAvPhaseC/loadRAAPTR.h
  */
 /*! \file loadrealdata.h
 \brief Header file for \ref loadrealdata.c
 */
-#if !defined(REALDATA)
-#define REALDATA
+#if !defined(RAAPTR_DATA)
+#define RAAPTR_DATA
 #include "hdf5.h"
 #include "hdf5_hl.h"
 
@@ -35,5 +35,8 @@ struct RAAPTR_data {
 
 struct RAAPTR_data *loadRAAPTR2llrparams(hid_t, const char **, size_t);
 
-struct RAAPTR_data *llrRAAPTR_alloc(unsigned int);
+struct RAAPTR_data *llrparam_alloc_RAAPTR(unsigned int);
+
+void raaptr_free(struct RAAPTR_data *);
+
 #endif

@@ -3,8 +3,8 @@
  * @Description: test file for func loadfile2llrparam_real
  * @Date: 2022-09-19 19:05:41
  * @LastEditors: Yiqian Qian
- * @LastEditTime: 2022-09-22 12:04:01
- * @FilePath: /MxAvPhaseC/test_loadfile2llrparamsreal.c
+ * @LastEditTime: 2022-09-29 22:21:49
+ * @FilePath: /MxAvPhaseC/test_loadRAAPTR2llrparams.c
  */
 #include "gslhdf5_io.h"
 #include "hdf5_hl.h"
@@ -18,7 +18,8 @@
 
 void readpsrnames(const char *, char **, size_t);
 
-void main(int argc, char *argv[]) {
+void main(int argc, char *argv[])
+{
   /*
   A function to load data from .hdf5 file for real data.
   */
@@ -31,7 +32,8 @@ void main(int argc, char *argv[]) {
   // printf("String length is %d\n", strlen(psrnames[0]));
 
   hid_t inFile = H5Fopen(inputFile, H5F_ACC_RDONLY, H5P_DEFAULT);
-  if (inFile < 0) {
+  if (inFile < 0)
+  {
     printf("Error: cannot open file %s", inputFile);
     abort();
   }
@@ -45,7 +47,7 @@ void main(int argc, char *argv[]) {
 
   struct RAAPTR_data *llp;
   // printf("inFile is %d\n", inFile);
-  printf("pulsarnames_dbug 0 %s, pulsarnames 0 %s", psrnames_dbug[0],
+  printf("pulsarnames_dbug 0 %s, pulsarnames 0 %s\n", psrnames_dbug[0],
          psrnames[0]);
   llp = loadRAAPTR2llrparams(inFile, psrnames, Np);
   FILE *fptr = fopen("Output.txt", "w");
@@ -54,7 +56,8 @@ void main(int argc, char *argv[]) {
   fprintf(fptr, "The location of pulsar %s is %f, %f\n", psrnames[0],
           llp->alphaP[0], llp->deltaP[0]);
 
-  for (int psr = 0; psr < (int)Np; psr++) {
+  for (int psr = 0; psr < (int)Np; psr++)
+  {
     // print yr for pulsar psr
     fprintf(fptr, "yr for pulsar %s is ", psrnames[psr]);
     for (int i = 0; i < llp->N[psr]; i++)
@@ -68,12 +71,15 @@ void main(int argc, char *argv[]) {
     for (int i = 0; i < llp->N[psr]; i++)
       fprintf(fptr, "%f\n", llp->s[psr][i]);
   }
+  double *ssd = llp->sd[1];
+  printf("ssd[1] is %f\n sd[1][1] is %f", ssd[1], llp->sd[1][1]);
   // close file
   H5Fclose(inFile);
   fclose(fptr);
 
   // free memory
-  for (int i = 0; i < (int)Np; i++) {
+  for (int i = 0; i < (int)Np; i++)
+  {
     free(llp->yr[i]);
     free(llp->sd[i]);
     free(llp->s[i]);
@@ -89,7 +95,8 @@ void main(int argc, char *argv[]) {
   // free(psrnames);
 }
 
-void readpsrnames(const char *filename, char **psrNames, size_t Np) {
+void readpsrnames(const char *filename, char **psrNames, size_t Np)
+{
   FILE *fptr = fopen(filename, "r");
   FILE *fptr2 = fopen("PulsarNames.txt", "w");
   char *line = NULL;
@@ -103,7 +110,7 @@ void readpsrnames(const char *filename, char **psrNames, size_t Np) {
     psrNames[i] = (char *)malloc((strlen(line) + 1) * sizeof(char));
     // printf("The length of %s is %d\n", line, strlen(line));
     strcpy(psrNames[i], line);
-    if (i != Np - 1) // the last line does not have a newline character
+    if (i != Np - 1)                        // the last line does not have a newline character
       psrNames[i][strlen(line) - 1] = '\0'; // change the last character to '\0'
     printf("Read pulsar %s\n", psrNames[i]);
     fprintf(fptr2, "%s loaded.\n", psrNames[i]);

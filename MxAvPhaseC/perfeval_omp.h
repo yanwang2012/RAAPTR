@@ -1,3 +1,11 @@
+/*
+ * @Author: Yiqian Qian
+ * @Description: Function to fit the data.
+ * @Date: 2020-09-02 12:41:57
+ * @LastEditors: Yiqian Qian
+ * @LastEditTime: 2022-09-29 22:35:40
+ * @FilePath: /MxAvPhaseC/perfeval_omp.h
+ */
 #if !defined(PERFEVAL_OMP_HDR)
 #define PERFEVAL_OMP_HDR
 
@@ -14,6 +22,10 @@
 */
 
 void perfeval_omp(struct fitFuncParams *, char *, char *, char *);
+
+void perfeval_omp_RAAPTR(struct fitFuncParams *, char *, char *, char *, char *);
+
+void readpsrnames(const char *, char **, size_t);
 
 /* Load special fitness function parameters from file*/
 struct  llr_pso_params * loadfile2llrparam(hid_t);

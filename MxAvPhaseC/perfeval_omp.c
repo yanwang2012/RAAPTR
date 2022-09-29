@@ -1,4 +1,5 @@
 #include "maxphase.h"
+#include "loadRAAPTR.h"
 #include "LLR_Mp_Av.h"
 #include "ptapso.h"
 #include "perfeval_omp.h"
@@ -276,6 +277,223 @@ void perfeval_omp(struct fitFuncParams *ffp, /*!< Parameters for the fitness fun
 		returnData_free(psoResults[lpc1]);
 	}
 	gsl_vector_free(wallClkTimes);
+}
+
+void perfeval_omp_RAAPTR(struct fitFuncParams *ffp, /*!< Parameters for the fitness function */
+				  char *inputFileName,		/*!< Name of the file containing data to analyze*/
+				  char *outputFileName,		/*!< Name of the file to store output results in*/
+				  char *mp_av_select, 		/*!< Select Max or AvPhase algorithm */
+				  char *psrfile 		/*!< Name of the file containing the pulsar catalog */)
+{
+
+	/* Number of independent PSO runs */
+	size_t nRuns = 8;
+	/* General purpose loop counters */
+	size_t lpc1, lpc2;
+	/*General purpose variables */
+	int stat;
+
+	/* Each run has an different random number seed.
+	  {e,pi,
+	   sqrt(2),euler's const gamma,
+	   i^i, Feignbaum's number,
+	   exp(pi), Champernowne const}
+	*/
+	unsigned long int rngSeeds[8] = {271828182, 314159265,
+									 141421356, 577215664,
+									 207879576, 466920160,
+									 231406926, 123456789};
+
+	/* Choose the algorithm to use. */
+	double (*fitfunc)(gsl_vector *, void *);
+	if (!strcmp(mp_av_select, "maxPhase"))
+	{
+		fitfunc = LLR_mp;
+	}
+	else if (!strcmp(mp_av_select, "avPhase"))
+	{
+		fitfunc = LLR_av;
+	}
+	else if (!strcmp(mp_av_select, "raaptr")){
+		fitfunc = LLR_av_RAAPTR;
+	}
+	else
+	{
+		printf("Option %s is not recognized. Use maxPhase or avPhase.\n", mp_av_select);
+		return;
+	}
+
+	/* Choose the random number generation method.
+	   Need independent random number generators
+	   inside an OMP for loop (?)*/
+	gsl_rng *rngGen[8];
+	for (lpc1 = 0; lpc1 < 8; lpc1++)
+	{
+		rngGen[lpc1] = gsl_rng_alloc(gsl_rng_taus);
+	}
+
+	// Load data from specified .hdf5 input file
+	herr_t status;
+	hid_t inFile = H5Fopen(inputFileName, H5F_ACC_RDONLY, H5P_DEFAULT);
+	if (inFile < 0)
+	{
+		fprintf(stdout, "Error opening file\n");
+		abort();
+	}
+/* simulated parameters doesn't exist in the input file
+	char genHypothesis[10];
+	status = H5LTread_dataset_string(inFile, "genHypothesis", genHypothesis);
+	if (status < 0)
+	{
+		fprintf(stdout, "Error reading genHypothesis\n");
+		abort();
+	}
+	// fprintf(stdout,"genHypothesis: %s\n",genHypothesis);
+
+	struct
+	{
+		int snr_id;
+		int loc_id;
+		int omg_id;
+		int rlz_id;
+	} id;
+	status = H5LTread_dataset_int(inFile, "snr_id", &id.snr_id);
+	if (status < 0)
+	{
+		fprintf(stdout, "Error reading snr_id\n");
+		abort();
+	}
+	status = H5LTread_dataset_int(inFile, "loc_id", &id.loc_id);
+	if (status < 0)
+	{
+		fprintf(stdout, "Error reading loc_id\n");
+		abort();
+	}
+	status = H5LTread_dataset_int(inFile, "omg_id", &id.omg_id);
+	if (status < 0)
+	{
+		fprintf(stdout, "Error reading omg_id\n");
+		abort();
+	}
+	status = H5LTread_dataset_int(inFile, "rlz_id", &id.rlz_id);
+	if (status < 0)
+	{
+		fprintf(stdout, "Error reading rlz_id\n");
+		abort();
+	}
+*/
+	// Remaining data loads into special parameter structure
+	size_t Np = (size_t)hdf52dscalar(inFile, "Np");
+	char **psrnames = (char **)malloc(Np * sizeof(char *));
+	readpsrnames(psrfile, psrnames, Np);
+	struct RAAPTR_data *llp;
+	printf("Fist pulsar in perfeval_omp_RAAPTR: %s\n", psrnames[0]);
+	llp = loadRAAPTR2llrparams(inFile, psrnames, Np);
+
+	// Close file
+	status = H5Fclose(inFile);
+	if (status < 0)
+	{
+		fprintf(stdout, "Error closing file %s \n", inputFileName);
+	}
+
+	// Load special parameter struct into fitness function struct
+	ffp->splParams = llp;
+
+	/*----------------
+		RUN PSO
+	-----------------*/
+	// Number of search dimensions
+	size_t nDim = ffp->nDim;
+	struct returnData *psoResults[nRuns];
+	for (lpc1 = 0; lpc1 < nRuns; lpc1++)
+	{
+		psoResults[lpc1] = returnData_alloc(nDim);
+	}
+	// Number of extrinsic parameters = Number of pulsars
+	// size_t Np = llp->Np;
+	// Time to complete
+	gsl_vector *wallClkTimes = gsl_vector_alloc(nRuns);
+	// PSO timer variables
+	clock_t psoStartTime, psoStopTime;
+	// Loop over runs using omp.
+	/* We must use deep copies of
+	   the fitness parameter structure because otherwise it is
+	   shared and different OMP workers will overwrite the realCoord
+	   field. Similarly copies of other variables need to be used if there is a
+	   chance that sharing them will lead to intereference between the workers.
+	   This is a not a problem in an MPI code since one must explicity pass
+	   values of variables to the workers.
+	*/
+	struct fitFuncParams *ffpCopy;
+	struct psoParamStruct psoParams;
+#pragma omp parallel for private(psoStartTime, psoStopTime, ffpCopy, psoParams)
+	for (lpc1 = 0; lpc1 < nRuns; lpc1++)
+	{
+		fprintf(stdout, "Running PSO run %zu on worker %d\n", lpc1, omp_get_thread_num());
+		/* Initialize random number generator separately for each worker*/
+		gsl_rng_set(rngGen[lpc1], rngSeeds[lpc1]);
+		/* Configure PSO parameters*/
+		psoParams.popsize = 40;
+		psoParams.maxSteps = 2000;
+		psoParams.c1 = 2;
+		psoParams.c2 = 2;
+		psoParams.max_velocity = 0.2;
+		psoParams.dcLaw_a = 0.9;
+		psoParams.dcLaw_b = 0.4;
+		psoParams.dcLaw_c = psoParams.maxSteps;
+		psoParams.dcLaw_d = 0.2;
+		psoParams.locMinIter = 0;
+		psoParams.locMinStpSz = 0.01;
+		psoParams.debugDumpFile = NULL;
+		psoParams.rngGen = rngGen[lpc1];
+
+		/*Clone fitness parameter struct */
+		ffpCopy = RAAPTR_clone(ffp);
+
+		/*Timed PSO run */
+		psoStartTime = clock();
+		ptapso(nDim, fitfunc, ffpCopy, &psoParams, psoResults[lpc1]);
+		psoStopTime = clock();
+
+		gsl_vector_set(wallClkTimes, lpc1, (((double)(psoStopTime - psoStartTime)) / CLOCKS_PER_SEC) / 60.0);
+
+		// Delete local copy of fitness parameter struct
+		llrparam_free(ffpCopy->splParams);
+		ffparam_free(ffpCopy);
+	}
+}
+
+/*! read pulsar names from puslar catalog */
+void readpsrnames(const char *filename, char **psrNames, size_t Np)
+{
+	FILE *fptr = fopen(filename, "r");
+	FILE *fptr2 = fopen("PulsarNames.txt", "w");
+	char *line = NULL;
+	size_t len = 0;
+	ssize_t read;
+	int i = 0;
+
+	while ((read = getline(&line, &len, fptr)) !=
+		   -1) // getline will store the newline character as part of the string.
+	{
+		psrNames[i] = (char *)malloc((strlen(line) + 1) * sizeof(char));
+		// printf("The length of %s is %d\n", line, strlen(line));
+		strcpy(psrNames[i], line);
+		if (i != Np - 1)						  // the last line does not have a newline character
+			psrNames[i][strlen(line) - 1] = '\0'; // change the last character to '\0'
+		printf("Read pulsar %s\n", psrNames[i]);
+		fprintf(fptr2, "%s loaded.\n", psrNames[i]);
+		i++;
+	}
+
+	/*for (int i = 0; i < Np; i++ ){
+	   psrNames[i] = (char *)malloc(buffersize * sizeof(char));
+	   getline(&psrNames[i], &buffersize, fptr);
+	   fprintf(fptr2, "%s", psrNames[i]);
+	}*/
+	fclose(fptr);
+	fclose(fptr2);
 }
 
 /*! Dump output from multiple pso runs in perfeval_omp() to a .mat file */

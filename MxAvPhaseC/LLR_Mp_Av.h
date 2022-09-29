@@ -1,3 +1,11 @@
+/*
+ * @Author: Yiqian Qian
+ * @Description: header file for fit functions
+ * @Date: 2022-09-20 11:28:27
+ * @LastEditors: Yiqian Qian
+ * @LastEditTime: 2022-09-29 21:21:04
+ * @FilePath: /MxAvPhaseC/LLR_Mp_Av.h
+ */
 /*! \file LLR_Mp_Av.h
 \brief Header file for \ref LLR_Mp_Av.c.
 */
@@ -45,6 +53,8 @@ struct lh_OUTPUT {
 // Creation of a new deep copy of the fitness function parameter struct
 struct fitFuncParams *ffparams_clone(struct fitFuncParams *);
 
+struct fitFuncParams *RAAPTR_clone(struct fitFuncParams *);
+
 //-------AvPhase specific functions and structs--------
 /* Structure for avPhase */
 struct avPhase_param {
@@ -62,8 +72,12 @@ double LLR_av(gsl_vector *, /*!< Data vector */
               void *        /*!< Pointer to fitFuncParams struct */
 );
 
+double LLR_av_RAAPTR(gsl_vector *, void *);
+
 // double LogLikelihoodRatioMP5(struct fitFuncParams *);
 double AvPhaseLLR(struct fitFuncParams *);
+
+double AvPhaseLLR_RAAPTR(struct fitFuncParams *);
 //-----------------------------------------------------
 
 double InnProduct(unsigned int N, double *, double *, double sd);
@@ -77,6 +91,10 @@ double LogLikelihoodRatioMP5(struct fitFuncParams *);
 void likelihood(double *, double *, struct lh_OUTPUT *);
 
 void cfunc(unsigned int, double, double, double, double, double, double, double,
+           double, double, double, double *, double *, double *,
+           struct cfunc_OUTPUT *);
+
+void cfunc_raaptr(unsigned int, double, double, double, double, double, double, double,
            double, double, double, double *, double *, double *,
            struct cfunc_OUTPUT *);
 
