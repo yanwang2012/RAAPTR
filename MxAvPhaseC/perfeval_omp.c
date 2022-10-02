@@ -720,7 +720,7 @@ void perfevalomp2hdf5file_raaptr(size_t nRuns, size_t nDim, size_t Np,
 			dummyAmp = gsl_vector_get(ffp->realCoord, 4);
 			dummyAmp = log10(dummyAmp);
 			gsl_vector_set(ffp->realCoord, 4, dummyAmp);
-			dummyFitVal = LogLikelihoodRatioMP5(ffp);
+			dummyFitVal = LogLikelihoodRatioMP5_raaptr(ffp);
 		}
 
 		for (lpc2 = 0; lpc2 < nDim; lpc2++)

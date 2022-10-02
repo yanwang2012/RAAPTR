@@ -3,7 +3,7 @@
  * @Description: header file for fit functions
  * @Date: 2022-09-20 11:28:27
  * @LastEditors: Yiqian Qian
- * @LastEditTime: 2022-10-02 01:55:29
+ * @LastEditTime: 2022-10-03 00:38:25
  * @FilePath: /MxAvPhaseC/LLR_Mp_Av.h
  */
 /*! \file LLR_Mp_Av.h
@@ -88,6 +88,8 @@ double LLR_mp(gsl_vector *, /*!< Data vector */
 );
 
 double LogLikelihoodRatioMP5(struct fitFuncParams *);
+
+double LogLikelihoodRatioMP5_raaptr(struct fitFuncParams *);
 
 void likelihood(double *, double *, struct lh_OUTPUT *);
 
