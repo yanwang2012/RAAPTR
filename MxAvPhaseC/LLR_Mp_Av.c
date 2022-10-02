@@ -9,9 +9,9 @@ standardized particle coordinates and converts then to real
 coordinates before calling LogLikelihoodRatioMP5().
  */
 #include "LLR_Mp_Av.h"
-#include "loadRAAPTR.h"
 #include "gslhdf5_io.h"
 #include "hdf5_hl.h"
+#include "loadRAAPTR.h"
 #include "maxphase.h"
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_integration.h>
@@ -25,8 +25,7 @@ coordinates before calling LogLikelihoodRatioMP5().
 /*! Deep copy of fitness function parameter struct. Copies are required
  in an OpenMP code since sharing this struct will lead to overwriting
 of critical fields. */
-struct fitFuncParams *ffparams_clone(struct fitFuncParams *srcffp)
-{
+struct fitFuncParams *ffparams_clone(struct fitFuncParams *srcffp) {
 
   struct fitFuncParams *dstffp = ffparam_alloc(srcffp->nDim);
 
@@ -40,19 +39,16 @@ struct fitFuncParams *ffparams_clone(struct fitFuncParams *srcffp)
   dstffp->fitEvalFlag = srcffp->fitEvalFlag;
 
   size_t lpc1, lpc2;
-  for (lpc1 = 0; lpc1 < srcllp->Np; lpc1++)
-  {
+  for (lpc1 = 0; lpc1 < srcllp->Np; lpc1++) {
     llp->sd[lpc1] = srcllp->sd[lpc1];
     llp->alphaP[lpc1] = srcllp->alphaP[lpc1];
     llp->deltaP[lpc1] = srcllp->deltaP[lpc1];
     llp->phiI[lpc1] = srcllp->phiI[lpc1];
-    for (lpc2 = 0; lpc2 < srcllp->N; lpc2++)
-    {
+    for (lpc2 = 0; lpc2 < srcllp->N; lpc2++) {
       llp->s[lpc1][lpc2] = srcllp->s[lpc1][lpc2];
     }
   }
-  for (lpc2 = 0; lpc2 < srcllp->N; lpc2++)
-  {
+  for (lpc2 = 0; lpc2 < srcllp->N; lpc2++) {
     llp->yr[lpc2] = srcllp->yr[lpc2];
   }
 
@@ -61,8 +57,7 @@ struct fitFuncParams *ffparams_clone(struct fitFuncParams *srcffp)
   return dstffp;
 }
 
-struct fitFuncParams *RAAPTR_clone(struct fitFuncParams *srcffp)
-{
+struct fitFuncParams *RAAPTR_clone(struct fitFuncParams *srcffp) {
 
   struct fitFuncParams *dstffp = ffparam_alloc(srcffp->nDim);
 
@@ -70,7 +65,7 @@ struct fitFuncParams *RAAPTR_clone(struct fitFuncParams *srcffp)
 
   struct RAAPTR_data *llp = llrparam_alloc_RAAPTR(srcllp->Np);
   // dynamic alloc memory for llp
-  for (size_t psr = 0; psr < srcllp->Np; psr++){
+  for (size_t psr = 0; psr < srcllp->Np; psr++) {
     llp->s[psr] = (double *)malloc(sizeof(double) * srcllp->N[psr]);
     llp->sd[psr] = (double *)malloc(sizeof(double) * srcllp->N[psr]);
     llp->yr[psr] = (double *)malloc(sizeof(double) * srcllp->N[psr]);
@@ -82,14 +77,12 @@ struct fitFuncParams *RAAPTR_clone(struct fitFuncParams *srcffp)
   dstffp->fitEvalFlag = srcffp->fitEvalFlag;
 
   size_t lpc1, lpc2;
-  for (lpc1 = 0; lpc1 < srcllp->Np; lpc1++)
-  {
+  for (lpc1 = 0; lpc1 < srcllp->Np; lpc1++) {
     llp->alphaP[lpc1] = srcllp->alphaP[lpc1];
     llp->deltaP[lpc1] = srcllp->deltaP[lpc1];
     llp->phiI[lpc1] = srcllp->phiI[lpc1];
     llp->N[lpc1] = srcllp->N[lpc1];
-    for (lpc2 = 0; lpc2 < srcllp->N[lpc1]; lpc2++)
-    {
+    for (lpc2 = 0; lpc2 < srcllp->N[lpc1]; lpc2++) {
       llp->s[lpc1][lpc2] = srcllp->s[lpc1][lpc2];
       llp->sd[lpc1][lpc2] = srcllp->sd[lpc1][lpc2];
       llp->yr[lpc1][lpc2] = srcllp->yr[lpc1][lpc2];
@@ -122,8 +115,7 @@ LLR_av(gsl_vector *xVec,     /*!< Standardized Particle Coordinates*/
        void *inParamsPointer /*!< Fitness function parameter structure
                                                     containing information for
                                 conversion of standardized to real coordinates*/
-)
-{
+) {
 
   // Set to 0 if angular variables do not have a periodic boundary conditions
   size_t wrapAngles = 1;
@@ -139,21 +131,17 @@ LLR_av(gsl_vector *xVec,     /*!< Standardized Particle Coordinates*/
   validPt = llrpsochkcoord(wrapAngles, inParams->rmin, inParams->rangeVec, xVec,
                            inParams->realCoord);
 
-  if (validPt)
-  {
+  if (validPt) {
     inParams->fitEvalFlag = 1;
     fitFuncVal = AvPhaseLLR(inParams);
-  }
-  else
-  {
+  } else {
     inParams->fitEvalFlag = 0;
     fitFuncVal = GSL_POSINF;
   }
   return fitFuncVal;
 }
 
-double f(double x, void *p)
-{
+double f(double x, void *p) {
   // double alpha0 = *(double *) params[0];
   struct avPhase_param *params = (struct avPhase_param *)p;
   double b[5], norm;
@@ -184,8 +172,7 @@ LLR_mp(gsl_vector *xVec,     /*!< Standardized Particle Coordinates*/
        void *inParamsPointer /*!< Fitness function parameter structure
                                                     containing information for
                                 conversion of standardized to real coordinates*/
-)
-{
+) {
 
   // Set to 0 if angular variables do not have a periodic boundary conditions
   size_t wrapAngles = 1;
@@ -201,13 +188,10 @@ LLR_mp(gsl_vector *xVec,     /*!< Standardized Particle Coordinates*/
   validPt = llrpsochkcoord(wrapAngles, inParams->rmin, inParams->rangeVec, xVec,
                            inParams->realCoord);
 
-  if (validPt)
-  {
+  if (validPt) {
     inParams->fitEvalFlag = 1;
     fitFuncVal = LogLikelihoodRatioMP5(inParams);
-  }
-  else
-  {
+  } else {
     inParams->fitEvalFlag = 0;
     fitFuncVal = GSL_POSINF;
   }
@@ -216,13 +200,12 @@ LLR_mp(gsl_vector *xVec,     /*!< Standardized Particle Coordinates*/
 }
 // EOF LLR_Mp_Av
 
-double
-LLR_av_RAAPTR(gsl_vector *xVec,     /*!< Standardized Particle Coordinates*/
-       void *inParamsPointer /*!< Fitness function parameter structure
-                                                    containing information for
-                                conversion of standardized to real coordinates*/
-)
-{
+double LLR_av_RAAPTR(
+    gsl_vector *xVec,     /*!< Standardized Particle Coordinates*/
+    void *inParamsPointer /*!< Fitness function parameter structure
+                                                 containing information for
+                             conversion of standardized to real coordinates*/
+) {
 
   // Set to 0 if angular variables do not have a periodic boundary conditions
   size_t wrapAngles = 1;
@@ -238,13 +221,10 @@ LLR_av_RAAPTR(gsl_vector *xVec,     /*!< Standardized Particle Coordinates*/
   validPt = llrpsochkcoord(wrapAngles, inParams->rmin, inParams->rangeVec, xVec,
                            inParams->realCoord);
 
-  if (validPt)
-  {
+  if (validPt) {
     inParams->fitEvalFlag = 1;
     fitFuncVal = AvPhaseLLR_RAAPTR(inParams);
-  }
-  else
-  {
+  } else {
     inParams->fitEvalFlag = 0;
     fitFuncVal = GSL_POSINF;
   }
@@ -252,8 +232,7 @@ LLR_av_RAAPTR(gsl_vector *xVec,     /*!< Standardized Particle Coordinates*/
 }
 
 // average/marginalize LLR over pulsar phases, Jan. 2017
-double AvPhaseLLR(struct fitFuncParams *inParams)
-{
+double AvPhaseLLR(struct fitFuncParams *inParams) {
 
   struct llr_pso_params *splParams =
       (struct llr_pso_params *)inParams->splParams;
@@ -345,8 +324,7 @@ double AvPhaseLLR(struct fitFuncParams *inParams)
   thetaN = gsl_vector_get(inParams->realCoord, 6);
 
   s = (double **)malloc(Np * sizeof(double));
-  for (i = 0; i < Np; i++)
-  {
+  for (i = 0; i < Np; i++) {
     //*(s+i) = (double *)malloc(N * sizeof(double));  // not needed!
     s[i] = splParams->s[i];
   }
@@ -373,8 +351,7 @@ double AvPhaseLLR(struct fitFuncParams *inParams)
   gsl_vector_set(skyLocSrc, 1, cos(delta) * sin(alpha));
   gsl_vector_set(skyLocSrc, 2, sin(delta));
 
-  for (i = 0; i < N; i++)
-  {
+  for (i = 0; i < N; i++) {
     Phi[i] = yr[i] * omega;
     // printf("MP5: *(Phi+i) = %e, *(yr+i) = %e\n", *(Phi+i), *(yr+i));
   }
@@ -409,8 +386,7 @@ double AvPhaseLLR(struct fitFuncParams *inParams)
   // printf("LLR_PSOav: result = %.18f\n",result );
   // printf("AvPhaseLLR: Np = %d\n", Np);
 
-  for (i = 0; i < Np; i++)
-  {
+  for (i = 0; i < Np; i++) {
     // printf("AvPhaseLLR: i = %d\n", i);
     M = 0.0;
     // printf("MP5: i = %d\n", i);
@@ -439,19 +415,15 @@ double AvPhaseLLR(struct fitFuncParams *inParams)
     b[4] = tmp;
 
     // quadrant I-IV
-    for (j = 0; j < 4; j++)
-    {
+    for (j = 0; j < 4; j++) {
 
-      for (j1 = 0; j1 < 5; j1++)
-      {
+      for (j1 = 0; j1 < 5; j1++) {
         bs[j1] = b[j1] * sign[j][j1];
       }
 
       tmp0 = 0;
-      for (jj = 1; jj < 5; jj++)
-      {
-        if (bs[jj] > 0)
-        {
+      for (jj = 1; jj < 5; jj++) {
+        if (bs[jj] > 0) {
           tmp0 = tmp0 + bs[jj];
         }
       }
@@ -471,13 +443,10 @@ double AvPhaseLLR(struct fitFuncParams *inParams)
 
       LRn[j] = result;
 
-      if (gsl_isinf(LRn[j]))
-      {
+      if (gsl_isinf(LRn[j])) {
         printf("AvPhaseLLR: Inf for PSR i = %d\n", i);
         printf("LRn at j = %d\n", j);
-      }
-      else if (gsl_isnan(LRn[j]))
-      {
+      } else if (gsl_isnan(LRn[j])) {
         printf("AvPhaseLLR: NAN for PSR i = %d\n", i);
         printf("LRn at j = %d\n", j);
       }
@@ -492,13 +461,11 @@ double AvPhaseLLR(struct fitFuncParams *inParams)
     // NN = gsl_max_dbl(norm1);
     NN = gsl_vector_max(norm1);
 
-    for (j2 = 0; j2 < 4; j2++)
-    {
+    for (j2 = 0; j2 < 4; j2++) {
       norm2[j2] = gsl_vector_get(norm1, j2) - NN;
     }
 
-    for (j3 = 0; j3 < 4; j3++)
-    {
+    for (j3 = 0; j3 < 4; j3++) {
       M += exp(norm2[j3]);
     }
 
@@ -526,11 +493,9 @@ double AvPhaseLLR(struct fitFuncParams *inParams)
   return LLR / M_PI;
 }
 
-double AvPhaseLLR_RAAPTR(struct fitFuncParams *inParams)
-{
+double AvPhaseLLR_RAAPTR(struct fitFuncParams *inParams) {
 
-  struct RAAPTR_data *splParams =
-      (struct RAAPTR_data *)inParams->splParams;
+  struct RAAPTR_data *splParams = (struct RAAPTR_data *)inParams->splParams;
 
   struct cfunc_OUTPUT *output;
   output = (struct cfunc_OUTPUT *)malloc(1 * sizeof(struct cfunc_OUTPUT));
@@ -609,7 +574,8 @@ double AvPhaseLLR_RAAPTR(struct fitFuncParams *inParams)
   iota = gsl_vector_get(inParams->realCoord, 5);
   thetaN = gsl_vector_get(inParams->realCoord, 6);
 
-  double **yr, **s, **sd, **Phi; // asign for jagged array, for different pulsars
+  double **yr, **s, **sd,
+      **Phi; // asign for jagged array, for different pulsars
   // sign value from splParams
   yr = splParams->yr;
   s = splParams->s;
@@ -639,11 +605,9 @@ double AvPhaseLLR_RAAPTR(struct fitFuncParams *inParams)
   gsl_vector_set(skyLocSrc, 0, cos(delta) * cos(alpha));
   gsl_vector_set(skyLocSrc, 1, cos(delta) * sin(alpha));
   gsl_vector_set(skyLocSrc, 2, sin(delta));
-  for (i = 0; i < Np; i++)
-  {
-    for (j = 0; j < splParams->N[i]; j++)
-    {
-      Phi[i] = (double *)malloc(splParams->N[i] * sizeof(double));
+  for (i = 0; i < Np; i++) {
+    Phi[i] = (double *)malloc(splParams->N[i] * sizeof(double));
+    for (j = 0; j < splParams->N[i]; j++) {
       Phi[i][j] = yr[i][j] * omega;
       // printf("MP5: *(Phi+i) = %e, *(yr+i) = %e\n", *(Phi+i), *(yr+i));
     }
@@ -678,8 +642,7 @@ double AvPhaseLLR_RAAPTR(struct fitFuncParams *inParams)
   // printf("LLR_PSOav: result = %.18f\n",result );
   // printf("AvPhaseLLR: Np = %d\n", Np);
 
-  for (i = 0; i < Np; i++)
-  {
+  for (i = 0; i < Np; i++) {
     // printf("AvPhaseLLR: i = %d\n", i);
     M = 0.0;
     // printf("MP5: i = %d\n", i);
@@ -694,8 +657,8 @@ double AvPhaseLLR_RAAPTR(struct fitFuncParams *inParams)
     theta = acos(res);
     // printf("theta = %f\n", theta);
 
-    cfunc_raaptr(splParams->N[i], alpha, delta, alphaP[i], deltaP[i], theta, Amp, omega, iota,
-                 thetaN, phi0, Phi[i], s[i], sd[i], output);
+    cfunc_raaptr(splParams->N[i], alpha, delta, alphaP[i], deltaP[i], theta,
+                 Amp, omega, iota, thetaN, phi0, Phi[i], s[i], sd[i], output);
     tmp = (*output).v[2] - 0.5 * ((*output).v[6] + (*output).v[8]);
     b[0] = tmp;
     tmp = (*output).v[0] - (*output).v[5];
@@ -708,19 +671,15 @@ double AvPhaseLLR_RAAPTR(struct fitFuncParams *inParams)
     b[4] = tmp;
 
     // quadrant I-IV
-    for (j = 0; j < 4; j++)
-    {
+    for (j = 0; j < 4; j++) {
 
-      for (j1 = 0; j1 < 5; j1++)
-      {
+      for (j1 = 0; j1 < 5; j1++) {
         bs[j1] = b[j1] * sign[j][j1];
       }
 
       tmp0 = 0;
-      for (jj = 1; jj < 5; jj++)
-      {
-        if (bs[jj] > 0)
-        {
+      for (jj = 1; jj < 5; jj++) {
+        if (bs[jj] > 0) {
           tmp0 = tmp0 + bs[jj];
         }
       }
@@ -740,13 +699,10 @@ double AvPhaseLLR_RAAPTR(struct fitFuncParams *inParams)
 
       LRn[j] = result;
 
-      if (gsl_isinf(LRn[j]))
-      {
+      if (gsl_isinf(LRn[j])) {
         printf("AvPhaseLLR: Inf for PSR i = %d\n", i);
         printf("LRn at j = %d\n", j);
-      }
-      else if (gsl_isnan(LRn[j]))
-      {
+      } else if (gsl_isnan(LRn[j])) {
         printf("AvPhaseLLR: NAN for PSR i = %d\n", i);
         printf("LRn at j = %d\n", j);
       }
@@ -761,13 +717,11 @@ double AvPhaseLLR_RAAPTR(struct fitFuncParams *inParams)
     // NN = gsl_max_dbl(norm1);
     NN = gsl_vector_max(norm1);
 
-    for (j2 = 0; j2 < 4; j2++)
-    {
+    for (j2 = 0; j2 < 4; j2++) {
       norm2[j2] = gsl_vector_get(norm1, j2) - NN;
     }
 
-    for (j3 = 0; j3 < 4; j3++)
-    {
+    for (j3 = 0; j3 < 4; j3++) {
       M += exp(norm2[j3]);
     }
 
@@ -818,8 +772,7 @@ check against actual search range.
 */
 size_t llrpsochkcoord(const size_t wrapAngles, const gsl_vector *rmin,
                       const gsl_vector *rangeVec, gsl_vector *xVec,
-                      gsl_vector *realCoord)
-{
+                      gsl_vector *realCoord) {
 
   // Default is to assume coordinates are valid
   size_t validPt = 1;
@@ -829,8 +782,7 @@ size_t llrpsochkcoord(const size_t wrapAngles, const gsl_vector *rmin,
   s2rvector(xVec, rmin, rangeVec, realCoord);
 
   /* if angle wrapping not needed, just check standardized coordinates only */
-  if (!wrapAngles)
-  {
+  if (!wrapAngles) {
     validPt = chkstdsrchrng(xVec);
     return validPt;
   }
@@ -854,13 +806,11 @@ size_t llrpsochkcoord(const size_t wrapAngles, const gsl_vector *rmin,
   size_t thetaNIndx = 6;
 
   /* First check non-angular parameters. Standardized coordinates are enough. */
-  if (gsl_vector_get(xVec, omgIndx) < 0 || gsl_vector_get(xVec, omgIndx) > 1)
-  {
+  if (gsl_vector_get(xVec, omgIndx) < 0 || gsl_vector_get(xVec, omgIndx) > 1) {
     validPt = 0;
     return validPt;
   }
-  if (gsl_vector_get(xVec, ampIndx) < 0 || gsl_vector_get(xVec, ampIndx) > 1)
-  {
+  if (gsl_vector_get(xVec, ampIndx) < 0 || gsl_vector_get(xVec, ampIndx) > 1) {
     validPt = 0;
     return validPt;
   }
@@ -870,20 +820,15 @@ size_t llrpsochkcoord(const size_t wrapAngles, const gsl_vector *rmin,
   double mn_alpha = gsl_vector_get(rmin, alphaIndx);
   double mx_alpha = gsl_vector_get(rangeVec, alphaIndx) + mn_alpha;
   double rng_alpha = mx_alpha - mn_alpha;
-  if (mn_alpha < 0 || mx_alpha > twoPi)
-  {
+  if (mn_alpha < 0 || mx_alpha > twoPi) {
     printf("Warning: Check the limits on alpha\n");
   }
   double alpha = gsl_vector_get(realCoord, alphaIndx);
-  if (alpha < mn_alpha || alpha > mx_alpha)
-  {
-    if (alpha < 0)
-    {
+  if (alpha < mn_alpha || alpha > mx_alpha) {
+    if (alpha < 0) {
       alpha = fmod(alpha, -twoPi);
       alpha = twoPi + alpha;
-    }
-    else if (alpha > twoPi)
-    {
+    } else if (alpha > twoPi) {
       alpha = fmod(alpha, twoPi);
     }
     // Reset real coordinate values
@@ -892,8 +837,7 @@ size_t llrpsochkcoord(const size_t wrapAngles, const gsl_vector *rmin,
     gsl_vector_set(xVec, alphaIndx, (alpha - mn_alpha) / rng_alpha);
     // check with boundaries in case search reagion does not cover the whole
     // sphere
-    if (alpha < mn_alpha || alpha > mx_alpha)
-    {
+    if (alpha < mn_alpha || alpha > mx_alpha) {
       validPt = 0;
       return validPt;
     }
@@ -902,19 +846,15 @@ size_t llrpsochkcoord(const size_t wrapAngles, const gsl_vector *rmin,
   // check delta
   double mn_delta = gsl_vector_get(rmin, deltaIndx);
   double mx_delta = gsl_vector_get(rangeVec, deltaIndx) + mn_delta;
-  if (mn_delta < -M_PI_2 || mx_delta > M_PI_2)
-  {
+  if (mn_delta < -M_PI_2 || mx_delta > M_PI_2) {
     printf("Warning: Check the limits on delta\n");
   }
   double delta = gsl_vector_get(realCoord, deltaIndx);
-  if (delta < mn_delta || delta > mx_delta)
-  {
+  if (delta < mn_delta || delta > mx_delta) {
     double polTheta = M_PI_2 - delta;
-    if (polTheta < 0)
-    {
+    if (polTheta < 0) {
       polTheta = fmod(polTheta, -twoPi);
-      if (polTheta > -M_PI)
-      {
+      if (polTheta > -M_PI) {
         alpha = alpha + M_PI;
         polTheta = -polTheta;
         alpha = fmod(alpha, twoPi);
@@ -922,21 +862,14 @@ size_t llrpsochkcoord(const size_t wrapAngles, const gsl_vector *rmin,
         gsl_vector_set(realCoord, alphaIndx, alpha);
         // Reset standardized value of alpha
         gsl_vector_set(xVec, alphaIndx, (alpha - mn_alpha) / rng_alpha);
-      }
-      else if (polTheta <= -M_PI)
-      {
+      } else if (polTheta <= -M_PI) {
         polTheta = twoPi + polTheta;
       }
-    }
-    else if (polTheta > M_PI)
-    {
+    } else if (polTheta > M_PI) {
       polTheta = fmod(polTheta, twoPi);
-      if (polTheta < M_PI)
-      {
+      if (polTheta < M_PI) {
         // Do nothing
-      }
-      else if (polTheta >= M_PI)
-      {
+      } else if (polTheta >= M_PI) {
         polTheta = twoPi - polTheta;
         alpha = alpha + M_PI;
         // Reset alpha
@@ -953,8 +886,7 @@ size_t llrpsochkcoord(const size_t wrapAngles, const gsl_vector *rmin,
     // check with boundaries in case search reagion does not cover the whole
     // sphere
     if (alpha < mn_alpha || alpha > mx_alpha || delta < mn_delta ||
-        delta > mx_delta)
-    {
+        delta > mx_delta) {
       validPt = 0;
       return validPt;
     }
@@ -963,20 +895,17 @@ size_t llrpsochkcoord(const size_t wrapAngles, const gsl_vector *rmin,
   // Check phi0
   double mn_phi0 = gsl_vector_get(rmin, phi0Indx);
   double mx_phi0 = gsl_vector_get(rangeVec, phi0Indx) + mn_phi0;
-  if (mn_phi0 < 0 || mx_phi0 > M_PI)
-  {
+  if (mn_phi0 < 0 || mx_phi0 > M_PI) {
     printf("Warning: Check the limits for phi0\n");
   }
   double phi0 = gsl_vector_get(realCoord, phi0Indx);
-  if (phi0 < mn_phi0 || phi0 > mx_phi0)
-  {
+  if (phi0 < mn_phi0 || phi0 > mx_phi0) {
     phi0 = wraphalfcircangle(phi0);
     // Reset real coordinate
     gsl_vector_set(realCoord, phi0Indx, phi0);
     // Reset standardized coordinate
     gsl_vector_set(xVec, phi0Indx, (phi0 - mn_phi0) / (mx_phi0 - mn_phi0));
-    if (phi0 < mn_phi0 || phi0 > mx_phi0)
-    {
+    if (phi0 < mn_phi0 || phi0 > mx_phi0) {
       validPt = 0;
       return validPt;
     }
@@ -985,21 +914,18 @@ size_t llrpsochkcoord(const size_t wrapAngles, const gsl_vector *rmin,
   // Check iota
   double mn_iota = gsl_vector_get(rmin, iotaIndx);
   double mx_iota = gsl_vector_get(rangeVec, iotaIndx) + mn_iota;
-  if (mn_iota < 0 || mx_iota > M_PI)
-  {
+  if (mn_iota < 0 || mx_iota > M_PI) {
     printf("Warning: Check the limits for iota\n");
     abort();
   }
   double iota = gsl_vector_get(realCoord, iotaIndx);
-  if (iota < mn_iota || iota > mx_iota)
-  {
+  if (iota < mn_iota || iota > mx_iota) {
     iota = wraphalfcircangle(iota);
     // Reset real coordinate
     gsl_vector_set(realCoord, iotaIndx, iota);
     // Reset standardized coordinate
     gsl_vector_set(xVec, iotaIndx, (iota - mn_iota) / (mx_iota - mn_iota));
-    if (iota < mn_iota || iota > mx_iota)
-    {
+    if (iota < mn_iota || iota > mx_iota) {
       validPt = 0;
       return validPt;
     }
@@ -1008,21 +934,18 @@ size_t llrpsochkcoord(const size_t wrapAngles, const gsl_vector *rmin,
   // Check thetaN
   double mn_thetaN = gsl_vector_get(rmin, thetaNIndx);
   double mx_thetaN = gsl_vector_get(rangeVec, thetaNIndx) + mn_thetaN;
-  if (mn_thetaN < 0 || mx_thetaN > M_PI)
-  {
+  if (mn_thetaN < 0 || mx_thetaN > M_PI) {
     printf("Warning: Check the limits for thetaN\n");
   }
   double thetaN = gsl_vector_get(realCoord, thetaNIndx);
-  if (thetaN < mn_thetaN || thetaN > mx_thetaN)
-  {
+  if (thetaN < mn_thetaN || thetaN > mx_thetaN) {
     thetaN = wraphalfcircangle(thetaN);
     // Reset real coordinate
     gsl_vector_set(realCoord, thetaNIndx, thetaN);
     // Reset standardized coordinate
     gsl_vector_set(xVec, thetaNIndx,
                    (thetaN - mn_thetaN) / (mx_thetaN - mn_thetaN));
-    if (thetaN < mn_thetaN || thetaN > mx_thetaN)
-    {
+    if (thetaN < mn_thetaN || thetaN > mx_thetaN) {
       validPt = 0;
       return validPt;
     }
@@ -1033,16 +956,12 @@ size_t llrpsochkcoord(const size_t wrapAngles, const gsl_vector *rmin,
 }
 
 /*! Wrap angles into [0, pi].*/
-double wraphalfcircangle(double phi)
-{
+double wraphalfcircangle(double phi) {
   double twoPi = 2 * M_PI;
   double twoPhi = 2 * phi;
-  if (twoPhi < 0)
-  {
+  if (twoPhi < 0) {
     twoPhi = twoPi + fmod(twoPhi, -twoPi);
-  }
-  else if (twoPhi > twoPi)
-  {
+  } else if (twoPhi > twoPi) {
     twoPhi = fmod(twoPhi, twoPi);
   }
   return twoPhi / 2;
@@ -1057,8 +976,7 @@ eps=2.2204e-16 \date 11/13/14, compare fitness values at boundaries and at the
 stationary points \date 12/19/14, cancel the changes made on 11/11/14, but still
 check boundary \date Converted to C, Dec. 29, 2015.
 */
-double LogLikelihoodRatioMP5(struct fitFuncParams *inParams)
-{
+double LogLikelihoodRatioMP5(struct fitFuncParams *inParams) {
 
   struct llr_pso_params *splParams =
       (struct llr_pso_params *)inParams->splParams;
@@ -1165,8 +1083,7 @@ double LogLikelihoodRatioMP5(struct fitFuncParams *inParams)
   // }
 
   s = (double **)malloc(Np * sizeof(double));
-  for (i = 0; i < Np; i++)
-  {
+  for (i = 0; i < Np; i++) {
     //*(s+i) = (double *)malloc(N * sizeof(double));  // not needed!
     s[i] = splParams->s[i];
   }
@@ -1176,8 +1093,7 @@ double LogLikelihoodRatioMP5(struct fitFuncParams *inParams)
   phiI = malloc(Np * sizeof(double));
   phiItmp = (double **)malloc(Np * sizeof(double));
   lh = (double **)malloc(Np * sizeof(double));
-  for (i = 0; i < Np; i++)
-  {
+  for (i = 0; i < Np; i++) {
     phiItmp[i] = (double *)malloc(6 * sizeof(double));
     lh[i] = (double *)malloc(6 * sizeof(double));
   }
@@ -1212,16 +1128,14 @@ double LogLikelihoodRatioMP5(struct fitFuncParams *inParams)
   gsl_vector_set(skyLocSrc, 2, sin(delta));
 
   // printf("MP5: omega = %f\n", omega);
-  for (i = 0; i < N; i++)
-  {
+  for (i = 0; i < N; i++) {
     Phi[i] = yr[i] * omega;
     // printf("MP5: *(Phi+i) = %e, *(yr+i) = %e\n", *(Phi+i), *(yr+i));
   }
 
   gsl_poly_complex_workspace *w = gsl_poly_complex_workspace_alloc(5);
 
-  for (i = 0; i < Np; i++)
-  {
+  for (i = 0; i < Np; i++) {
     // printf("MP5: i = %d\n", i);
     // printf("alphaP = %f, deltaP = %f \n", *(alphaP+i), *(deltaP+i));
     gsl_vector_set(skyLocPulsar, 0, cos(deltaP[i]) * cos(alphaP[i]));
@@ -1267,8 +1181,7 @@ double LogLikelihoodRatioMP5(struct fitFuncParams *inParams)
 
     nr = 0;
 
-    for (j = 0; j < 4; j++)
-    {
+    for (j = 0; j < 4; j++) {
 
       if (z[2 * j + 1] == 0.0 &&
           fabs(z[2 * j]) <= 1.0) // real solution for y=cos(2\phi)
@@ -1282,9 +1195,7 @@ double LogLikelihoodRatioMP5(struct fitFuncParams *inParams)
         // i,j,*(*(phiItmp+i)+j),*(*(lh+i)+j));
 
         nr = nr + 1;
-      }
-      else
-      {
+      } else {
         // printf("MP5: There is a problem\n");
         phiItmp[i][j] = GSL_NAN; // NAN; //*(*lhoutput).phiI;
         lh[i][j] = GSL_NEGINF;   // INFINITY; //gsl_neginf; //*(*lhoutput).lhI;
@@ -1306,8 +1217,7 @@ double LogLikelihoodRatioMP5(struct fitFuncParams *inParams)
     phiItmp[i][5] = 0.0;
     lh[i][5] = *(*lhoutput).lhI;
 
-    if (nr > 0)
-    {
+    if (nr > 0) {
 
       // printf("Going to break here \n");
       // printf("%f, %f, %f, %f\n", *(src+0), *(src+1),*(src+4), *(src+5));
@@ -1320,8 +1230,7 @@ double LogLikelihoodRatioMP5(struct fitFuncParams *inParams)
       // C = *(src+pp[0]);
       // printf("MP5: C = %f\n", C);
 
-      if (pp[0] == 4 || pp[0] == 5)
-      {
+      if (pp[0] == 4 || pp[0] == 5) {
         printf("Using fitness at boundary for PSR: %d. \n", i);
       }
 
@@ -1331,21 +1240,17 @@ double LogLikelihoodRatioMP5(struct fitFuncParams *inParams)
       LLR = LLR + lh[i][pp[0]];
     }
 
-    else if (nr == 0)
-    {
+    else if (nr == 0) {
 
       printf(
           "MP5: NO effective root (nr=0) for PSR: %d, use boundary fitness.\n",
           i);
 
-      if (lh[i][4] > lh[i][5])
-      {
+      if (lh[i][4] > lh[i][5]) {
         C = lh[i][4];
         //(*lhoutput).phiI[i] = M_PI/2.0;
         phiI[i] = M_PI / 2.0;
-      }
-      else
-      {
+      } else {
         C = lh[i][5];
         //(*lhoutput).phiI[i] = 0.0;
         phiI[i] = 0.0;
@@ -1363,8 +1268,7 @@ double LogLikelihoodRatioMP5(struct fitFuncParams *inParams)
 through the special parameter structure
 */
   size_t lpPhi;
-  for (lpPhi = 0; lpPhi < Np; lpPhi++)
-  {
+  for (lpPhi = 0; lpPhi < Np; lpPhi++) {
     splParams->phiI[lpPhi] = phiI[lpPhi];
   }
 
@@ -1391,8 +1295,7 @@ through the special parameter structure
   free(lhoutput);
   free(Phi);
   free(s);
-  for (i = 0; i < Np; i++)
-  {
+  for (i = 0; i < Np; i++) {
     free(phiItmp[i]);
     free(lh[i]);
   }
@@ -1408,8 +1311,7 @@ through the special parameter structure
 // EOF: LogLikelihoodRatioMP5
 
 /*! Core function called by \ref LogLikelihoodRatioMP5. */
-void likelihood(double *y, double *inn, struct lh_OUTPUT *output)
-{
+void likelihood(double *y, double *inn, struct lh_OUTPUT *output) {
   unsigned int i;
   double x[2];
   double lh[2];
@@ -1424,33 +1326,26 @@ void likelihood(double *y, double *inn, struct lh_OUTPUT *output)
   x[0] = sqrt(1.0 - pow(yy, 2.0));
   x[1] = -sqrt(1.0 - pow(yy, 2.0));
 
-  for (i = 0; i < 2; i++)
-  {
+  for (i = 0; i < 2; i++) {
     lh[i] = inn[0] * yy + inn[1] * x[i] + inn[2] -
             0.5 * (inn[3] * (yy * yy) + inn[6] * (x[i] * x[i]) +
                    2.0 * inn[4] * x[i] * yy + 2.0 * inn[5] * yy +
                    2.0 * inn[7] * x[i] + inn[8]); //  Eq 22
   }
 
-  if (lh[0] > lh[1])
-  {
+  if (lh[0] > lh[1]) {
     tmp = x[0];
     lhI = lh[0];
-  }
-  else
-  {
+  } else {
     tmp = x[1];
     lhI = lh[1];
   }
 
   // if y>=0
-  if (tmp >= 0.0)
-  {
+  if (tmp >= 0.0) {
     phiI = atan2(tmp, yy) / 2.0;
     //  y=cos(2*phiI)==X in Matlab atan2 func
-  }
-  else
-  {
+  } else {
     phiI = (atan2(tmp, yy) + 2.0 * M_PI) / 2.0;
     // phiI = (rt_atan2d_snf(tmp, y) + 6.2831853071795862) / 2.0;
   }
@@ -1468,8 +1363,7 @@ void likelihood(double *y, double *inn, struct lh_OUTPUT *output)
 void cfunc(unsigned int N, double alpha, double delta, double alphaP,
            double deltaP, double theta, double Amp, double omega, double iota,
            double thetaN, double phi0, double *Phi, double *s, double *sd,
-           struct cfunc_OUTPUT *varargout)
-{
+           struct cfunc_OUTPUT *varargout) {
   unsigned int i;
   double alphatilde;
   double a, b, c, d, e, f;
@@ -1535,8 +1429,7 @@ void cfunc(unsigned int N, double alpha, double delta, double alphaP,
                   (Fp * cos(2.0 * thetaN) - Fc * sin(2.0 * thetaN)));
   //("cfunc: psi = %f\n", psi);
 
-  for (i = 0; i < N; i++)
-  {
+  for (i = 0; i < N; i++) {
     x[i] = 0.5 * A * cos(psi + Phi[i]);
     y[i] = -0.5 * A * sin(psi + Phi[i]);
     z[i] = -0.5 * A * cos(2 * phi0 + psi + Phi[i]);
@@ -1578,10 +1471,9 @@ void cfunc(unsigned int N, double alpha, double delta, double alphaP,
 // EOF cfunc
 
 void cfunc_raaptr(unsigned int N, double alpha, double delta, double alphaP,
-                  double deltaP, double theta, double Amp, double omega, double iota,
-                  double thetaN, double phi0, double *Phi, double *s, double *sd,
-                  struct cfunc_OUTPUT *varargout)
-{
+                  double deltaP, double theta, double Amp, double omega,
+                  double iota, double thetaN, double phi0, double *Phi,
+                  double *s, double *sd, struct cfunc_OUTPUT *varargout) {
   unsigned int i;
   double alphatilde;
   double a, b, c, d, e, f;
@@ -1647,8 +1539,7 @@ void cfunc_raaptr(unsigned int N, double alpha, double delta, double alphaP,
                   (Fp * cos(2.0 * thetaN) - Fc * sin(2.0 * thetaN)));
   //("cfunc: psi = %f\n", psi);
 
-  for (i = 0; i < N; i++)
-  {
+  for (i = 0; i < N; i++) {
     x[i] = 0.5 * A * cos(psi + Phi[i]);
     y[i] = -0.5 * A * sin(psi + Phi[i]);
     z[i] = -0.5 * A * cos(2 * phi0 + psi + Phi[i]);
@@ -1689,8 +1580,7 @@ void cfunc_raaptr(unsigned int N, double alpha, double delta, double alphaP,
 }
 
 /*! \brief Inner product function for MaxPhase codes. */
-double InnProduct(unsigned int N, double *X, double *Y, double sd)
-{
+double InnProduct(unsigned int N, double *X, double *Y, double sd) {
   unsigned int i;
   double result;
   double c = 0.0;
@@ -1698,8 +1588,7 @@ double InnProduct(unsigned int N, double *X, double *Y, double sd)
   // printf("InnProduct: sd = %f\n", sd);
   // printf("InnProduct: X[0] = %f\n", *(X+0));
 
-  for (i = 0; i < N; i++)
-  {
+  for (i = 0; i < N; i++) {
     c += (X[i] * Y[i]);
   }
   // printf("InnProduct: c = %f\n", c);
@@ -1712,8 +1601,7 @@ double InnProduct(unsigned int N, double *X, double *Y, double sd)
 // EOF: InnProduct
 
 /*! \brief Inner product function for RAAPTR codes. */
-double InnProduct_raaptr(unsigned int N, double *X, double *Y, double *sd)
-{
+double InnProduct_raaptr(unsigned int N, double *X, double *Y, double *sd) {
   unsigned int i;
   double result;
   double c = 0.0;
@@ -1721,9 +1609,8 @@ double InnProduct_raaptr(unsigned int N, double *X, double *Y, double *sd)
   // printf("InnProduct: sd = %f\n", sd);
   // printf("InnProduct: X[0] = %f\n", *(X+0));
 
-  for (i = 0; i < N; i++)
-  {
-    c += (X[i] * Y[i])/(sd[i] * sd[i]);
+  for (i = 0; i < N; i++) {
+    c += (X[i] * Y[i]) / (sd[i] * sd[i]);
   }
   // printf("InnProduct: c = %f\n", c);
 
@@ -1735,8 +1622,7 @@ double InnProduct_raaptr(unsigned int N, double *X, double *Y, double *sd)
 }
 
 /*! Allocate special parameter structure */
-struct llr_pso_params *llrparam_alloc(unsigned int N, unsigned int Np)
-{
+struct llr_pso_params *llrparam_alloc(unsigned int N, unsigned int Np) {
   struct llr_pso_params *llp =
       (struct llr_pso_params *)malloc(sizeof(struct llr_pso_params));
   llp->Np = Np;
@@ -1749,8 +1635,7 @@ struct llr_pso_params *llrparam_alloc(unsigned int N, unsigned int Np)
 
   double **s = (double **)malloc(Np * sizeof(double *));
   size_t lpc1;
-  for (lpc1 = 0; lpc1 < Np; lpc1++)
-  {
+  for (lpc1 = 0; lpc1 < Np; lpc1++) {
     s[lpc1] = (double *)malloc(N * sizeof(double));
   }
 
@@ -1761,14 +1646,12 @@ struct llr_pso_params *llrparam_alloc(unsigned int N, unsigned int Np)
 
 /*! Deallocate special parameter structure specific to LLR_PSO fitness function.
  */
-void llrparam_free(struct llr_pso_params *llp)
-{
+void llrparam_free(struct llr_pso_params *llp) {
 
   size_t lpc;
   size_t Np = llp->Np;
 
-  for (lpc = 0; lpc < Np; lpc++)
-  {
+  for (lpc = 0; lpc < Np; lpc++) {
     free(llp->s[lpc]);
   }
   free(llp->s);
