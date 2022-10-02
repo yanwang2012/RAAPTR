@@ -3,7 +3,7 @@
  * @Description: Function to fit the data.
  * @Date: 2020-09-02 12:41:57
  * @LastEditors: Yiqian Qian
- * @LastEditTime: 2022-09-29 22:35:40
+ * @LastEditTime: 2022-10-02 12:39:01
  * @FilePath: /MxAvPhaseC/perfeval_omp.h
  */
 #if !defined(PERFEVAL_OMP_HDR)
@@ -33,6 +33,10 @@ struct  llr_pso_params * loadfile2llrparam(hid_t);
 /* Dump output from multiple pso runs in perfeval to .hdf5 file */
 void perfevalomp2hdf5file(size_t, size_t, size_t, gsl_vector *,
 					  struct returnData *[], struct fitFuncParams *,
+                      double (*)(gsl_vector *, void *), char *, hid_t );
+
+void perfevalomp2hdf5file_raaptr(size_t, size_t, size_t, gsl_vector *,
+                      struct returnData *[], struct fitFuncParams *,
                       double (*)(gsl_vector *, void *), char *, hid_t );
 					  
 

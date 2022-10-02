@@ -306,7 +306,7 @@ void perfeval_omp_RAAPTR(struct fitFuncParams *ffp, /*!< Parameters for the fitn
 
 	/* Choose the algorithm to use. */
 	double (*fitfunc)(gsl_vector *, void *);
-	if (!strcmp(mp_av_select, "maxPhase"))
+	if (!strcmp(mp_av_select, "maxPhase")) // "!" is due to strcmp returns 0 when two str is identical
 	{
 		fitfunc = LLR_mp;
 	}
