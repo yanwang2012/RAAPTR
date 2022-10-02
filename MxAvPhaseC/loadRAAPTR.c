@@ -3,7 +3,7 @@
  * @Description: Function to load real data.
  * @Date: 2022-09-20 13:12:27
  * @LastEditors: Yiqian Qian
- * @LastEditTime: 2022-09-29 22:09:22
+ * @LastEditTime: 2022-10-01 13:11:22
  * @FilePath: /MxAvPhaseC/loadRAAPTR.c
  */
 #include "loadRAAPTR.h"
@@ -90,5 +90,7 @@ void raaptr_free(struct RAAPTR_data * llp){
   free(llp->s);
   free(llp->alphaP);
   free(llp->deltaP);
+  free(llp->phiI);
+  free(llp->N);
   free(llp);
 }

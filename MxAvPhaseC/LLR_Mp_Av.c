@@ -69,6 +69,12 @@ struct fitFuncParams *RAAPTR_clone(struct fitFuncParams *srcffp)
   struct RAAPTR_data *srcllp = (struct RAAPTR_data *)srcffp->splParams;
 
   struct RAAPTR_data *llp = llrparam_alloc_RAAPTR(srcllp->Np);
+  // dynamic alloc memory for llp
+  for (size_t psr = 0; psr < srcllp->Np; psr++){
+    llp->s[psr] = (double *)malloc(sizeof(double) * srcllp->N[psr]);
+    llp->sd[psr] = (double *)malloc(sizeof(double) * srcllp->N[psr]);
+    llp->yr[psr] = (double *)malloc(sizeof(double) * srcllp->N[psr]);
+  }
 
   gsl_vector_memcpy(dstffp->rmin, srcffp->rmin);
   gsl_vector_memcpy(dstffp->rangeVec, srcffp->rangeVec);
@@ -81,11 +87,12 @@ struct fitFuncParams *RAAPTR_clone(struct fitFuncParams *srcffp)
     llp->alphaP[lpc1] = srcllp->alphaP[lpc1];
     llp->deltaP[lpc1] = srcllp->deltaP[lpc1];
     llp->phiI[lpc1] = srcllp->phiI[lpc1];
-    for (lpc2 = 0; lpc2 < srcllp->N; lpc2++)
+    llp->N[lpc1] = srcllp->N[lpc1];
+    for (lpc2 = 0; lpc2 < srcllp->N[lpc1]; lpc2++)
     {
       llp->s[lpc1][lpc2] = srcllp->s[lpc1][lpc2];
       llp->sd[lpc1][lpc2] = srcllp->sd[lpc1][lpc2];
-      llp->yr[lpc2] = srcllp->yr[lpc2];
+      llp->yr[lpc1][lpc2] = srcllp->yr[lpc1][lpc2];
     }
   }
 
@@ -1650,15 +1657,15 @@ void cfunc_raaptr(unsigned int N, double alpha, double delta, double alphaP,
 
   // c are combination of inner weighted product of s with X,Y,Z
   // printf("cfunc: N= %d, s[5] = %f\n", N, *(s+5) );
-  sx = InnProduct(N, s, x, sd[i]); //  scalar
-  sy = InnProduct(N, s, y, sd[i]);
-  sz = InnProduct(N, s, z, sd[i]);
-  xx = InnProduct(N, x, x, sd[i]);
-  xy = InnProduct(N, x, y, sd[i]);
-  xz = InnProduct(N, x, z, sd[i]);
-  yy = InnProduct(N, y, y, sd[i]);
-  yz = InnProduct(N, y, z, sd[i]);
-  zz = InnProduct(N, z, z, sd[i]);
+  sx = InnProduct_raaptr(N, s, x, sd); //  scalar
+  sy = InnProduct_raaptr(N, s, y, sd);
+  sz = InnProduct_raaptr(N, s, z, sd);
+  xx = InnProduct_raaptr(N, x, x, sd);
+  xy = InnProduct_raaptr(N, x, y, sd);
+  xz = InnProduct_raaptr(N, x, z, sd);
+  yy = InnProduct_raaptr(N, y, y, sd);
+  yz = InnProduct_raaptr(N, y, z, sd);
+  zz = InnProduct_raaptr(N, z, z, sd);
   // printf("cfunc: sx= %f, sy = %f, zz =%f\n", sx,sy,zz);
 
   (*varargout).c[0] = -sx + xz;
@@ -1703,6 +1710,29 @@ double InnProduct(unsigned int N, double *X, double *Y, double sd)
   return result;
 }
 // EOF: InnProduct
+
+/*! \brief Inner product function for RAAPTR codes. */
+double InnProduct_raaptr(unsigned int N, double *X, double *Y, double *sd)
+{
+  unsigned int i;
+  double result;
+  double c = 0.0;
+
+  // printf("InnProduct: sd = %f\n", sd);
+  // printf("InnProduct: X[0] = %f\n", *(X+0));
+
+  for (i = 0; i < N; i++)
+  {
+    c += (X[i] * Y[i])/(sd[i] * sd[i]);
+  }
+  // printf("InnProduct: c = %f\n", c);
+
+  // result = c / (sd[i] * sd[i]);
+  result = c;
+  // printf("InnProduct: result = %f\n", result);
+
+  return result;
+}
 
 /*! Allocate special parameter structure */
 struct llr_pso_params *llrparam_alloc(unsigned int N, unsigned int Np)

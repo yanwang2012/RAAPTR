@@ -3,7 +3,7 @@
  * @Description: header file for fit functions
  * @Date: 2022-09-20 11:28:27
  * @LastEditors: Yiqian Qian
- * @LastEditTime: 2022-09-29 21:21:04
+ * @LastEditTime: 2022-10-02 01:55:29
  * @FilePath: /MxAvPhaseC/LLR_Mp_Av.h
  */
 /*! \file LLR_Mp_Av.h
@@ -80,7 +80,8 @@ double AvPhaseLLR(struct fitFuncParams *);
 double AvPhaseLLR_RAAPTR(struct fitFuncParams *);
 //-----------------------------------------------------
 
-double InnProduct(unsigned int N, double *, double *, double sd);
+double InnProduct(unsigned int , double *, double *, double );
+double InnProduct_raaptr(unsigned int , double *, double *, double *);
 
 double LLR_mp(gsl_vector *, /*!< Data vector */
               void *        /*!< Pointer to fitFuncParams struct */

@@ -280,10 +280,10 @@ void perfeval_omp(struct fitFuncParams *ffp, /*!< Parameters for the fitness fun
 }
 
 void perfeval_omp_RAAPTR(struct fitFuncParams *ffp, /*!< Parameters for the fitness function */
-				  char *inputFileName,		/*!< Name of the file containing data to analyze*/
-				  char *outputFileName,		/*!< Name of the file to store output results in*/
-				  char *mp_av_select, 		/*!< Select Max or AvPhase algorithm */
-				  char *psrfile 		/*!< Name of the file containing the pulsar catalog */)
+						 char *inputFileName,		/*!< Name of the file containing data to analyze*/
+						 char *outputFileName,		/*!< Name of the file to store output results in*/
+						 char *mp_av_select,		/*!< Select Max or AvPhase algorithm */
+						 char *psrfile /*!< Name of the file containing the pulsar catalog */)
 {
 
 	/* Number of independent PSO runs */
@@ -314,7 +314,8 @@ void perfeval_omp_RAAPTR(struct fitFuncParams *ffp, /*!< Parameters for the fitn
 	{
 		fitfunc = LLR_av;
 	}
-	else if (!strcmp(mp_av_select, "raaptr")){
+	else if (!strcmp(mp_av_select, "raaptr"))
+	{
 		fitfunc = LLR_av_RAAPTR;
 	}
 	else
@@ -340,48 +341,48 @@ void perfeval_omp_RAAPTR(struct fitFuncParams *ffp, /*!< Parameters for the fitn
 		fprintf(stdout, "Error opening file\n");
 		abort();
 	}
-/* simulated parameters doesn't exist in the input file
-	char genHypothesis[10];
-	status = H5LTread_dataset_string(inFile, "genHypothesis", genHypothesis);
-	if (status < 0)
-	{
-		fprintf(stdout, "Error reading genHypothesis\n");
-		abort();
-	}
-	// fprintf(stdout,"genHypothesis: %s\n",genHypothesis);
+	/* simulated parameters doesn't exist in the input file
+		char genHypothesis[10];
+		status = H5LTread_dataset_string(inFile, "genHypothesis", genHypothesis);
+		if (status < 0)
+		{
+			fprintf(stdout, "Error reading genHypothesis\n");
+			abort();
+		}
+		// fprintf(stdout,"genHypothesis: %s\n",genHypothesis);
 
-	struct
-	{
-		int snr_id;
-		int loc_id;
-		int omg_id;
-		int rlz_id;
-	} id;
-	status = H5LTread_dataset_int(inFile, "snr_id", &id.snr_id);
-	if (status < 0)
-	{
-		fprintf(stdout, "Error reading snr_id\n");
-		abort();
-	}
-	status = H5LTread_dataset_int(inFile, "loc_id", &id.loc_id);
-	if (status < 0)
-	{
-		fprintf(stdout, "Error reading loc_id\n");
-		abort();
-	}
-	status = H5LTread_dataset_int(inFile, "omg_id", &id.omg_id);
-	if (status < 0)
-	{
-		fprintf(stdout, "Error reading omg_id\n");
-		abort();
-	}
-	status = H5LTread_dataset_int(inFile, "rlz_id", &id.rlz_id);
-	if (status < 0)
-	{
-		fprintf(stdout, "Error reading rlz_id\n");
-		abort();
-	}
-*/
+		struct
+		{
+			int snr_id;
+			int loc_id;
+			int omg_id;
+			int rlz_id;
+		} id;
+		status = H5LTread_dataset_int(inFile, "snr_id", &id.snr_id);
+		if (status < 0)
+		{
+			fprintf(stdout, "Error reading snr_id\n");
+			abort();
+		}
+		status = H5LTread_dataset_int(inFile, "loc_id", &id.loc_id);
+		if (status < 0)
+		{
+			fprintf(stdout, "Error reading loc_id\n");
+			abort();
+		}
+		status = H5LTread_dataset_int(inFile, "omg_id", &id.omg_id);
+		if (status < 0)
+		{
+			fprintf(stdout, "Error reading omg_id\n");
+			abort();
+		}
+		status = H5LTread_dataset_int(inFile, "rlz_id", &id.rlz_id);
+		if (status < 0)
+		{
+			fprintf(stdout, "Error reading rlz_id\n");
+			abort();
+		}
+	*/
 	// Remaining data loads into special parameter structure
 	size_t Np = (size_t)hdf52dscalar(inFile, "Np");
 	char **psrnames = (char **)malloc(Np * sizeof(char *));
@@ -459,9 +460,52 @@ void perfeval_omp_RAAPTR(struct fitFuncParams *ffp, /*!< Parameters for the fitn
 		gsl_vector_set(wallClkTimes, lpc1, (((double)(psoStopTime - psoStartTime)) / CLOCKS_PER_SEC) / 60.0);
 
 		// Delete local copy of fitness parameter struct
-		llrparam_free(ffpCopy->splParams);
+		raaptr_free(ffpCopy->splParams);
 		ffparam_free(ffpCopy);
 	}
+
+	/* Store results in output file */
+	hsize_t dims;
+	// MATFile *outputFilePr;
+	// 	outputFilePr = matOpen(outputFileName,"w");
+	hid_t outFile = H5Fcreate(outputFileName, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+	if (outFile < 0)
+	{
+		fprintf(stdout, "Error opening file %s \n", outputFileName);
+		abort();
+	}
+	// Store input file name
+	status = H5LTmake_dataset_string(outFile, "inputFile", inputFileName);
+	if (status < 0)
+	{
+		fprintf(stdout, "Error writing variable inputFile in file %s\n", outputFileName);
+	}
+
+	// Store all other variables
+	perfevalomp2hdf5file_raaptr(nRuns, nDim, Np, wallClkTimes,
+						 psoResults, ffp, fitfunc, mp_av_select,
+						 outFile);
+
+	// Close output file
+	status = H5Fclose(outFile);
+	if (status < 0)
+	{
+		fprintf(stdout, "Error closing file %s\n", outputFileName);
+	}
+
+	/*
+	  Wrap up
+	*/
+	for (lpc1 = 0; lpc1 < 8; lpc1++)
+	{
+		gsl_rng_free(rngGen[lpc1]);
+	}
+	raaptr_free(llp);
+	for (lpc1 = 0; lpc1 < nRuns; lpc1++)
+	{
+		returnData_free(psoResults[lpc1]);
+	}
+	gsl_vector_free(wallClkTimes);
 }
 
 /*! read pulsar names from puslar catalog */
@@ -566,6 +610,127 @@ void perfevalomp2hdf5file(size_t nRuns, size_t nDim, size_t Np,
 		for (lpc2 = nDim; lpc2 < nDim + Np; lpc2++)
 		{
 			gsl_matrix_set(bestLocRealCPr, lpc1, lpc2, ((struct llr_pso_params *)ffp->splParams)->phiI[lpc2 - nDim]);
+		}
+	}
+
+	// Find the best run
+	size_t bestRun = 0;
+	double minFitVal = INFINITY;
+	for (lpc1 = 0; lpc1 < nRuns; lpc1++)
+	{
+		if (gsl_vector_get(bestFitValVecPr, lpc1) < minFitVal)
+		{
+			minFitVal = gsl_vector_get(bestFitValVecPr, lpc1);
+			bestRun = lpc1;
+		}
+	}
+
+	// Get the standardized location for the best run
+	for (lpc1 = 0; lpc1 < nDim; lpc1++)
+	{
+		gsl_vector_set(bestRunBestLocationPr, lpc1, gsl_matrix_get(bestLocationVecPr, bestRun, lpc1));
+	}
+
+	// Get the unstandardized location for the best run (including phiI values)
+	for (lpc1 = 0; lpc1 < nDim + Np; lpc1++)
+	{
+		gsl_vector_set(bestRunRealCPr, lpc1, gsl_matrix_get(bestLocRealCPr, bestRun, lpc1));
+	}
+
+	// Store in .hdf5 file
+	dscalar2hdf5(outFile, "nRuns", nRuns);
+	gslmatrix2hdf5(outFile, "bestLocVals", bestLocationVecPr);
+	gslmatrix2hdf5(outFile, "bestLocRealCVals", bestLocRealCPr);
+	gslvector2hdf5(outFile, "fitnessVals", bestFitValVecPr);
+	gslvector2hdf5(outFile, "numFitEvals", nFuncEvalsVecPr);
+	gslvector2hdf5(outFile, "numIter", nIterVecPr);
+	gslvector2hdf5(outFile, "time2complete", wallClkTimeVecPr);
+	dscalar2hdf5(outFile, "bestRun", bestRun + 1);
+	gslvector2hdf5(outFile, "bestLocation", bestRunBestLocationPr);
+	gslvector2hdf5(outFile, "bestRealLoc", bestRunRealCPr);
+
+	// Wrap up
+	gsl_matrix_free(bestLocationVecPr);
+	gsl_matrix_free(bestLocRealCPr);
+	gsl_vector_free(bestFitValVecPr);
+	gsl_vector_free(nFuncEvalsVecPr);
+	gsl_vector_free(nIterVecPr);
+	gsl_vector_free(wallClkTimeVecPr);
+	gsl_vector_free(bestRunBestLocationPr);
+	gsl_vector_free(bestRunRealCPr);
+}
+
+/*! Dump output from multiple pso runs in perfeval_omp() to a .mat file */
+/* RAAPTR version */
+void perfevalomp2hdf5file_raaptr(size_t nRuns, size_t nDim, size_t Np,
+						  gsl_vector *wallClckTimes,
+						  struct returnData *psoResults[],
+						  struct fitFuncParams *ffp,
+						  double (*fitfunc)(gsl_vector *, void *),
+						  char *mp_av_select,
+						  hid_t outFile)
+{
+
+	// Loop counters
+	size_t lpc1, lpc2, lpc3;
+	// Dummy variable
+	double dummyFitVal, dummyAmp;
+
+	/* Create storage for results from multiple PSO runs.
+	  (This is very inefficient because it is a translation
+	   from the earlier code that used  mat file output.)
+	*/
+	gsl_matrix *bestLocationVecPr = gsl_matrix_alloc(nRuns, nDim);
+	gsl_matrix *bestLocRealCPr = gsl_matrix_alloc(nRuns, nDim + Np);
+	gsl_vector *bestFitValVecPr = gsl_vector_alloc(nRuns);
+	gsl_vector *nFuncEvalsVecPr = gsl_vector_alloc(nRuns);
+	gsl_vector *nIterVecPr = gsl_vector_alloc(nRuns);
+	gsl_vector *wallClkTimeVecPr = gsl_vector_alloc(nRuns);
+	gsl_vector *bestRunBestLocationPr = gsl_vector_alloc(nDim);
+	gsl_vector *bestRunRealCPr = gsl_vector_alloc(nDim + Np);
+
+	// Get results from all the runs
+	for (lpc1 = 0; lpc1 < nRuns; lpc1++)
+	{
+		// Fitness value
+		gsl_vector_set(bestFitValVecPr, lpc1, psoResults[lpc1]->bestFitVal);
+		// standardized coordinates (intrinsic params only)
+		for (lpc2 = 0; lpc2 < nDim; lpc2++)
+		{
+			gsl_matrix_set(bestLocationVecPr, lpc1, lpc2, gsl_vector_get(psoResults[lpc1]->bestLocation, lpc2));
+		}
+		// Other quantities
+		gsl_vector_set(nFuncEvalsVecPr, lpc1, psoResults[lpc1]->totalFuncEvals);
+		gsl_vector_set(nIterVecPr, lpc1, psoResults[lpc1]->totalIterations);
+		gsl_vector_set(wallClkTimeVecPr, lpc1, gsl_vector_get(wallClckTimes, lpc1));
+	}
+	// Get the unstandardized coordinates
+	for (lpc1 = 0; lpc1 < nRuns; lpc1++)
+	{
+		fitfunc(psoResults[lpc1]->bestLocation, ffp);
+		// For AvPhase, also get the pulsar phases using MaxPhase
+		if (!strcmp(mp_av_select, "raaptr"))
+		{
+			/* The previous call to fitfunc sets the real coordinate values,
+			   allowing LogLikelihoodRatioMP5 to be called and pulsar phases to
+			   be estimated. However, the amplitude needs to be reconverted back to
+			   log because its anti-log is taken inside LogLikelihoodRatioMP5 and
+			   returned in the fitness function parameter structure.
+			*/
+			dummyAmp = gsl_vector_get(ffp->realCoord, 4);
+			dummyAmp = log10(dummyAmp);
+			gsl_vector_set(ffp->realCoord, 4, dummyAmp);
+			dummyFitVal = LogLikelihoodRatioMP5(ffp);
+		}
+
+		for (lpc2 = 0; lpc2 < nDim; lpc2++)
+		{
+			gsl_matrix_set(bestLocRealCPr, lpc1, lpc2, gsl_vector_get(ffp->realCoord, lpc2));
+		}
+		// Append PhiI values (extrinsic parameters)
+		for (lpc2 = nDim; lpc2 < nDim + Np; lpc2++)
+		{
+			gsl_matrix_set(bestLocRealCPr, lpc1, lpc2, ((struct RAAPTR_data *)ffp->splParams)->phiI[lpc2 - nDim]);
 		}
 	}
 

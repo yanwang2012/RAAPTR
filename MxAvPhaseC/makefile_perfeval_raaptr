@@ -1,7 +1,7 @@
 # makefile for RAAPTR.  Sep 29, 2022
 
 OBJ = test_perfeval_raaptr.o perfeval_omp.o  LLR_Mp_Av.o  maxphaseutils.o ptapso.o gslhdf5_io.o loadRAAPTR.o
-CC = gcc -O3
+CC = gcc -O0 -g # no optimization and for debug
 
 CXXFLAGS = /opt/local/include
 CXXLIBS = /opt/local/lib
