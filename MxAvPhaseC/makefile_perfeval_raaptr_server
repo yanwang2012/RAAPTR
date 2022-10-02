@@ -7,7 +7,7 @@ CXXFLAGS = /home/qyq/miniconda3/include
 CXXLIBS = /home/qyq/miniconda3/lib
 
 perfeval_raaptr: $(OBJ)
-	$(CC) -fopenmp $(OBJ) -L$(CXXLIBS) -lhdf5 -lhdf5_hl -lm -lgsl -lgslcblas -o TESTH5IO/perfeval_raaptr_server
+	$(CC) -fopenmp $(OBJ) -L$(CXXLIBS) -lhdf5 -lhdf5_hl -lm -lz -lgsl -lgslcblas -o TESTH5IO/perfeval_raaptr_server
 
 test_perfeval_raaptr.o: test_perfeval_raaptr.c
 	$(CC) -c  -I$(CXXFLAGS) test_perfeval_raaptr.c
