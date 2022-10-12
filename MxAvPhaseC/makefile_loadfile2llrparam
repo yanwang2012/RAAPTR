@@ -17,7 +17,7 @@ gslhdf5_io.o: gslhdf5_io.c
 loadRAAPTR.o: loadRAAPTR.c	
 	gcc -c -I$(CXXFLAGS) loadRAAPTR.c	
 
-test_loadRAAPTR2llrparams.o: test_loadRAAPTR2llrparams.c	
+test_perfeval_raaptr.o: test_loadRAAPTR2llrparams.c	
 	gcc -c -I$(CXXFLAGS) test_loadRAAPTR2llrparams.c
 
 .PHONY:clean
