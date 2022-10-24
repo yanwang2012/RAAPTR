@@ -1,4 +1,5 @@
 #include "subtract.h"
+#include "loadRAAPTR.h"
 #include "maxphase.h"
 #include "LLR_Mp_Av.h"
 #include "hdf5.h"
@@ -135,6 +136,83 @@ gsl_matrix *timingResiduals(struct estSrcParams *srcp, struct llr_pso_params *sp
 	}
 
 	gsl_matrix_free(tmp);
+	gsl_vector_free(psrPhase);
+	gsl_vector_free(skyLocSrc);
+	gsl_vector_free(skyLocPsr);
+
+	return timResiduals;
+}
+
+double **timingResiduals_raaptr(struct estSrcParams *srcp, struct RAAPTR_data *splParams)
+{
+	//struct llr_pso_params *splParams = (struct llr_pso_params *)inParams->splParams;
+	size_t Np;
+	/* estimated source parameters. */
+	double alpha, delta, omega, phi0, Amp, iota, thetaN;
+
+	gsl_vector *skyLocSrc = gsl_vector_calloc((size_t)3);
+	gsl_vector *skyLocPsr = gsl_vector_calloc((size_t)3);
+	/* pulsar parameters. */
+	double *alphaP, *deltaP, *N;
+	double **yr;
+	double theta, res;
+
+	alpha = srcp->alpha;
+	delta = srcp->delta;
+	omega = srcp->omega;
+	phi0 = srcp->phi0;
+	Amp = srcp->Amp;
+	iota = srcp->iota;
+	thetaN = srcp->thetaN;
+
+	alphaP = splParams->alphaP;
+	deltaP = splParams->deltaP;
+	yr = splParams->yr;
+	Np = (size_t)splParams->Np;
+	N = splParams->N;
+
+	//gsl_matrix *timResiduals = gsl_matrix_calloc(Np, N);
+	double ** timResiduals = (double **)malloc(sizeof(double *) * Np);
+	gsl_vector *psrPhase = gsl_vector_calloc(Np);
+	gsl_matrix *tmp;
+
+	size_t i, j, k;
+
+	for (i = 0; i < Np; i++)
+	{
+		gsl_vector_set(psrPhase, i, gsl_vector_get(srcp->psrPhase, i));
+	}
+
+	gsl_vector_set(skyLocSrc, 0, cos(delta) * cos(alpha));
+	gsl_vector_set(skyLocSrc, 1, cos(delta) * sin(alpha));
+	gsl_vector_set(skyLocSrc, 2, sin(delta));
+
+	for (j = 0; j < Np; j++)
+	{
+		gsl_vector_set(skyLocPsr, 0, cos(deltaP[j]) * cos(alphaP[j]));
+		gsl_vector_set(skyLocPsr, 1, cos(deltaP[j]) * sin(alphaP[j]));
+		gsl_vector_set(skyLocPsr, 2, sin(deltaP[j]));
+
+		tmp = gsl_matrix_calloc(N[j], 1);
+
+		gsl_blas_ddot(skyLocSrc, skyLocPsr, &res);
+		theta = acos(res);
+		double phiI = gsl_vector_get(psrPhase, j);
+		//printf("timing_theta is: %e\n",theta);
+		tmp = FullResiduals(srcp, alphaP[j], deltaP[j], phiI, theta, yr[j], (size_t)N[j]);
+		//printf("length of tmp: %zu %zu\n", tmp->size1, tmp->size2);
+		for (k = 0; k < N[j]; k++)
+		{
+			//printf("j, k: %zu %zu \n",j,k);
+			timResiduals[j] = (double *)malloc(sizeof(double) * N[j]);
+			timResiduals[j][k] = gsl_matrix_get(tmp,k,0);
+			//printf("%e, ",gsl_matrix_get(timResiduals,j,k));
+		}
+		//printf("/n");
+		gsl_matrix_free(tmp);
+	}
+
+	
 	gsl_vector_free(psrPhase);
 	gsl_vector_free(skyLocSrc);
 	gsl_vector_free(skyLocPsr);

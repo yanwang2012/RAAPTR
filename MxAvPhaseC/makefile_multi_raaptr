@@ -1,0 +1,42 @@
+# Makefile for Multi_PSO for real pulsar timing data
+# Yiqian-Qian 10/20/2022
+
+OBJ = Multi_RAAPTR.o perfeval_omp.o  LLR_Mp_Av.o  maxphaseutils.o ptapso.o gslhdf5_io.o subtract.o loadRAAPTR.o
+# change gcc to icc to switch form LS5 to Stampede2
+CC = gcc -g#-O3 #-xmic-avx512 to take adavantage of AVX 512 architecture which does NOT work with current code.
+GSLFLAGS := /opt/local/include
+GSLLIBS := /opt/local/lib
+HDF5FLAGS := /opt/local/include
+HDF5LIBS := /opt/local/lib
+
+Multi_RAAPTR: $(OBJ)
+	$(CC) -fopenmp $(OBJ)  -L$(HDF5LIBS) -lhdf5 -lhdf5_hl -lz -L$(GSLLIBS) -lm -lgsl -lgslcblas -o Multi_RAAPTR
+
+Multi_RAAPTR.o: Multi_RAAPTR.c
+	$(CC) -c  -I$(HDF5FLAGS) -I$(GSLFLAGS) Multi_RAAPTR.c
+
+gslhdf5_io.o: gslhdf5_io.c
+	$(CC) -c -I$(HDF5FLAGS) -I$(GSLFLAGS) gslhdf5_io.c
+
+perfeval_omp.o: perfeval_omp.c
+	$(CC) -c -fopenmp -I$(HDF5FLAGS) -I$(GSLFLAGS) perfeval_omp.c
+
+LLR_Mp_Av.o: LLR_Mp_Av.c
+	$(CC) -c LLR_Mp_Av.c -I$(GSLFLAGS)
+
+maxphaseutils.o: maxphaseutils.c
+	$(CC) -c maxphaseutils.c -I$(GSLFLAGS)
+
+ptapso.o: ptapso.c
+	$(CC) -c ptapso.c -I$(GSLFLAGS)
+
+subtract.o: subtract.c
+	$(CC) -c -I$(HDF5FLAGS) -I$(GSLFLAGS) subtract.c
+
+loadRAAPTR.o: loadRAAPTR.c
+	$(CC) -c -I$(HDF5FLAGS) -I$(GSLFLAGS) loadRAAPTR.c
+
+.PHONY:clean
+clean:
+	rm -f *.o
+	echo Clean!

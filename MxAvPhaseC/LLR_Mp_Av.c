@@ -1497,8 +1497,8 @@ double LogLikelihoodRatioMP5_raaptr(struct fitFuncParams *inParams)
   // printf("MP5: s[0][1] = %f\n", *(*(s+0)+1));
   // printf("MP5: s[1][2] = %f\n", *(*(s+1)+5));
   phiI = malloc(Np * sizeof(double));
-  phiItmp = (double **)malloc(Np * sizeof(double));
-  lh = (double **)malloc(Np * sizeof(double));
+  phiItmp = (double **)malloc(Np * sizeof(double *));
+  lh = (double **)malloc(Np * sizeof(double *));
   for (i = 0; i < Np; i++)
   {
     phiItmp[i] = (double *)malloc(6 * sizeof(double));

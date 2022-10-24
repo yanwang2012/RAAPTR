@@ -5,10 +5,11 @@
       "-O3",
       "-c",
       "-I/opt/local/include",
-      "test_perfeval_raaptr.c"
+      "-I/opt/local/include",
+      "Multi_RAAPTR.c"
     ],
-    "directory": "/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC",
-    "file": "/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC/test_perfeval_raaptr.c"
+    "directory": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC",
+    "file": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC/Multi_RAAPTR.c"
   },
   {
     "arguments": [
@@ -17,10 +18,11 @@
       "-c",
       "-fopenmp",
       "-I/opt/local/include",
+      "-I/opt/local/include",
       "perfeval_omp.c"
     ],
-    "directory": "/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC",
-    "file": "/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC/perfeval_omp.c"
+    "directory": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC",
+    "file": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC/perfeval_omp.c"
   },
   {
     "arguments": [
@@ -30,8 +32,8 @@
       "-I/opt/local/include",
       "LLR_Mp_Av.c"
     ],
-    "directory": "/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC",
-    "file": "/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC/LLR_Mp_Av.c"
+    "directory": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC",
+    "file": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC/LLR_Mp_Av.c"
   },
   {
     "arguments": [
@@ -41,8 +43,8 @@
       "-I/opt/local/include",
       "maxphaseutils.c"
     ],
-    "directory": "/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC",
-    "file": "/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC/maxphaseutils.c"
+    "directory": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC",
+    "file": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC/maxphaseutils.c"
   },
   {
     "arguments": [
@@ -52,19 +54,20 @@
       "-I/opt/local/include",
       "ptapso.c"
     ],
-    "directory": "/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC",
-    "file": "/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC/ptapso.c"
+    "directory": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC",
+    "file": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC/ptapso.c"
   },
   {
     "arguments": [
       "/opt/local/bin/gcc",
       "-O3",
       "-c",
+      "-I/opt/local/include",
       "-I/opt/local/include",
       "gslhdf5_io.c"
     ],
-    "directory": "/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC",
-    "file": "/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC/gslhdf5_io.c"
+    "directory": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC",
+    "file": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC/gslhdf5_io.c"
   },
   {
     "arguments": [
@@ -72,9 +75,22 @@
       "-O3",
       "-c",
       "-I/opt/local/include",
+      "-I/opt/local/include",
+      "subtract.c"
+    ],
+    "directory": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC",
+    "file": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC/subtract.c"
+  },
+  {
+    "arguments": [
+      "/opt/local/bin/gcc",
+      "-O3",
+      "-c",
+      "-I/opt/local/include",
+      "-I/opt/local/include",
       "loadRAAPTR.c"
     ],
-    "directory": "/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC",
-    "file": "/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC/loadRAAPTR.c"
+    "directory": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC",
+    "file": "/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC/loadRAAPTR.c"
   }
 ]
