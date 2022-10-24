@@ -177,6 +177,7 @@ int main(int argc, char *argv[])
 			printf("Error creating new input file %s \n", newinputfile);
 		}
 		/* Copy data to new file */
+		H5Ocopy(inFile, "/Np", ninFile, "/Np", H5P_DEFAULT, H5P_DEFAULT);
 		for(i = 0; i < Np; i++){
 			hid_t inGroup = H5Gopen(inFile, psrnames[i], H5P_DEFAULT);
 			if (inGroup < 0)
