@@ -200,13 +200,14 @@ double **timingResiduals_raaptr(struct estSrcParams *srcp, struct RAAPTR_data *s
 		double phiI = gsl_vector_get(psrPhase, j);
 		//printf("timing_theta is: %e\n",theta);
 		tmp = FullResiduals(srcp, alphaP[j], deltaP[j], phiI, theta, yr[j], (size_t)N[j]);
+		gsl_matrix_fprintf(stdout, tmp, "%e");
 		//printf("length of tmp: %zu %zu\n", tmp->size1, tmp->size2);
 		for (k = 0; k < N[j]; k++)
 		{
 			//printf("j, k: %zu %zu \n",j,k);
 			timResiduals[j] = (double *)malloc(sizeof(double) * N[j]);
 			timResiduals[j][k] = gsl_matrix_get(tmp,k,0);
-			//printf("%e, ",gsl_matrix_get(timResiduals,j,k));
+			printf("%e ", timResiduals[j][k]);
 		}
 		//printf("/n");
 		gsl_matrix_free(tmp);

@@ -2,7 +2,8 @@
   {
     "arguments": [
       "/opt/local/bin/gcc",
-      "-O3",
+      "-g",
+      "-O0",
       "-c",
       "-I/opt/local/include",
       "-I/opt/local/include",
@@ -14,7 +15,8 @@
   {
     "arguments": [
       "/opt/local/bin/gcc",
-      "-O3",
+      "-g",
+      "-O0",
       "-c",
       "-fopenmp",
       "-I/opt/local/include",
@@ -27,7 +29,8 @@
   {
     "arguments": [
       "/opt/local/bin/gcc",
-      "-O3",
+      "-g",
+      "-O0",
       "-c",
       "-I/opt/local/include",
       "LLR_Mp_Av.c"
@@ -38,7 +41,8 @@
   {
     "arguments": [
       "/opt/local/bin/gcc",
-      "-O3",
+      "-g",
+      "-O0",
       "-c",
       "-I/opt/local/include",
       "maxphaseutils.c"
@@ -49,7 +53,8 @@
   {
     "arguments": [
       "/opt/local/bin/gcc",
-      "-O3",
+      "-g",
+      "-O0",
       "-c",
       "-I/opt/local/include",
       "ptapso.c"
@@ -60,7 +65,8 @@
   {
     "arguments": [
       "/opt/local/bin/gcc",
-      "-O3",
+      "-g",
+      "-O0",
       "-c",
       "-I/opt/local/include",
       "-I/opt/local/include",
@@ -72,7 +78,8 @@
   {
     "arguments": [
       "/opt/local/bin/gcc",
-      "-O3",
+      "-g",
+      "-O0",
       "-c",
       "-I/opt/local/include",
       "-I/opt/local/include",
@@ -84,7 +91,8 @@
   {
     "arguments": [
       "/opt/local/bin/gcc",
-      "-O3",
+      "-g",
+      "-O0",
       "-c",
       "-I/opt/local/include",
       "-I/opt/local/include",

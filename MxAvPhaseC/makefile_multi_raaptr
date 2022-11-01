@@ -3,7 +3,7 @@
 
 OBJ = Multi_RAAPTR.o perfeval_omp.o  LLR_Mp_Av.o  maxphaseutils.o ptapso.o gslhdf5_io.o subtract.o loadRAAPTR.o
 # change gcc to icc to switch form LS5 to Stampede2
-CC = gcc -g#-O3 #-xmic-avx512 to take adavantage of AVX 512 architecture which does NOT work with current code.
+CC = gcc -g -O0#-xmic-avx512 to take adavantage of AVX 512 architecture which does NOT work with current code.
 GSLFLAGS := /opt/local/include
 GSLLIBS := /opt/local/lib
 HDF5FLAGS := /opt/local/include
