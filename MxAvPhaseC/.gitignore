@@ -5,3 +5,6 @@
 makefile_omp_local_QYQ
 makefile_multi_local
 *.exe
+results
+*.hdf5
+*.mat
