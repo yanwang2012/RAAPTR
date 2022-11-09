@@ -3,7 +3,7 @@
  * @Description: Function to load real data.
  * @Date: 2022-09-20 13:12:27
  * @LastEditors: Yiqian Qian
- * @LastEditTime: 2022-10-01 13:11:22
+ * @LastEditTime: 2022-11-08 17:49:51
  * @FilePath: /MxAvPhaseC/loadRAAPTR.c
  */
 #include "loadRAAPTR.h"
@@ -32,7 +32,7 @@ struct RAAPTR_data *loadRAAPTR2llrparams(hid_t inFile, const char **psrNames,
                                          size_t Np) {
 
   struct RAAPTR_data *llp = llrparam_alloc_RAAPTR((unsigned int)Np);
-  printf("First pulsar in loadRAAPTR2llrparams is %s\n", psrNames[0]);
+  // printf("First pulsar in loadRAAPTR2llrparams is %s\n", psrNames[0]);
   for (int psr = 0; psr < Np; psr++) {
     hid_t inGroup = H5Gopen(inFile, psrNames[psr], H5P_DEFAULT);
     if (inGroup < 0) {

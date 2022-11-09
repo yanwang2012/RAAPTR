@@ -388,7 +388,7 @@ void perfeval_omp_RAAPTR(struct fitFuncParams *ffp, /*!< Parameters for the fitn
 	char **psrnames = (char **)malloc(Np * sizeof(char *));
 	readpsrnames(psrfile, psrnames, Np);
 	struct RAAPTR_data *llp;
-	printf("Fist pulsar in perfeval_omp_RAAPTR: %s\n", psrnames[0]);
+	// printf("Fist pulsar in perfeval_omp_RAAPTR: %s\n", psrnames[0]);
 	llp = loadRAAPTR2llrparams(inFile, psrnames, Np);
 
 	// Close file
@@ -512,7 +512,7 @@ void perfeval_omp_RAAPTR(struct fitFuncParams *ffp, /*!< Parameters for the fitn
 void readpsrnames(const char *filename, char **psrNames, size_t Np)
 {
 	FILE *fptr = fopen(filename, "r");
-	FILE *fptr2 = fopen("PulsarNames.txt", "w");
+	FILE *fptr2 = fopen("loaded_psrs.txt", "w");
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t read;

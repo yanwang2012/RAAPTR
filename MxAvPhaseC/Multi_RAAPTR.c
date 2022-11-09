@@ -40,11 +40,14 @@ See the documentation for the simulation data generation code.
 */
 
 struct fitFuncParams *file2ffparam(char *); // decleration
-int main(int argc, char *argv[]) {
+
+int main(int argc, char *argv[])
+{
   /* General purpose variables */
   size_t lpc1, lpc2, lpc3;
   double **tres;
-  if (argc != 7) {
+  if (argc != 7)
+  {
     fprintf(stdout,
             "Usage: %s parameter_file_path input_file_path output_file_path "
             "mp_av_select psr_catalog number_of_iterations\n",
@@ -62,19 +65,17 @@ int main(int argc, char *argv[]) {
   // size_t length = strlen(outputFileName);
   // printf("Length of outputFileName is %d\n",length);
 
-  /* Create new input file.*/
-  char purefilename[strlen(argv[2])];
-  char newinputfile[strlen(purefilename) + strlen("_sub1.hdf5")];
-  strncpy(purefilename, argv[2], strlen(argv[2]) - strlen(".hdf5"));
-  purefilename[strlen(argv[2]) - strlen(".hdf5")] = '\0'; // null character manually added
-
   /* Creat new output file. */
   char purename[strlen(argv[3])];
-  strncpy(purename, argv[3],
-          strlen(argv[3]) -
-                strlen(".hdf5")); // get the pure file name without extension.
-  purename[strlen(argv[3]) - strlen(".hdf5")] = '\0'; // null character manually added
+  strncpy(purename, argv[3], strlen(argv[3]) - strlen(".hdf5")); // get the pure file name without extension.
+  purename[strlen(argv[3]) - strlen(".hdf5")] = '\0';            // null character manually added
   char newName[strlen(purename) + strlen("_0.hdf5")];
+
+  /* Create new input file.*/
+  char purefilename[strlen(argv[2])];
+  strncpy(purefilename, argv[2], strlen(argv[2]) - strlen(".hdf5"));
+  purefilename[strlen(argv[2]) - strlen(".hdf5")] = '\0'; // null character manually added
+  char newinputfile[strlen(purefilename) + strlen("_sub1.hdf5")];
 
   /* Which algorithm to use */
   char *mp_av_select = argv[4];
@@ -86,7 +87,8 @@ int main(int argc, char *argv[]) {
   int num_ite = atoi(argv[6]); // transfer char to integer
   fprintf(stdout, "Number of iteration is: %d\n", num_ite);
 
-  for (int ite = 0; ite < num_ite; ite++) {
+  for (int ite = 0; ite < num_ite; ite++)
+  {
     /* Multi PSO Process */
 
     /* Error handling off */
@@ -119,7 +121,8 @@ int main(int argc, char *argv[]) {
 
     herr_t status;
     hid_t inFile = H5Fopen(inputFileName, H5F_ACC_RDONLY, H5P_DEFAULT);
-    if (inFile < 0) {
+    if (inFile < 0)
+    {
       fprintf(stdout, "Error opening file\n");
       abort();
     }
@@ -148,26 +151,37 @@ int main(int argc, char *argv[]) {
 
     double **timResiduals = (double **)malloc(Np * sizeof(double *));
     double **estRes = timingResiduals_raaptr(srcp, llp);
+    // printf("timResiduals outside is %p\n", estRes);
     // printf("Dimension of timResiduals: %zu %zu\n", timResiduals->size1,
     // timResiduals->size2);
+
+    /*
+    debug session no longer needed
     FILE *fsub, *fest;
     fsub = fopen("subtracted_timing_residual.txt", "w");
     fest = fopen("estimated_timing_residual.txt", "w");
+    */
 
+    // subtraction
     size_t i, j;
-    for (i = 0; i < Np; i++) {
+    for (i = 0; i < Np; i++)
+    {
       timResiduals[i] = (double *)malloc(N[i] * sizeof(double));
-      for (j = 0; j < N[i]; j++) {
+      for (j = 0; j < N[i]; j++)
+      {
         timResiduals[i][j] = tres[i][j] - estRes[i][j];
-        fprintf(fsub, "%e ", timResiduals[i][j]);
-        fprintf(fest, "%e ", estRes[i][j]);
+        // fprintf(fsub, "%e ", timResiduals[i][j]);
+        // printf("%e ", timResiduals[i][j]);
+        // fprintf(fest, "%e ", estRes[i][j]);
+        //  printf("Estimated timing residuals: %e\n", estRes[i][j]);
       }
-      fprintf(fsub, "\n");
-      fprintf(fest, "\n");
+      // fprintf(fsub, "\n");
+      // fprintf(fest, "\n");
     }
-
+    /*
     fclose(fsub);
     fclose(fest);
+    */
 
     /*	hid_t dset_id = H5Dopen1(inFile, "timingResiduals"); // Open an existing
     dataset. status = H5Dwrite(dset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL,
@@ -187,14 +201,17 @@ int main(int argc, char *argv[]) {
 
     hid_t ninFile =
         H5Fcreate(newinputfile, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-    if (ninFile < 0) {
+    if (ninFile < 0)
+    {
       printf("Error creating new input file %s \n", newinputfile);
     }
     /* Copy data to new file */
     H5Ocopy(inFile, "/Np", ninFile, "/Np", H5P_DEFAULT, H5P_DEFAULT);
-    for (i = 0; i < Np; i++) {
+    for (i = 0; i < Np; i++)
+    {
       hid_t inGroup = H5Gopen(inFile, psrnames[i], H5P_DEFAULT);
-      if (inGroup < 0) {
+      if (inGroup < 0)
+      {
         printf("Error opening group %s \n", psrnames[i]);
       }
       // copy groups to new file
@@ -205,22 +222,27 @@ int main(int argc, char *argv[]) {
     }
 
     status = H5Fclose(ninFile);
-    if (status < 0) {
+    if (status < 0)
+    {
       printf("Error closing new input file %s \n", newinputfile);
     }
     status = H5Fclose(inFile);
-    if (status < 0) {
+    if (status < 0)
+    {
       printf("Error closing input file %s \n", inputFileName);
     }
 
     /* Update timing residuals in new input file */
     hid_t newFile = H5Fopen(newinputfile, H5F_ACC_RDWR, H5P_DEFAULT);
-    if (newFile < 0) {
+    if (newFile < 0)
+    {
       printf("Error opening new input file %s \n", newinputfile);
     }
-    for (i = 0; i < Np; i++) {
+    for (i = 0; i < Np; i++)
+    {
       hid_t group_id = H5Gopen(newFile, psrnames[i], H5P_DEFAULT);
-      if (group_id < 0) {
+      if (group_id < 0)
+      {
         printf("Error opening group %s \n", psrnames[i]);
       }
       hid_t dset_id =
@@ -232,7 +254,8 @@ int main(int argc, char *argv[]) {
       H5Gclose(group_id);
     }
     status = H5Fclose(newFile);
-    if (status < 0) {
+    if (status < 0)
+    {
       printf("Error closing new input file %s \n", newinputfile);
     }
 
@@ -258,7 +281,8 @@ int main(int argc, char *argv[]) {
     srcpara_free(srcp);
     raaptr_free(llp);
     ffparam_free(ffp);
-    for (i = 0; i < Np; i++) {
+    for (i = 0; i < Np; i++)
+    {
       free(timResiduals[i]);
       free(estRes[i]);
     }
@@ -270,11 +294,13 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-struct fitFuncParams *file2ffparam(char *srchParamsFile) {
+struct fitFuncParams *file2ffparam(char *srchParamsFile)
+{
 
   herr_t status;
   hid_t srchPar = H5Fopen(srchParamsFile, H5F_ACC_RDONLY, H5P_DEFAULT);
-  if (srchPar < 0) {
+  if (srchPar < 0)
+  {
     fprintf(stdout, "Error opening file %s\n", srchParamsFile);
     abort();
   }
@@ -287,7 +313,8 @@ struct fitFuncParams *file2ffparam(char *srchParamsFile) {
   /* transfer xmaxmin to fitness function parameter struct */
   struct fitFuncParams *ffp = ffparam_alloc(nDim);
   size_t lpc1;
-  for (lpc1 = 0; lpc1 < nDim; lpc1++) {
+  for (lpc1 = 0; lpc1 < nDim; lpc1++)
+  {
     gsl_vector_set(ffp->rmin, lpc1, gsl_matrix_get(xmaxmin, lpc1, 1));
     gsl_vector_set(ffp->rangeVec, lpc1,
                    gsl_matrix_get(xmaxmin, lpc1, 0) -
@@ -297,7 +324,8 @@ struct fitFuncParams *file2ffparam(char *srchParamsFile) {
   }
   /* Close file */
   status = H5Fclose(srchPar);
-  if (status < 0) {
+  if (status < 0)
+  {
     fprintf(stdout, "Error closing file %s \n", srchParamsFile);
   }
 
