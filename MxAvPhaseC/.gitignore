@@ -5,6 +5,7 @@
 makefile_omp_local_QYQ
 makefile_multi_local
 *.exe
-results
+/TESTH5IO/results/
+/TESTH5IO/searchParams_Nyquist/
 *.hdf5
 *.mat
