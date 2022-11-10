@@ -6,9 +6,9 @@
 clear;
 %% calculate SNR
 %phiI = psrParams.phiI;
-DataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/Real Data/NANOGrav/NANOGrav_12yv4';
-ResultsDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC/TESTH5IO';
-resultFiles = dir([ResultsDir,filesep,'*result.mat']);
+DataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/Real Data/NANOGrav/NANOGrav_12yv4';
+ResultsDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/RAAPTR/MxAvPhaseC/TESTH5IO/results';
+resultFiles = dir([ResultsDir,filesep,'*results_1.mat']);
 psrFile = dir([DataDir,filesep,'*.mat']);
 srcParams = load([ResultsDir,filesep,resultFiles.name]);
 psrParams = load([DataDir,filesep,psrFile.name]);
