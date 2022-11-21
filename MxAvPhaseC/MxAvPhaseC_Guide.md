@@ -152,6 +152,6 @@ $LAUNCHER_DIR/paramrun
 ```
 
 To submit the job, the command is:  
-```
+```slurm
 sbatch LAUNCHER_SLURM_FILE_PTA.slurm  
 ```
