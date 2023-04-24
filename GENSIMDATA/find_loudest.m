@@ -5,7 +5,7 @@
 
 clear;
 
-dataDir = '/Users/yiqianqian/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/Lomb-Scargle';
+dataDir = '/Users/qyq/Library/Mobile Documents/com~apple~CloudDocs/Research/PulsarTiming/SimDATA/Lomb-Scargle';
 files = dir([dataDir, filesep,'GWBsimDataSKASrlz*Nrlz1.mat']);
 filenames = sort_nat({files.name});
 N = length(filenames);
